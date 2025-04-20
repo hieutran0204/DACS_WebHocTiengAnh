@@ -1,31 +1,75 @@
 extends ../../layouts/default
+
 block content
-  h1 Danh sách câu hỏi TOEIC #{partNames[currentPart]}
+  .container.mt-4
+    .d-flex.justify-content-between.align-items-center.mb-4
+      h1 Quản lý Web Học Tiếng Anh
+      .btn-group
+        a.btn.btn-primary(href="#", style="margin-right: 5px") Tạo đề thi
+        a.btn.btn-primary(href="#") Quản lý Đề thi
 
-  //- Menu chọn Part
-  .part-filter.mb-3
-    each val, key in partNames
-      a.btn.btn-outline-primary.mr-2(
-        href=`/admin/questions/by-part/${key}`, 
-        class=currentPart == key ? "active" : ""
-      ) #{val}
+    h2.mb-4 Danh sách câu hỏi TOEIC Part #{currentPart}
 
-  //- Bảng câu hỏi
-  table#questionsTable.table.table-striped.table-bordered
-    thead
-      tr
-        th STT
-        th Mã (MaCC)
-        th Câu hỏi
-        th Đáp án
-        th Hành động
-    tbody
-      each q, index in questions
-        tr
-          td= index + 1
-          td= q.MaCC
-          td= q.question
-          td= q.correctAnswer
-          td
-            a.btn.btn-sm.btn-warning.mr-1(href=`/admin/questions/edit/${q._id}`) Sửa
-            a.btn.btn-sm.btn-danger(href=`/admin/questions/delete/${q._id}`, onclick="return confirm('Xóa?')") Xóa
+    //- Menu chọn Part
+    .mb-4
+      label.fw-bold.mb-2 Lọc theo phân thi:
+      .btn-group(role="group")
+        a.btn.btn-outline-secondary(href="/admin/questions/by-part/5", class=currentPart == 5 ? "active" : "") Part 5
+        a.btn.btn-outline-secondary(href="/admin/questions/by-part/6", class=currentPart == 6 ? "active" : "") Part 6
+        a.btn.btn-outline-secondary(href="/admin/questions/by-part/7", class=currentPart == 7 ? "active" : "") Part 7
+
+    //- Bảng câu hỏi
+    .table-responsive
+      table.table.table-hover.table-bordered.align-middle
+        thead.table-light
+          tr
+            th(scope="col") STT
+            th(scope="col") Mã CC
+            th(scope="col") Nội dung
+            th(scope="col") Đáp án đúng
+            th(scope="col") Hành động
+        tbody
+          if questions.length > 0
+            each q, index in questions
+              tr
+                td #{index + 1}
+                td #{q.MaCC || "TOEIC"}
+                td 
+                  if q.part == 5
+                    | #{q.question || "N/A"}
+                  else if q.part == 6 || q.part == 7
+                    | #{q.passage ? q.passage.substring(0, 100) + (q.passage.length > 100 ? "..." : "") : "N/A"}
+                  else
+                    | N/A
+                td
+                  if q.part == 5
+                    | #{q.correctAnswer || "N/A"}
+                  else if q.part == 6 && q.blanks
+                    each blank in q.blanks
+                      | Blank #{blank.blank}: #{blank.correctAnswer || "N/A"}
+                      br
+                  else if q.part == 7 && q.questions
+                    each question, qIndex in q.questions
+                      | Q#{qIndex + 1}: #{question.correctAnswer || "N/A"}
+                      br
+                  else
+                    | N/A
+                td
+                  a.btn.btn-sm.btn-warning.me-2(href=`/admin/questions/edit/${q._id}`)
+                    i.fas.fa-edit.me-1
+                    | Sửa
+                  a.btn.btn-sm.btn-danger(href=`/admin/questions/delete/${q._id}`, onclick="return confirm('Bạn có chắc chắn muốn xóa câu hỏi này?')")
+                    i.fas.fa-trash.me-1
+                    | Xóa
+          else
+            tr
+              td(colspan="5", class="text-center text-muted") Không có câu hỏi nào thuộc phần này.
+
+    .mt-3
+      a.btn.btn-success(href=`/admin/questions/add?part=${currentPart}`)
+        i.fas.fa-plus.me-2
+        | Thêm câu hỏi mới
+
+    .mt-4.d-flex.justify-content-between.align-items-center
+      small.text-muted DOI: SuperLMS
+      small.text-muted Linear-thinking
