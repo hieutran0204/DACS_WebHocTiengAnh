@@ -45,6 +45,7 @@ exports.showCreateFormExam = (req, res) => {
     }
 };
 // Xử lý thêm câu hỏi
+// Cập nhật hàm createQuestion để hỗ trợ cả 3 part
 exports.createQuestion = async (req, res) => {
     try {
         const {
@@ -55,46 +56,72 @@ exports.createQuestion = async (req, res) => {
             question,
             options,
             correctAnswer,
-            explanation
+            passage,
+            blanks,
+            questions,
+            explanation,
+            difficulty
         } = req.body;
 
-        // Kiểm tra các trường bắt buộc
-        if (!MaCC || !TopicN || !part || !questionN || !question || !options || !correctAnswer) {
+        // Validate chung
+        if (!MaCC || !TopicN || !part || !questionN) {
             return res.status(400).send("Vui lòng điền đầy đủ các trường bắt buộc.");
         }
 
-        // Kiểm tra các trường số
-        if (isNaN(TopicN) || isNaN(part) || isNaN(questionN)) {
-            return res.status(400).send("Các trường số phải là giá trị hợp lệ.");
+        const partNum = parseInt(part);
+        const questionData = {
+            MaCC,
+            TopicN: parseInt(TopicN),
+            part: partNum,
+            questionN: parseInt(questionN),
+            explanation: explanation || '',
+            difficulty: parseInt(difficulty) || 0,
+            Img: req.file ? "/admin/img/uploads_reading_TOEIC/" + req.file.filename : null
+        };
+
+        // Xử lý theo từng Part
+        switch (partNum) {
+            case 5:
+                if (!question || !options || !correctAnswer) {
+                    return res.status(400).send("Vui lòng điền đầy đủ các trường cho Part 5.");
+                }
+                questionData.question = question;
+                questionData.options = Array.isArray(options) ? options : [options];
+                questionData.correctAnswer = correctAnswer;
+                break;
+
+            case 6:
+                if (!passage || !blanks) {
+                    return res.status(400).send("Vui lòng điền đầy đủ các trường cho Part 6.");
+                }
+                questionData.passage = passage;
+                questionData.blanks = Array.isArray(blanks) ? blanks : [];
+                break;
+
+            case 7:
+                if (!passage || !questions) {
+                    return res.status(400).send("Vui lòng điền đầy đủ các trường cho Part 7.");
+                }
+                questionData.passage = passage;
+                questionData.questions = Array.isArray(questions) ? questions : [];
+                break;
+
+            default:
+                return res.status(400).send("Part không hợp lệ");
         }
 
-        // Ép kiểu nếu chỉ có 1 option
-        const optionsArray = Array.isArray(options) ? options : [options];
-
-        const imagePath = req.file
-            ? "/admin/img/uploads_reading_TOEIC/" + req.file.filename
-            : null;
-
-        const newQuestion = new Question({
-            MaCC,
-            TopicN: Number(TopicN),
-            part: Number(part),
-            questionN: Number(questionN),
-            question,
-            options: optionsArray,
-            correctAnswer,
-            explanation,
-            Img: imagePath
-        });
-
+        const newQuestion = new Question(questionData);
         await newQuestion.save();
-        res.redirect("/admin/dashboard");
+        
+        req.flash('success', 'Thêm câu hỏi thành công');
+        res.redirect(`/admin/questions/by-part/${partNum}`);
+
     } catch (error) {
-        console.error(error);
-        res.status(500).send("Lỗi tạo câu hỏi");
+        console.error("Lỗi khi thêm câu hỏi:", error);
+        req.flash('error', 'Có lỗi khi thêm câu hỏi: ' + error.message);
+        res.redirect('/admin/questions/add');
     }
 };
-
 
 // Ramdom exam generation
 // Lọc câu hỏi theo độ khó (Dễ/Trung bình/Kho)
@@ -241,6 +268,44 @@ exports.showEditForm = async (req, res) => {
         if (!question) {
             return res.status(404).send("Không tìm thấy câu hỏi");
         }
+
+        // Xử lý dữ liệu cho Part 6
+        if (question.part == 6) {
+            // Nếu không có blanks hoặc không phải mảng, gán mảng rỗng mẫu
+            if (!Array.isArray(question.blanks) || question.blanks.length === 0) {
+                question.blanks = [{
+                    blank: 1,
+                    options: ["", "", "", ""],
+                    correctAnswer: ""
+                }];
+            } else {
+                // Đảm bảo mỗi blank có đủ 4 options
+                question.blanks = question.blanks.map((b, i) => ({
+                    blank: b.blank || i + 1,
+                    options: Array.isArray(b.options) ? b.options.concat(Array(4 - b.options.length).fill("")) : ["", "", "", ""],
+                    correctAnswer: b.correctAnswer || ""
+                }));
+            }
+        }
+
+        // Xử lý dữ liệu cho Part 7
+        if (question.part == 7) {
+            if (!Array.isArray(question.questions) || question.questions.length === 0) {
+                question.questions = [{
+                    question: "",
+                    options: ["", "", "", ""],
+                    correctAnswer: ""
+                }];
+            } else {
+                // Đảm bảo mỗi câu có đủ 4 options
+                question.questions = question.questions.map((q) => ({
+                    question: q.question || "",
+                    options: Array.isArray(q.options) ? q.options.concat(Array(4 - q.options.length).fill("")) : ["", "", "", ""],
+                    correctAnswer: q.correctAnswer || ""
+                }));
+            }
+        }
+
         res.render("admin/pages/TOEIC/edit-question", { question });
     } catch (error) {
         console.error(error);
@@ -248,6 +313,7 @@ exports.showEditForm = async (req, res) => {
     }
 };
 
+// Cập nhật hàm updateQuestion
 exports.updateQuestion = async (req, res) => {
     try {
         const { id } = req.params;
@@ -259,54 +325,138 @@ exports.updateQuestion = async (req, res) => {
             question,
             options,
             correctAnswer,
-            explanation
+            explanation,
+            passage,
+            blanks,
+            questions,
+            removeImage
         } = req.body;
 
-        // Kiểm tra câu hỏi tồn tại
+        // Validate input
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).send("ID không hợp lệ");
+        }
+
         const existingQuestion = await Question.findById(id);
         if (!existingQuestion) {
             return res.status(404).send("Không tìm thấy câu hỏi");
         }
 
-        // Cập nhật dữ liệu
-        existingQuestion.MaCC = MaCC;
-        existingQuestion.TopicN = Number(TopicN);
-        existingQuestion.part = Number(part);
-        existingQuestion.questionN = Number(questionN);
-        existingQuestion.question = question;
-        existingQuestion.options = Array.isArray(options) ? options : [options];
-        existingQuestion.correctAnswer = correctAnswer;
-        existingQuestion.explanation = explanation;
+        // Cập nhật thông tin chung
+        existingQuestion.MaCC = MaCC || 'TOEIC';
+        existingQuestion.TopicN = parseInt(TopicN) || 1;
+        existingQuestion.part = parseInt(part);
+        existingQuestion.questionN = parseInt(questionN) || 1;
+        existingQuestion.explanation = explanation || '';
+        existingQuestion.updatedAt = Date.now();
 
-        // Cập nhật ảnh nếu có
-        if (req.file) {
+        // Xử lý ảnh
+        if (removeImage === 'on') {
+            existingQuestion.Img = '';
+        } else if (req.file) {
             existingQuestion.Img = "/admin/img/uploads_reading_TOEIC/" + req.file.filename;
         }
 
+        // Xử lý theo từng Part
+        switch (parseInt(part)) {
+            case 5:
+                existingQuestion.question = question || '';
+                existingQuestion.options = Array.isArray(options) ? options.slice(0, 4) : 
+                                          (typeof options === 'string' ? [options, '', '', ''] : ['', '', '', '']);
+                existingQuestion.correctAnswer = ['A', 'B', 'C', 'D'].includes(correctAnswer) ? correctAnswer : '';
+                
+                // Xóa các trường không dùng
+                existingQuestion.passage = undefined;
+                existingQuestion.blanks = [];
+                existingQuestion.questions = [];
+                break;
+
+            case 6:
+                existingQuestion.passage = passage || '';
+                
+                // Xử lý blanks
+                if (Array.isArray(blanks)) {
+                    existingQuestion.blanks = blanks.map(b => ({
+                        blank: parseInt(b.blank) || 1,
+                        options: Array.isArray(b.options) ? b.options.slice(0, 4) : ['', '', '', ''],
+                        correctAnswer: ['A', 'B', 'C', 'D'].includes(b.correctAnswer) ? b.correctAnswer : ''
+                    })).filter(b => b.blank > 0);
+                } else {
+                    existingQuestion.blanks = [];
+                }
+                
+                // Xóa các trường không dùng
+                existingQuestion.question = undefined;
+                existingQuestion.options = [];
+                existingQuestion.correctAnswer = undefined;
+                existingQuestion.questions = [];
+                break;
+
+            case 7:
+                existingQuestion.passage = passage || '';
+                
+                // Xử lý questions
+                if (Array.isArray(questions)) {
+                    existingQuestion.questions = questions.map(q => ({
+                        question: q.question || '',
+                        options: Array.isArray(q.options) ? q.options.slice(0, 4) : ['', '', '', ''],
+                        correctAnswer: ['A', 'B', 'C', 'D'].includes(q.correctAnswer) ? q.correctAnswer : ''
+                    }));
+                } else {
+                    existingQuestion.questions = [];
+                }
+                
+                // Xóa các trường không dùng
+                existingQuestion.question = undefined;
+                existingQuestion.options = [];
+                existingQuestion.correctAnswer = undefined;
+                existingQuestion.blanks = [];
+                break;
+
+            default:
+                return res.status(400).send("Part không hợp lệ");
+        }
+
         await existingQuestion.save();
-        res.redirect("/admin/dashboard");
+        res.redirect("/admin/questions/by-part/" + existingQuestion.part);
     } catch (error) {
-        console.error(error);
-        res.status(500).send("Lỗi khi cập nhật câu hỏi");
+        console.error("Lỗi khi cập nhật câu hỏi:", error);
+        res.redirect(`/admin/questions/edit/${id}?error=Có lỗi khi cập nhật câu hỏi`);
     }
 };
 
-
+// exports.getQuestionsByPart = async (req, res) => {
+//     try {
+//         const { part } = req.params;
+//         const questions = await Question.find({ part: Number(part) }).lean(); // Ép kiểu số vì part trong schema là Number
+//         res.render("admin/pages/TOEIC/questions-by-part", { 
+//             questions,
+//             currentPart: part,
+//             partNames: { 5: "Part 5", 6: "Part 6", 7: "Part 7" } // Đặt tên hiển thị
+//         });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).send("Lỗi khi lọc câu hỏi theo Part");
+//     }
+// };
+// Hiện thị câu hỏi theo Part (5/6/7)
 exports.getQuestionsByPart = async (req, res) => {
     try {
         const { part } = req.params;
         const questions = await Question.find({ part: Number(part) }).lean(); // Ép kiểu số vì part trong schema là Number
+        const partNames = { 5: "Part 5", 6: "Part 6", 7: "Part 7" }; // Đặt tên hiển thị
+        const currentPart = Number(part);
+
         res.render("admin/pages/TOEIC/questions-by-part", { 
             questions,
-            currentPart: part,
-            partNames: { 5: "Part 5", 6: "Part 6", 7: "Part 7" } // Đặt tên hiển thị
+            currentPart,
+            partNames
         });
     } catch (error) {
         console.error(error);
         res.status(500).send("Lỗi khi lọc câu hỏi theo Part");
     }
 };
-
 
 // Hiển thị form tìm kiếm
 exports.showSearchForm = (req, res) => {

@@ -1,5 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const flash = require('connect-flash');
+const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const path = require('path');
 
@@ -17,11 +19,27 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static('public'));
+app.use(session({
+    secret: 'your-secret-key',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } // Đặt true nếu dùng HTTPS
+}));
+
+// Phải đặt flash middleware sau session và trước các routes
+app.use(flash());
+
+// Thêm middleware để truyền flash messages đến views
+app.use((req, res, next) => {
+  res.locals.success = req.flash('success');
+  res.locals.error = req.flash('error');
+  next();
+});
 
 // View engine setup
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
-// app.set('views', './views');
+
 // Routes
 const authRoutes = require('./routes/shared/auth.route.js');
 const questionRoutes = require('./routes/admin/CRUD_readingTOEIC.route.js');
@@ -31,7 +49,7 @@ const adminRoutes = require('./routes/admin/index.route');
 app.use('/auth', authRoutes);
 app.use('/', clientRoutes);
 app.use('/admin', adminRoutes);
-app.use('/admin/questions', questionRoutes); // Nên đặt cùng nhóm admin
+app.use('/admin/questions', questionRoutes);
 
 // Khởi động server
 app.listen(port, () => {

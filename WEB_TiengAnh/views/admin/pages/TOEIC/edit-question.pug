@@ -2,64 +2,112 @@ extends ../../layouts/default
 
 block content
   .container.mt-4
-    h1.mb-4 Chỉnh sửa câu hỏi
-
+    h1.mb-4 📝 Chỉnh sửa câu hỏi TOEIC Part #{question.part}
+    
     form(method="POST", action=`/admin/questions/update/${question._id}`, enctype="multipart/form-data")
-
       .row
         .col-md-6.mb-3
           label.form-label(for="MaCC") Mã câu hỏi:
-          input.form-control(type="text", name="MaCC", id="MaCC", value=question.MaCC, required)
-
-        .col-md-6.mb-3
+          input.form-control(type="text", name="MaCC", id="MaCC", value=question.MaCC || "TOEIC", required)
+        
+        .col-md-3.mb-3
           label.form-label(for="TopicN") Chủ đề (TopicN):
           input.form-control(type="number", name="TopicN", id="TopicN", value=question.TopicN, required)
-
-        .col-md-6.mb-3
+        
+        .col-md-3.mb-3
           label.form-label(for="part") Part:
-          input.form-control(type="number", name="part", id="part", value=question.part, required)
+          input.form-control(type="text", id="partDisplay", value=`Part ${question.part}`, readonly)
+          input(type="hidden", name="part", value=question.part)
 
-        .col-md-6.mb-3
-          label.form-label(for="questionN") Số câu (questionN):
-          input.form-control(type="number", name="questionN", id="questionN", value=question.questionN, required)
+      //- ... (phần còn lại giữ nguyên theo part của câu hỏi) ...
 
+      if question.part == 5
+        //- Form cho Part 5
+        .mb-3
+          label.form-label(for="question") Câu hỏi:
+          textarea.form-control(name="question", id="question", rows="3")= question.question || ''
+        
+        .row
+          each option, index in ['A', 'B', 'C', 'D']
+            .col-md-3.mb-3
+              label.form-label(for=`option${option}`) Đáp án #{option}:
+              input.form-control(type="text", name=`options[]`, id=`option${option}`, value=question.options && question.options[index] || '')
+        
+        .mb-3
+          label.form-label(for="correctAnswer") Đáp án đúng:
+          select.form-select(name="correctAnswer", id="correctAnswer")
+            each option in ['A', 'B', 'C', 'D']
+              option(value=option, selected=question.correctAnswer == option)= option
+
+      else if question.part == 6
+        //- Form cho Part 6
+        .mb-3
+          label.form-label(for="passage") Đoạn văn:
+          textarea.form-control(name="passage", id="passage", rows="5")= question.passage || ''
+        
+        h5.mt-4 Các lựa chọn cho chỗ trống:
+        each blank, index in question.blanks || [{}]
+          .card.mb-3
+            .card-header Chỗ trống #{blank.blank || index + 1}
+            .card-body
+              input(type="hidden", name=`blanks[${index}][blank]`, value=blank.blank || index + 1)
+              .row
+                each option, optIndex in ['A', 'B', 'C', 'D']
+                  .col-md-3.mb-3
+                    label.form-label(for=`blank${index}_option${option}`) Lựa chọn #{option}:
+                    input.form-control(type="text", name=`blanks[${index}][options][]`, id=`blank${index}_option${option}`, value=blank.options && blank.options[optIndex] || '')
+              .mb-3
+                label.form-label(for=`blank${index}_correctAnswer`) Đáp án đúng:
+                select.form-select(name=`blanks[${index}][correctAnswer]`, id=`blank${index}_correctAnswer`)
+                  each option in ['A', 'B', 'C', 'D']
+                    option(value=option, selected=blank.correctAnswer == option)= option
+
+      else if question.part == 7
+        //- Form cho Part 7
+        .mb-3
+          label.form-label(for="passage") Đoạn văn:
+          textarea.form-control(name="passage", id="passage", rows="5")= question.passage || ''
+        
+        h5.mt-4 Câu hỏi:
+        each q, index in question.questions || [{}]
+          .card.mb-3
+            .card-header Câu hỏi #{index + 1}
+            .card-body
+              .mb-3
+                label.form-label(for=`question${index}_text`) Nội dung câu hỏi:
+                input.form-control(type="text", name=`questions[${index}][question]`, id=`question${index}_text`, value=q.question || '')
+              .row
+                each option, optIndex in ['A', 'B', 'C', 'D']
+                  .col-md-3.mb-3
+                    label.form-label(for=`question${index}_option${option}`) Lựa chọn #{option}:
+                    input.form-control(type="text", name=`questions[${index}][options][]`, id=`question${index}_option${option}`, value=q.options && q.options[optIndex] || '')
+              .mb-3
+                label.form-label(for=`question${index}_correctAnswer`) Đáp án đúng:
+                select.form-select(name=`questions[${index}][correctAnswer]`, id=`question${index}_correctAnswer`)
+                  each option in ['A', 'B', 'C', 'D']
+                    option(value=option, selected=q.correctAnswer == option)= option
+
+      //- Phần chung
       .mb-3
-        label.form-label(for="question") Câu hỏi:
-        textarea.form-control(name="question", id="question", rows="3", required)= question.question
-
-      .row
-        .col-md-3.mb-3
-          label.form-label(for="optionA") Đáp án A:
-          input.form-control(type="text", name="options[]", id="optionA", value=question.options[0], required)
-
-        .col-md-3.mb-3
-          label.form-label(for="optionB") Đáp án B:
-          input.form-control(type="text", name="options[]", id="optionB", value=question.options[1], required)
-
-        .col-md-3.mb-3
-          label.form-label(for="optionC") Đáp án C:
-          input.form-control(type="text", name="options[]", id="optionC", value=question.options[2], required)
-
-        .col-md-3.mb-3
-          label.form-label(for="optionD") Đáp án D:
-          input.form-control(type="text", name="options[]", id="optionD", value=question.options[3], required)
-
-      .mb-3
-        label.form-label(for="correctAnswer") Đáp án đúng:
-        select.form-select(name="correctAnswer", id="correctAnswer", required)
-          option(value="A", selected=question.correctAnswer === question.options[0]) A
-          option(value="B", selected=question.correctAnswer === question.options[1]) B
-          option(value="C", selected=question.correctAnswer === question.options[2]) C
-          option(value="D", selected=question.correctAnswer === question.options[3]) D
+        label.form-label(for="explanation") Giải thích:
+        textarea.form-control(name="explanation", id="explanation", rows="3")= question.explanation || ''
 
       if question.Img
         .mb-3
           label.form-label Ảnh hiện tại:
           br
-          img(src=question.Img, width="200", class="img-thumbnail")
+          img(src=question.Img, width="200", class="img-thumbnail mb-2")
+          br
+          label.form-check-label
+            input.form-check-input(type="checkbox", name="removeImage")
+            |  Xóa ảnh này
 
       .mb-3
         label.form-label(for="image") Ảnh mới (nếu thay đổi):
         input.form-control(type="file", name="image", id="image")
 
-      button.btn.btn-success(type="submit") 💾 Lưu thay đổi
+      .d-flex.justify-content-between.mt-4
+        a.btn.btn-outline-secondary(href="/admin/questions") ← Quay lại
+        button.btn.btn-primary(type="submit") 
+          i.fas.fa-save.me-2
+          | Lưu thay đổi
