@@ -1,0 +1,37 @@
+extends ../../layouts/default
+
+block content
+  .container.mt-5
+    h1 Sửa câu hỏi Listening
+
+    form(method='POST', action=`/admin/listening/edit/${question._id}`, enctype='multipart/form-data')
+      .mb-3
+        label.form-label Part
+        input.form-control(type='number', name='part', value=question.part, required)
+
+      .mb-3
+        label.form-label Audio hiện tại:
+        audio(controls)
+          source(src=question.audioUrl, type='audio/mpeg')
+
+      .mb-3
+        label.form-label Upload file audio mới (nếu muốn thay)
+        input.form-control(type='file', name='audio', accept='audio/mp3,audio/mpeg')
+
+      .mb-3
+        label.form-label Câu hỏi
+        textarea.form-control(name='questionText', rows='2')= question.questionText
+
+      .mb-3
+        label.form-label Các đáp án (dạng JSON)
+        textarea.form-control(name='options', rows='2', required)= JSON.stringify(question.options)
+
+      .mb-3
+        label.form-label Đáp án đúng
+        input.form-control(type='text', name='correctAnswer', maxlength='1', value=question.correctAnswer, required)
+
+      .mb-3
+        label.form-label Giải thích
+        textarea.form-control(name='explanation', rows='2')= question.explanation
+
+      button.btn.btn-primary(type='submit') Cập nhật câu hỏi

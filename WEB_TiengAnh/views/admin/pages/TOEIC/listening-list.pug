@@ -1,0 +1,43 @@
+extends ../../layouts/default
+
+block content
+  .container.mt-5
+    h1 Danh sách câu hỏi Listening TOEIC
+
+    a.btn.btn-primary.mb-3(href='/admin/listening/create') + Thêm câu hỏi
+
+    if questions.length
+      table.table.table-bordered.table-hover
+        thead
+          tr
+            th(scope='col') # 
+            th(scope='col') Part
+            th(scope='col') Audio
+            th(scope='col') Question
+            th(scope='col') Options
+            th(scope='col') Đáp án đúng
+            th(scope='col') Thời gian tạo
+            th(scope='col') Hành động
+
+        tbody
+          each question, index in questions
+            tr
+              td #{index + 1}
+              td #{question.part}
+              td 
+                audio(controls)
+                  source(src=question.audioUrl, type='audio/mpeg')
+                  | Trình duyệt của bạn không hỗ trợ audio
+              td= question.questionText || '—'
+              td 
+                ul
+                  each option in question.options
+                    li= option
+              td.text-center.text-success #{question.correctAnswer}
+              td= question.createdAt.toLocaleString()
+              td
+                a.btn.btn-sm.btn-warning(href=`/admin/listening/edit/${question._id}`) Sửa
+                a.btn.btn-sm.btn-danger.ms-2(href=`/admin/listening/delete/${question._id}` onclick="return confirm('Xác nhận xóa?')") Xóa
+
+    else
+      p.text-muted Không có câu hỏi nào.

@@ -45,12 +45,13 @@ const authRoutes = require('./routes/shared/auth.route.js');
 const questionRoutes = require('./routes/admin/CRUD_readingTOEIC.route.js');
 const clientRoutes = require('./routes/client/index.route');
 const adminRoutes = require('./routes/admin/index.route');
-
+const listeningRoutes = require('./routes/admin/CRUD_listeningTOEIC.route.js');
 app.use('/auth', authRoutes);
 app.use('/', clientRoutes);
 app.use('/admin', adminRoutes);
 app.use('/admin/questions', questionRoutes);
 
+app.use('/admin/listening', listeningRoutes);
 // Khởi động server
 app.listen(port, () => {
     console.log(`Server đang chạy tại http://localhost:${port}`);
