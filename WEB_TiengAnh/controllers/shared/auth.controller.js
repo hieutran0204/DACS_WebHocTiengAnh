@@ -41,7 +41,7 @@ exports.login = async (req, res) => {
     res.cookie('token', token, { httpOnly: true });
     
     // Chuyển hướng sau khi đăng nhập thành công
-    res.redirect('/dashboard');
+    res.redirect('/home');
   } catch (error) {
     res.render('client/pages/login', { error: 'Lỗi hệ thống: ' + error.message });
   }
