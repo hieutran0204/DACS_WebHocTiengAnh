@@ -19,5 +19,6 @@ router.use('/', require('./dashboard.route'));
 
 // Gắn các route khác
 router.use('/reading', require('./CRUD_readingTOEIC.route'));
+router.use('/listening', require('./CRUD_listeningTOEIC.route'));
 
 module.exports = router;
