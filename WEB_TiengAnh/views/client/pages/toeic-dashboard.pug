@@ -1,0 +1,550 @@
+//- block content
+//-   h1.text-center Đề Thi TOEIC
+
+//-   .flex-container
+//-     aside.filter-sidebar
+//-       .filter-section
+//-         h3.filter-title Kỹ Năng
+//-         ul.skill-list
+//-           li.skill-item
+//-             .skill-header
+//-               strong Listening
+//-             ul.part-list
+//-               li.part-item
+//-                 input(type="checkbox" id="listening-all").checkbox
+//-                 label(for="listening-all") Tất cả
+//-               li.part-item
+//-                 input(type="checkbox" id="listening-part1").checkbox
+//-                 label(for="listening-part1") Part 1: Mô tả hình ảnh
+//-               li.part-item
+//-                 input(type="checkbox" id="listening-part2").checkbox
+//-                 label(for="listening-part2") Part 2: Hỏi đáp
+//-               li.part-item
+//-                 input(type="checkbox" id="listening-part3").checkbox
+//-                 label(for="listening-part3") Part 3: Hội thoại
+//-               li.part-item
+//-                 input(type="checkbox" id="listening-part4").checkbox
+//-                 label(for="listening-part4") Part 4: Bài nói ngắn
+
+//-           li.skill-item
+//-             .skill-header
+//-               strong Reading
+//-             ul.part-list
+//-               li.part-item
+//-                 input(type="checkbox" id="reading-all").checkbox
+//-                 label(for="reading-all") Tất cả
+//-               li.part-item
+//-                 input(type="checkbox" id="reading-part5").checkbox
+//-                 label(for="reading-part5") Part 5: Hoàn thành câu
+//-               li.part-item
+//-                 input(type="checkbox" id="reading-part6").checkbox
+//-                 label(for="reading-part6") Part 6: Hoàn thành đoạn văn
+//-               li.part-item
+//-                 input(type="checkbox" id="reading-part7").checkbox
+//-                 label(for="reading-part7") Part 7: Đọc hiểu
+
+//-           li.skill-item
+//-             .skill-header
+//-               strong Speaking
+//-             ul.part-list
+//-               li.part-item
+//-                 input(type="checkbox" id="speaking-all").checkbox
+//-                 label(for="speaking-all") Tất cả
+//-               li.part-item
+//-                 input(type="checkbox" id="speaking-part1").checkbox
+//-                 label(for="speaking-part1") Part 1: Đọc to
+//-               li.part-item
+//-                 input(type="checkbox" id="speaking-part2").checkbox
+//-                 label(for="speaking-part2") Part 2: Mô tả hình ảnh
+//-               li.part-item
+//-                 input(type="checkbox" id="speaking-part3").checkbox
+//-                 label(for="speaking-part3") Part 3: Trả lời câu hỏi
+//-               li.part-item
+//-                 input(type="checkbox" id="speaking-part4").checkbox
+//-                 label(for="speaking-part4") Part 4: Trình bày ý kiến
+
+//-           li.skill-item
+//-             .skill-header
+//-               strong Writing
+//-             ul.part-list
+//-               li.part-item
+//-                 input(type="checkbox" id="writing-all").checkbox
+//-                 label(for="writing-all") Tất cả
+//-               li.part-item
+//-                 input(type="checkbox" id="writing-part1").checkbox
+//-                 label(for="writing-part1") Part 1: Viết câu
+//-               li.part-item
+//-                 input(type="checkbox" id="writing-part2").checkbox
+//-                 label(for="writing-part2") Part 2: Trả lời email
+//-               li.part-item
+//-                 input(type="checkbox" id="writing-part3").checkbox
+//-                 label(for="writing-part3") Part 3: Viết luận
+
+//-     main.exam-content
+//-       .exam-grid
+//-         if exams && exams.length
+//-           each exam in exams
+//-             .exam-card
+//-               .exam-thumbnail
+//-                 img(src=exam.thumbnail alt=exam.title)
+//-               .exam-info
+//-                 h3.exam-title= exam.title
+//-                 .exam-meta
+//-                   span.exam-part Part #{exam.part}
+//-                 .exam-actions
+//-                   button.btn.btn-primary Làm đề
+//-         else
+//-           .no-exams
+//-             img(src="/images/no-exams.png" alt="Không có đề thi")
+//-             p Không tìm thấy đề thi phù hợp
+
+//- style.
+//-   :root {
+//-     --primary-color: #4e73df;
+//-     --secondary-color: #f8f9fc;
+//-     --text-color: #5a5c69;
+//-   }
+  
+//-   .text-center {
+//-     text-align: center;
+//-     margin-bottom: 2rem;
+//-     color: var(--primary-color);
+//-   }
+  
+//-   .flex-container {
+//-     display: flex;
+//-     gap: 2rem;
+//-     max-width: 1200px;
+//-     margin: 0 auto;
+//-     padding: 0 1rem;
+//-   }
+  
+//-   .filter-sidebar {
+//-     width: 280px;
+//-     background: var(--secondary-color);
+//-     padding: 1.5rem;
+//-     border-radius: 8px;
+//-     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+//-   }
+  
+//-   .filter-title {
+//-     font-size: 1.1rem;
+//-     color: var(--primary-color);
+//-     margin-bottom: 1rem;
+//-     padding-bottom: 0.5rem;
+//-     border-bottom: 1px solid #ddd;
+//-   }
+  
+//-   .skill-list {
+//-     list-style: none;
+//-     padding: 0;
+//-   }
+  
+//-   .skill-item {
+//-     margin-bottom: 1.5rem;
+//-   }
+  
+//-   .skill-header {
+//-     padding: 0.5rem 0;
+//-     font-size: 1rem;
+//-     color: var(--text-color);
+//-   }
+  
+//-   .part-list {
+//-     list-style: none;
+//-     padding-left: 0.5rem;
+//-     margin-top: 0.5rem;
+//-   }
+  
+//-   .part-item {
+//-     margin: 0.5rem 0;
+//-     display: flex;
+//-     align-items: center;
+//-   }
+  
+//-   .checkbox {
+//-     margin-right: 0.75rem;
+//-     width: 16px;
+//-     height: 16px;
+//-   }
+  
+//-   .exam-content {
+//-     flex: 1;
+//-   }
+  
+//-   .exam-grid {
+//-     display: grid;
+//-     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+//-     gap: 1.5rem;
+//-   }
+  
+//-   .exam-card {
+//-     background: white;
+//-     border-radius: 8px;
+//-     overflow: hidden;
+//-     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+//-     transition: transform 0.2s;
+//-   }
+  
+//-   .exam-card:hover {
+//-     transform: translateY(-5px);
+//-   }
+  
+//-   .exam-thumbnail {
+//-     height: 160px;
+//-     overflow: hidden;
+//-   }
+  
+//-   .exam-thumbnail img {
+//-     width: 100%;
+//-     height: 100%;
+//-     object-fit: cover;
+//-   }
+  
+//-   .exam-info {
+//-     padding: 1.2rem;
+//-   }
+  
+//-   .exam-title {
+//-     font-size: 1.1rem;
+//-     margin: 0 0 0.5rem;
+//-     color: var(--text-color);
+//-   }
+  
+//-   .exam-meta {
+//-     display: flex;
+//-     justify-content: space-between;
+//-     font-size: 0.9rem;
+//-     color: #6c757d;
+//-     margin-bottom: 1rem;
+//-   }
+  
+//-   .exam-actions {
+//-     display: flex;
+//-     gap: 0.5rem;
+//-   }
+  
+//-   .btn {
+//-     padding: 0.5rem 1rem;
+//-     border-radius: 4px;
+//-     border: none;
+//-     cursor: pointer;
+//-     font-size: 0.9rem;
+//-     flex: 1;
+//-   }
+  
+//-   .btn-primary {
+//-     background: var(--primary-color);
+//-     color: white;
+//-   }
+  
+//-   .btn-outline {
+//-     background: white;
+//-     border: 1px solid #ddd;
+//-     color: var(--text-color);
+//-   }
+  
+//-   .no-exams {
+//-     text-align: center;
+//-     grid-column: 1 / -1;
+//-     padding: 3rem 0;
+//-   }
+  
+//-   .no-exams img {
+//-     width: 150px;
+//-     opacity: 0.6;
+//-     margin-bottom: 1rem;
+//-   }
+  
+//-   @media (max-width: 768px) {
+//-     .flex-container {
+//-       flex-direction: column;
+//-     }
+    
+//-     .filter-sidebar {
+//-       width: 100%;
+//-     }
+    
+//-     .exam-grid {
+//-       grid-template-columns: 1fr;
+//-     }
+//-   }
+
+
+
+
+block content
+  h1.text-center Đề Thi TOEIC
+
+  form(action="/toeic" method="GET")#filter-form
+    .flex-container
+      aside.filter-sidebar
+        .filter-section
+          h3.filter-title Kỹ Năng
+          ul.skill-list
+            li.skill-item
+              .skill-header
+                strong Listening
+              ul.part-list
+                li.part-item
+                  input(type="checkbox" name="skills" value="listening" id="listening-all" checked=selectedSkills.includes('listening')).checkbox
+                  label(for="listening-all") Tất cả
+                li.part-item
+                  input(type="checkbox" name="parts" value="1" id="listening-part1" checked=selectedParts.includes('1')).checkbox
+                  label(for="listening-part1") Part 1: Mô tả hình ảnh
+                li.part-item
+                  input(type="checkbox" name="parts" value="2" id="listening-part2" checked=selectedParts.includes('2')).checkbox
+                  label(for="listening-part2") Part 2: Hỏi đáp
+                li.part-item
+                  input(type="checkbox" name="parts" value="3" id="listening-part3" checked=selectedParts.includes('3')).checkbox
+                  label(for="listening-part3") Part 3: Hội thoại
+                li.part-item
+                  input(type="checkbox" name="parts" value="4" id="listening-part4" checked=selectedParts.includes('4')).checkbox
+                  label(for="listening-part4") Part 4: Bài nói ngắn
+
+            li.skill-item
+              .skill-header
+                strong Reading
+              ul.part-list
+                li.part-item
+                  input(type="checkbox" name="skills" value="reading" id="reading-all" checked=selectedSkills.includes('reading')).checkbox
+                  label(for="reading-all") Tất cả
+                li.part-item
+                  input(type="checkbox" name="parts" value="5" id="reading-part5" checked=selectedParts.includes('5')).checkbox
+                  label(for="reading-part5") Part 5: Hoàn thành câu
+                li.part-item
+                  input(type="checkbox" name="parts" value="6" id="reading-part6" checked=selectedParts.includes('6')).checkbox
+                  label(for="reading-part6") Part 6: Hoàn thành đoạn văn
+                li.part-item
+                  input(type="checkbox" name="parts" value="7" id="reading-part7" checked=selectedParts.includes('7')).checkbox
+                  label(for="reading-part7") Part 7: Đọc hiểu
+
+            li.skill-item
+            .skill-header
+              strong Speaking
+            ul.part-list
+              li.part-item
+                input(type="checkbox" id="speaking-all").checkbox
+                label(for="speaking-all") Tất cả
+              li.part-item
+                input(type="checkbox" id="speaking-part1").checkbox
+                label(for="speaking-part1") Part 1: Đọc to
+              li.part-item
+                input(type="checkbox" id="speaking-part2").checkbox
+                label(for="speaking-part2") Part 2: Mô tả hình ảnh
+              li.part-item
+                input(type="checkbox" id="speaking-part3").checkbox
+                label(for="speaking-part3") Part 3: Trả lời câu hỏi
+              li.part-item
+                input(type="checkbox" id="speaking-part4").checkbox
+                label(for="speaking-part4") Part 4: Trình bày ý kiến
+
+          li.skill-item
+            .skill-header
+              strong Writing
+            ul.part-list
+              li.part-item
+                input(type="checkbox" id="writing-all").checkbox
+                label(for="writing-all") Tất cả
+              li.part-item
+                input(type="checkbox" id="writing-part1").checkbox
+                label(for="writing-part1") Part 1: Viết câu
+              li.part-item
+                input(type="checkbox" id="writing-part2").checkbox
+                label(for="writing-part2") Part 2: Trả lời email
+              li.part-item
+                input(type="checkbox" id="writing-part3").checkbox
+                label(for="writing-part3") Part 3: Viết luận
+
+        button.btn.btn-primary(type="submit") Lọc
+
+      main.exam-content
+        .exam-grid
+          if exams && exams.length
+            each exam in exams
+              .exam-card
+                .exam-thumbnail
+                  img(src=exam.thumbnail alt=exam.title)
+                .exam-info
+                  h3.exam-title= exam.title
+                  .exam-meta
+                    span.exam-skill= exam.skill.toUpperCase()
+                    span.exam-part Part #{exam.part}
+                  .exam-actions
+                    button.btn.btn-primary Làm đề
+          else
+            .no-exams
+              img(src="/images/no-exams.png" alt="Không có đề thi")
+              p Không tìm thấy đề thi phù hợp
+
+  style.
+    :root {
+      --primary-color: #4e73df;
+      --secondary-color: #f8f9fc;
+      --text-color: #5a5c69;
+    }
+    
+    .text-center {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: var(--primary-color);
+    }
+    
+    .flex-container {
+      display: flex;
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+    
+    .filter-sidebar {
+      width: 280px;
+      background: var(--secondary-color);
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .filter-title {
+      font-size: 1.1rem;
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    .skill-list {
+      list-style: none;
+      padding: 0;
+    }
+    
+    .skill-item {
+      margin-bottom: 1.5rem;
+    }
+    
+    .skill-header {
+      padding: 0.5rem 0;
+      font-size: 1rem;
+      color: var(--text-color);
+    }
+    
+    .part-list {
+      list-style: none;
+      padding-left: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    
+    .part-item {
+      margin: 0.5rem 0;
+      display: flex;
+      align-items: center;
+    }
+    
+    .checkbox {
+      margin-right: 0.75rem;
+      width: 16px;
+      height: 16px;
+    }
+    
+    .exam-content {
+      flex: 1;
+    }
+    
+    .exam-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .exam-card {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+    
+    .exam-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .exam-thumbnail {
+      height: 160px;
+      overflow: hidden;
+    }
+    
+    .exam-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .exam-info {
+      padding: 1.2rem;
+    }
+    
+    .exam-title {
+      font-size: 1.1rem;
+      margin: 0 0 0.5rem;
+      color: var(--text-color);
+    }
+    
+    .exam-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      color: #6c757d;
+      margin-bottom: 1rem;
+    }
+    
+    .exam-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .btn {
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+      flex: 1;
+    }
+    
+    .btn-primary {
+      background: var(--primary-color);
+      color: white;
+    }
+    
+    .btn-outline {
+      background: white;
+      border: 1px solid #ddd;
+      color: var(--text-color);
+    }
+    
+    .no-exams {
+      text-align: center;
+      grid-column: 1 / -1;
+      padding: 3rem 0;
+    }
+    
+    .no-exams img {
+      width: 150px;
+      opacity: 0.6;
+      margin-bottom: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+      .flex-container {
+        flex-direction: column;
+      }
+      
+      .filter-sidebar {
+        width: 100%;
+      }
+      
+      .exam-grid {
+        grid-template-columns: 1fr;
+      }
+    }
