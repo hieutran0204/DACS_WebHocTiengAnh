@@ -1,25 +1,52 @@
 doctype html
 html
   head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
     title Đăng ký
-    link(rel="stylesheet", href="/css/style.css")
-  body
-    h1 Đăng ký
-    
-    if error
-      p.error-message= error
+    link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css")
+    link(rel="stylesheet", href="/client/css/login.css")
 
-    form(action="/auth/register", method="POST")
-      label(for="username") Tên người dùng:
-      input(type="text", name="username", required)
-      
-      label(for="email") Email:
-      input(type="email", name="email", required)
-      
-      label(for="password") Mật khẩu:
-      input(type="password", name="password", required)
-      
-      button(type="submit") Đăng ký
-    
-    p Đã có tài khoản? 
-      a(href="/auth/login") Đăng nhập ngay
+  body
+    #wrapper
+      #form-login
+        h1.form-heading Đăng ký
+
+        if error
+          p.error-message(style="color: red; text-align: center; margin-bottom: 10px;")= error
+
+        form(action="/auth/register", method="POST")
+          .form-group
+            i(class="fa fa-user")
+            input.form-input(type="text", name="username", placeholder="Tên người dùng", required)
+
+          .form-group
+            i(class="fa fa-envelope")
+            input.form-input(type="email", name="email", placeholder="Email", required)
+
+          .form-group
+            i(class="fa fa-lock")
+            input.form-input(type="password", name="password", placeholder="Mật khẩu", required)
+            #eye
+              i(class="fa fa-eye")
+
+          button.form-submit(type="submit") Đăng ký
+
+        p.register-link(style="color: #fff; margin-top: 20px; text-align: center;")
+          | Đã có tài khoản? 
+          a(href="/auth/login", style="color: #54a0ff; text-decoration: none;") Đăng nhập ngay
+
+    // jQuery và JS hiện/ẩn mật khẩu
+    script(src="https://code.jquery.com/jquery-3.6.0.min.js")
+    script.
+      $(document).ready(function(){
+          $('#eye').click(function(){
+              $(this).toggleClass('open');
+              $(this).children('i').toggleClass('fa-eye-slash fa-eye');
+              if($(this).hasClass('open')){
+                  $(this).prev().attr('type', 'text');
+              }else{
+                  $(this).prev().attr('type', 'password');
+              }
+          });
+      });

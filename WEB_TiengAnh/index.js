@@ -29,6 +29,7 @@ const clientRoutes = require('./routes/client/index.route');
 const adminRoutes = require('./routes/admin/index.route');
 
 app.use('/auth', authRoutes);
+app.use('/', authRoutes);
 app.use('/', clientRoutes);
 app.use('/admin', adminRoutes);
 app.use('/admin/questions', questionRoutes); // Nên đặt cùng nhóm admin
