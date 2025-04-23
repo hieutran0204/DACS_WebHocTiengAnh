@@ -1,0 +1,7 @@
+exclude:
+  - node_modules
+  - WEB_TiengAnh/node_modules
+  - WEB_TiengAnh/package-lock.json
+  - WEB_TiengAnh/package.json
+  - WEB_TiengAnh/index.js
+  - README.md
