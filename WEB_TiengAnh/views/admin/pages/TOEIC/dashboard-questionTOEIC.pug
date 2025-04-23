@@ -1,24 +1,59 @@
 extends ../../layouts/default
+
 block content
   h1 Danh sách câu hỏi TOEIC Reading
   a(href="/admin/questions/create") Thêm câu hỏi mới
+
   table#toeic-questions
     thead
       tr
         th STT
         th Mã câu hỏi (MaCC)
-        th Câu hỏi
+        th Nội dung
         th Part
-        th Đáp án
+        th Đáp án đúng
         th Hành động
     tbody
       each q, index in questions
         tr
           td= index + 1
           td= q.MaCC
-          td= q.question
+          td
+            if q.part == 5
+              p.mb-1= q.question
+              ul
+                each opt, i in q.options
+                  li= `${String.fromCharCode(65 + i)}. ${opt}`
+            else if q.part == 6
+              p.mb-1(style="white-space: pre-line")= q.passage
+              ul
+                each item in q.questions
+                  li
+                    strong Chỗ trống #{item.blank}:
+                    |  
+                    each opt, i in item.options
+                      | #{String.fromCharCode(65 + i)}. #{opt}#{i < item.options.length - 1 ? ', ' : ''}
+            else if q.part == 7
+              p.mb-1(style="white-space: pre-line")= q.passage
+              ol
+                each item in q.questions
+                  li
+                    p.mb-0= item.question
+                    ul
+                      each opt, i in item.options
+                        li= `${String.fromCharCode(65 + i)}. ${opt}`
           td= q.part
-          td= q.correctAnswer
+          td
+            if q.part == 5
+              = q.correctAnswer
+            else if q.part == 6
+              ul
+                each item in q.questions
+                  li= `Chỗ trống ${item.blank}: ${item.correctAnswer}`
+            else if q.part == 7
+              ul
+                each item, idx in q.questions
+                  li= `Câu ${idx + 1}: ${item.correctAnswer}`
           td
             a(href=`/admin/questions/edit/${q._id}`) Sửa
             |  

@@ -2,6 +2,19 @@ extends ../../layouts/default
 
 block content
   .container.mt-4
+    // Hiển thị flash message
+    if typeof success !== 'undefined' && success.length
+      .alert.alert-success.alert-dismissible.fade.show(role='alert')
+        i.fas.fa-check-circle.me-2
+        = success[0]
+        button.btn-close(type='button', data-bs-dismiss='alert', aria-label='Close')
+
+    if typeof error !== 'undefined' && error.length
+      .alert.alert-danger.alert-dismissible.fade.show(role='alert')
+        i.fas.fa-exclamation-triangle.me-2
+        = error[0]
+        button.btn-close(type='button', data-bs-dismiss='alert', aria-label='Close')
+
     .d-flex.justify-content-between.align-items-center.mb-4
       h1 Thêm câu hỏi mới
       a.btn.btn-secondary(href='/admin/dashboard')
@@ -10,28 +23,24 @@ block content
 
     .card
       .card-body
-        form(action="/admin/questions/add" method="POST" enctype="multipart/form-data")
+        form(action="/admin/questions/add" method="POST" enctype="multipart/form-data" id="questionForm")
           .row.mb-3
             .col-md-4
               label.form-label(for="MaCC") Mã Chứng Chỉ
               select.form-select(name="MaCC" required)
                 option(value="") -- Chọn chứng chỉ --
-                option(value="TOEIC") TOEIC
+                option(value="TOEIC", selected) TOEIC
                 option(value="IELTS") IELTS
                 option(value="TOEFL") TOEFL
 
             .col-md-4
               label.form-label(for="TopicN") Mã Đề
-              input.form-control(type="number" name="TopicN" required min="1" placeholder="VD: 1")
+              input.form-control(type="number" name="TopicN" required min="1")
 
             .col-md-4
               label.form-label(for="part") Phần Thi (Part)
-              select.form-select(name="part" required)
+              select.form-select(name="part" required id="partSelect" onchange="showPartFields(this.value)")
                 option(value="") -- Chọn phần --
-                option(value="1") Part 1
-                option(value="2") Part 2
-                option(value="3") Part 3
-                option(value="4") Part 4
                 option(value="5") Part 5
                 option(value="6") Part 6
                 option(value="7") Part 7
@@ -39,54 +48,234 @@ block content
           .row.mb-3
             .col-md-2
               label.form-label(for="questionN") Câu Hỏi Số
-              input.form-control(type="number" name="questionN" required min="1" placeholder="VD: 1")
+              input.form-control(type="number" name="questionN" required min="1")
 
-            .col-md-10
-              label.form-label(for="question") Câu Hỏi
-              textarea.form-control(name="question" rows="2" required placeholder="Nhập nội dung câu hỏi...")
+          // Part 5
+          #part5-fields.d-none
+            .mb-3
+              label.form-label(for="question") Câu hỏi
+              textarea.form-control(name="question" rows="2" required disabled)
 
-          .mb-3
-            label.form-label.fw-bold Đáp Án
-            .row.g-3
-              .col-md-6
-                .input-group
-                  span.input-group-text A
-                  input.form-control(type="text" name="options[]" required placeholder="Nhập đáp án A")
-              .col-md-6
-                .input-group
-                  span.input-group-text B
-                  input.form-control(type="text" name="options[]" required placeholder="Nhập đáp án B")
-              .col-md-6
-                .input-group
-                  span.input-group-text C
-                  input.form-control(type="text" name="options[]" required placeholder="Nhập đáp án C")
-              .col-md-6
-                .input-group
-                  span.input-group-text D
-                  input.form-control(type="text" name="options[]" required placeholder="Nhập đáp án D")
+            .mb-3
+              label.form-label Đáp Án
+              .row
+                each val, index in ['A', 'B', 'C', 'D']
+                  .col-md-6
+                    .input-group
+                      span.input-group-text #{val}
+                      input.form-control(type="text" name="options[]" required disabled)
 
-          .row.mb-3
-            .col-md-6
+            .mb-3
               label.form-label(for="correctAnswer") Đáp án đúng
-              select.form-select(name="correctAnswer" required)
-                option(value="") -- Chọn đáp án đúng --
+              select.form-select(name="correctAnswer" required disabled)
+                option(value="") -- Chọn --
                 option(value="A") A
                 option(value="B") B
                 option(value="C") C
                 option(value="D") D
 
+          // Part 6 + 7
+          #passage-field.d-none
+            .mb-3
+              label.form-label(for="passage") Đoạn văn (Passage)
+              textarea.form-control(name="passage" rows="5" required disabled)
+
+          // Part 6 - Blanks
+          #part6-fields.d-none
+            .mb-3
+              label.fw-bold Câu hỏi điền từ (blanks)
+              each blank in [1,2,3,4]
+                .card.mb-3
+                  .card-header Blank #{blank}
+                  .card-body
+                    input(type="hidden" name="blanks[#{blank - 1}][blank]" value=blank disabled)
+                    each val in ['A', 'B', 'C', 'D']
+                      .input-group.mb-2
+                        span.input-group-text #{val}
+                        input.form-control(type="text" name="blanks[#{blank - 1}][options][]" required disabled)
+                    label.form-label Chọn đáp án đúng:
+                    select.form-select(name="blanks[#{blank - 1}][correctAnswer]" required disabled)
+                      option(value="") -- Chọn --
+                      option(value="A") A
+                      option(value="B") B
+                      option(value="C") C
+                      option(value="D") D
+
+          // Part 7 - Multiple questions
+          #part7-fields.d-none
+            .mb-3
+              label.fw-bold Câu hỏi đọc hiểu
+              each qIndex in [0, 1, 2, 3]
+                .card.mb-3
+                  .card-header Câu hỏi #{qIndex + 1}
+                  .card-body
+                    .mb-3
+                      label.form-label(for="question#{qIndex}") Nội dung câu hỏi
+                      input.form-control(type="text" name="questions[#{qIndex}][question]" required disabled)
+                    each val in ['A', 'B', 'C', 'D']
+                      .input-group.mb-2
+                        span.input-group-text #{val}
+                        input.form-control(type="text" name="questions[#{qIndex}][options][]" required disabled)
+                    label.form-label(for="correctAnswer#{qIndex}") Đáp án đúng
+                    select.form-select(name="questions[#{qIndex}][correctAnswer]" required disabled)
+                      option(value="") -- Chọn --
+                      option(value="A") A
+                      option(value="B") B
+                      option(value="C") C
+                      option(value="D") D
+
+          .row.mb-3
             .col-md-6
               label.form-label(for="image") Hình ảnh (nếu có)
               input.form-control(type="file" name="image" accept="image/*")
+            .col-md-6
+              label.form-label(for="difficulty") Độ khó
+              select.form-select(name="difficulty")
+                option(value="0") Dễ
+                option(value="1") Trung bình
+                option(value="2") Khó
 
           .mb-3
             label.form-label(for="explanation") Giải thích
-            textarea.form-control(name="explanation" rows="3" placeholder="Giải thích đáp án...")
+            textarea.form-control(name="explanation" rows="3")
 
           .d-grid.gap-2.d-md-flex.justify-content-md-end
-            button.btn.btn-primary.me-md-2(type="submit")
+            button.btn.btn-primary.me-md-2(type="submit" id="submitBtn")
               i.fas.fa-save.me-2
               | Lưu câu hỏi
             button.btn.btn-outline-secondary(type="reset")
               i.fas.fa-undo.me-2
               | Nhập lại
+
+  script.
+    function showPartFields(part) {
+      // Ẩn và disable tất cả các phần
+      document.getElementById('part5-fields').classList.add('d-none');
+      document.querySelectorAll('#part5-fields [required]').forEach(el => el.disabled = true);
+      
+      document.getElementById('part6-fields').classList.add('d-none');
+      document.querySelectorAll('#part6-fields [required]').forEach(el => el.disabled = true);
+      
+      document.getElementById('part7-fields').classList.add('d-none');
+      document.querySelectorAll('#part7-fields [required]').forEach(el => el.disabled = true);
+      
+      document.getElementById('passage-field').classList.add('d-none');
+      document.querySelectorAll('#passage-field [required]').forEach(el => el.disabled = true);
+
+      if (part === "5") {
+        document.getElementById('part5-fields').classList.remove('d-none');
+        document.querySelectorAll('#part5-fields [required]').forEach(el => el.disabled = false);
+      } else if (part === "6") {
+        document.getElementById('passage-field').classList.remove('d-none');
+        document.querySelectorAll('#passage-field [required]').forEach(el => el.disabled = false);
+        document.getElementById('part6-fields').classList.remove('d-none');
+        document.querySelectorAll('#part6-fields [required]').forEach(el => el.disabled = false);
+      } else if (part === "7") {
+        document.getElementById('passage-field').classList.remove('d-none');
+        document.querySelectorAll('#passage-field [required]').forEach(el => el.disabled = false);
+        document.getElementById('part7-fields').classList.remove('d-none');
+        document.querySelectorAll('#part7-fields [required]').forEach(el => el.disabled = false);
+      }
+    }
+
+    // Xử lý sự kiện submit form
+    document.getElementById('questionForm').addEventListener('submit', function(e) {
+      const part = document.getElementById('partSelect').value;
+      let isValid = true;
+      let errorMessage = '';
+
+      // Kiểm tra part đã được chọn chưa
+      if (!part) {
+        errorMessage = 'Vui lòng chọn phần thi (Part)';
+        isValid = false;
+      } else {
+        // Kiểm tra các trường bắt buộc theo part
+        if (part === "5") {
+          const question = document.querySelector('#part5-fields [name="question"]');
+          const options = document.querySelectorAll('#part5-fields [name="options[]"]');
+          const correctAnswer = document.querySelector('#part5-fields [name="correctAnswer"]');
+          
+          if (!question.value.trim()) {
+            errorMessage = 'Vui lòng nhập nội dung câu hỏi';
+            isValid = false;
+          } else if (Array.from(options).some(opt => !opt.value.trim())) {
+            errorMessage = 'Vui lòng nhập đầy đủ các đáp án';
+            isValid = false;
+          } else if (!correctAnswer.value) {
+            errorMessage = 'Vui lòng chọn đáp án đúng';
+            isValid = false;
+          }
+        } else if (part === "6") {
+          const passage = document.querySelector('#passage-field [name="passage"]');
+          if (!passage.value.trim()) {
+            errorMessage = 'Vui lòng nhập đoạn văn (passage)';
+            isValid = false;
+          } else {
+            // Kiểm tra các blank
+            const blanks = document.querySelectorAll('#part6-fields .card');
+            for (let i = 0; i < blanks.length; i++) {
+              const blankOptions = blanks[i].querySelectorAll('[name^="blanks["][name$="[options][]"]');
+              const blankCorrectAnswer = blanks[i].querySelector('[name^="blanks["][name$="[correctAnswer]"]');
+              
+              if (Array.from(blankOptions).some(opt => !opt.value.trim())) {
+                errorMessage = `Vui lòng nhập đầy đủ đáp án cho Blank ${i+1}`;
+                isValid = false;
+                break;
+              } else if (!blankCorrectAnswer.value) {
+                errorMessage = `Vui lòng chọn đáp án đúng cho Blank ${i+1}`;
+                isValid = false;
+                break;
+              }
+            }
+          }
+        } else if (part === "7") {
+          const passage = document.querySelector('#passage-field [name="passage"]');
+          if (!passage.value.trim()) {
+            errorMessage = 'Vui lòng nhập đoạn văn (passage)';
+            isValid = false;
+          } else {
+            // Kiểm tra các câu hỏi part 7
+            const questions = document.querySelectorAll('#part7-fields .card');
+            for (let i = 0; i < questions.length; i++) {
+              const questionText = questions[i].querySelector('[name^="questions["][name$="[question]"]');
+              const questionOptions = questions[i].querySelectorAll('[name^="questions["][name$="[options][]"]');
+              const questionCorrectAnswer = questions[i].querySelector('[name^="questions["][name$="[correctAnswer]"]');
+              
+              if (!questionText.value.trim()) {
+                errorMessage = `Vui lòng nhập nội dung câu hỏi ${i+1}`;
+                isValid = false;
+                break;
+              } else if (Array.from(questionOptions).some(opt => !opt.value.trim())) {
+                errorMessage = `Vui lòng nhập đầy đủ đáp án cho câu hỏi ${i+1}`;
+                isValid = false;
+                break;
+              } else if (!questionCorrectAnswer.value) {
+                errorMessage = `Vui lòng chọn đáp án đúng cho câu hỏi ${i+1}`;
+                isValid = false;
+                break;
+              }
+            }
+          }
+        }
+      }
+
+      if (!isValid) {
+        e.preventDefault();
+        alert(errorMessage);
+        
+        // Cuộn đến phần bị lỗi
+        if (part) {
+          document.getElementById(`part${part}-fields`).scrollIntoView({ behavior: 'smooth' });
+        } else {
+          document.getElementById('partSelect').scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    });
+
+    // Tự động gọi showPartFields nếu đã có giá trị part khi load lại trang (ví dụ khi có lỗi)
+    document.addEventListener('DOMContentLoaded', function() {
+      const partSelect = document.getElementById('partSelect');
+      if (partSelect.value) {
+        showPartFields(partSelect.value);
+      }
+    });
