@@ -3,10 +3,11 @@ const router = express.Router();
 const homeController = require('../../controllers/client/home.controller');
 const authMiddleware = require('../../middlewares/auth.middleware');
 const toeicRoute = require("./toeic.route");
-router.use("/toeic", toeicRoute);
+const coverRoute = require('./cover.route');
 
+router.use("/toeic", toeicRoute);
+router.use('/', coverRoute); 
 // --- Route chính ---
-router.get('/', homeController.renderHomePage);       // Trang chủ không cần auth
 
 
 // --- Route bảo mật ---

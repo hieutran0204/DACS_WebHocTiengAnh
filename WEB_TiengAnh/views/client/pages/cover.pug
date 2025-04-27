@@ -1,0 +1,175 @@
+
+extends ../layouts/default
+
+block content
+  link(rel="stylesheet", href="/client/css/home.css")
+
+  //- HERO SLIDER
+  section.hero
+    .slider
+      .slide.active
+        .overlay
+        .slide-content
+          h2 Nâng Cao Trình Độ Tiếng Anh
+          p Hệ thống học tập thông minh giúp bạn chinh phục IELTS, TOEIC dễ dàng
+        img(src="/client/images/slide1.png", alt="TSE - TOEIC")
+      .slide
+        .overlay
+        .slide-content
+          h2 Luyện Thi IELTS Hiệu Quả
+          p Kho đề thi mô phỏng thực tế với đánh giá chi tiết từ chuyên gia
+        img(src="/client/images/slide2.jpg", alt="LEARN ENGLISH")
+      .slide
+        .overlay
+        .slide-content
+          h2 Cộng Đồng Học Tập
+          p Kết nối với hàng ngàn học viên và giáo viên giàu kinh nghiệm
+        img(src="/client/images/slide3.jpg", alt="NGUS")
+
+  //- INTRO SECTION
+  section.intro-section
+    .container
+      .intro-content
+        h1.intro-title TEIC
+        h2.intro-subtitle Test of English for International Communication
+        p.intro-text Chúng tôi cung cấp giải pháp học tiếng Anh toàn diện từ cơ bản đến nâng cao, giúp bạn chinh phục chứng chỉ quốc tế TOEIC một cách hiệu quả nhất. Với hệ thống bài học thông minh và đội ngũ giảng viên giàu kinh nghiệm.
+        a.cta-button(href="/auth/register") Đăng Ký Học Ngay
+
+  //- FEATURES SECTION
+  section.features-section
+    .container
+      h2.section-title Nâng Trình Tiếng Anh Cùng TEIC
+      .features-grid
+        .feature-card
+          .feature-icon 📝
+          h3.feature-title IELTS Online Test
+          p.feature-text Đề thi IELTS Online Test với trải nghiệm thi thật và kho đề khủng kèm giải thích chi tiết từ chuyên gia.
+          a.feature-button(href="/toeic") Bắt đầu làm bài
+        .feature-card
+          .feature-icon 🎧
+          h3.feature-title Luyện Listening & Reading
+          p.feature-text Kho đề luyện tập IELTS Listening & Reading với phân loại theo dạng câu hỏi và chủ đề đa dạng.
+          a.feature-button(href="/toeic") Luyện tập ngay
+        .feature-card
+          .feature-icon ✍️
+          h3.feature-title Bài Mẫu Writing & Speaking
+          p.feature-text Tuyển tập bài mẫu chất lượng cao với phân tích chi tiết từ giám khảo IELTS band 8.0+.
+          a.feature-button(href="/toeic") Xem bài mẫu
+
+  //- STATS SECTION
+  section.stats-section
+    .container
+      h2.section-title(style="color: white") TEIC Trong Những Con Số
+      .stats-grid
+        .stat-item
+          .stat-number 10,000+
+          .stat-text Học Viên Đang Theo Học
+        .stat-item
+          .stat-number 98%
+          .stat-text Hài Lòng Với Chất Lượng
+        .stat-item
+          .stat-number 500+
+          .stat-text Đề Thi Chất Lượng
+        .stat-item
+          .stat-number 450+
+          .stat-text Điểm TOEIC Trung Bình
+
+  //- NEWS SECTION
+  section.news-section
+    .container
+      h2.section-title Tin Tức & Sự Kiện
+      .news-grid
+        .news-card
+          .news-image
+            img(src="/client/images/news1.jpg", alt="Tin tức tiếng Anh")
+          .news-content
+            .news-date 26 tháng 4 · DOL IELTS Đình Lực
+            h3.news-title Phát hiện thêm 2 sản phẩm dinh dưỡng trẻ em giả
+            p.news-excerpt Các chuyên gia cảnh báo về tình trạng hàng giả, hàng nhái trên thị trường...
+            a.read-more(href="#") Đọc tiếp →
+        .news-card
+          .news-image
+            img(src="/client/images/news2.jpg", alt="Tin giáo dục")
+          .news-content
+            .news-date 25 tháng 4 · DOL IELTS Đình Lực
+            h3.news-title Khảo sát trình độ tiếng Anh ở TP.HCM khiến giáo viên sốc
+            p.news-excerpt Kết quả khảo sát mới nhất về trình độ tiếng Anh của học sinh TP.HCM...
+            a.read-more(href="#") Đọc tiếp →
+        .news-card
+          .news-image
+            img(src="/client/images/news3.jpg", alt="Sự kiện")
+          .news-content
+            .news-date 24 tháng 4 · TEIC Education
+            h3.news-title Workshop "Bí quyết đạt TOEIC 450+ trong 3 tháng"
+            p.news-excerpt Sự kiện miễn phí dành cho các bạn đang luyện thi TOEIC với nhiều...
+            a.read-more(href="#") Đọc tiếp →
+
+  //- TESTIMONIALS SECTION
+  section.testimonials-section
+    .container
+      h2.section-title Cảm Nhận Học Viên
+      .testimonial-card
+        p.testimonial-text "TEIC đã giúp tôi nâng điểm IELTS từ 400 lên 650 chỉ sau 3 tháng. Phương pháp học thông minh và hệ thống bài tập phong phú khiến việc học trở nên dễ dàng hơn bao giờ hết."
+        .testimonial-author - Nguyễn Văn A, TOEIC 650
+
+  //- CTA SECTION
+  section.cta-section
+    .container
+      h2.cta-title Sẵn Sàng Chinh Phục Tiếng Anh?
+      p.cta-text Đăng ký ngay để trải nghiệm hệ thống học tập thông minh và nhận ưu đãi lên đến 40% khóa học.
+      a.cta-button(href="/auth/register", style="background: #ff9e00; color: white") Đăng Ký Ngay
+
+  script.
+    document.addEventListener('DOMContentLoaded', function() {
+      // Hero Slider
+      const slides = document.querySelectorAll('.slide');
+      let currentSlide = 0;
+      const slideInterval = setInterval(nextSlide, 5000);
+
+      function nextSlide() {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (currentSlide + 1) % slides.length;
+        slides[currentSlide].classList.add('active');
+      }
+
+      // Pause slider on hover
+      const hero = document.querySelector('.hero');
+      hero.addEventListener('mouseenter', () => clearInterval(slideInterval));
+      hero.addEventListener('mouseleave', () => {
+        slideInterval = setInterval(nextSlide, 5000);
+      });
+
+      // Smooth scroll for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+          e.preventDefault();
+          document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth'
+          });
+        });
+      });
+
+      // Animation on scroll
+      const animateOnScroll = function() {
+        const elements = document.querySelectorAll('.feature-card, .news-card, .stat-item');
+        elements.forEach(element => {
+          const elementPosition = element.getBoundingClientRect().top;
+          const windowHeight = window.innerHeight;
+          
+          if (elementPosition < windowHeight - 100) {
+            element.style.opacity = '1';
+            element.style.transform = 'translateY(0)';
+          }
+        });
+      };
+
+      // Initialize elements with hidden state
+      document.querySelectorAll('.feature-card, .news-card, .stat-item').forEach(element => {
+        element.style.opacity = '0';
+        element.style.transform = 'translateY(30px)';
+        element.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      });
+
+      window.addEventListener('load', animateOnScroll);
+      window.addEventListener('scroll', animateOnScroll);
+    });
