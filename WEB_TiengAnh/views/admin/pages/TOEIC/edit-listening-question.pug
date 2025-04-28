@@ -2,36 +2,344 @@ extends ../../layouts/default
 
 block content
   .container.mt-5
-    h1 Sửa câu hỏi Listening
+    h1 Sửa câu hỏi Listening TOEIC (Part #{question.part})
 
-    form(method='POST', action=`/admin/listening/edit/${question._id}`, enctype='multipart/form-data')
-      .mb-3
-        label.form-label Part
-        input.form-control(type='number', name='part', value=question.part, required)
+    form(method='POST', action=`/admin/listeningTOEIC/update/${question._id}`, enctype='multipart/form-data', id='editListeningForm', novalidate)
+      input(type='hidden', name='part', value=question.part)
 
+      // Common Fields for All Parts
       .mb-3
         label.form-label Audio hiện tại:
         audio(controls)
           source(src=question.audioUrl, type='audio/mpeg')
+        .mt-2
+          label.form-label(for='audio') Upload file audio mới (nếu muốn thay đổi)
+          input.form-control(type='file', name='audio', accept='audio/mp3,audio/mpeg')
+        .mt-2.form-check
+          input.form-check-input(type='checkbox', name='removeAudio', id='removeAudio')
+          label.form-check-label(for='removeAudio') Xóa file audio hiện tại
 
       .mb-3
-        label.form-label Upload file audio mới (nếu muốn thay)
-        input.form-control(type='file', name='audio', accept='audio/mp3,audio/mpeg')
+        label.form-label(for='questionNumber') Số câu hỏi *
+        input.form-control(type='number', name='questionNumber', min='1', max='100', value=question.questionNumber, required)
 
       .mb-3
-        label.form-label Câu hỏi
-        textarea.form-control(name='questionText', rows='2')= question.questionText
-
-      .mb-3
-        label.form-label Các đáp án (dạng JSON)
-        textarea.form-control(name='options', rows='2', required)= JSON.stringify(question.options)
-
-      .mb-3
-        label.form-label Đáp án đúng
-        input.form-control(type='text', name='correctAnswer', maxlength='1', value=question.correctAnswer, required)
-
-      .mb-3
-        label.form-label Giải thích
+        label.form-label(for='explanation') Giải thích (Không bắt buộc)
         textarea.form-control(name='explanation', rows='2')= question.explanation
 
-      button.btn.btn-primary(type='submit') Cập nhật câu hỏi
+      // Part 1: Picture Description
+      if question.part == 1
+        .mb-3
+          label.form-label Hình ảnh hiện tại:
+          if question.imageUrl
+            img(src=question.imageUrl, style='max-width: 300px; display: block; margin-bottom: 10px;')
+          .mt-2
+            label.form-label(for='image') Upload hình ảnh mới (nếu muốn thay đổi)
+            input.form-control(type='file', name='image', accept='image/*')
+          .mt-2.form-check
+            input.form-check-input(type='checkbox', name='removeImage', id='removeImage')
+            label.form-check-label(for='removeImage') Xóa hình ảnh hiện tại
+        .mb-3
+          label.form-label(for='paragraph') Câu hỏi mô tả hình ảnh *
+          textarea.form-control(name='paragraph', rows='2', required, pattern='\\S+.*', title='Không được để trống hoặc chỉ chứa khoảng trắng')= question.paragraph
+        .mb-3
+          label.form-label Các lựa chọn *
+          each option, index in question.options
+            input.form-control.mb-2(type='text', name=`option${String.fromCharCode(65 + index)}`, value=option, placeholder=`Đáp án ${String.fromCharCode(65 + index)}`, required, pattern='\\S+.*', title='Không được để trống hoặc chỉ chứa khoảng trắng')
+        .mb-3
+          label.form-label(for='correctAnswer') Đáp án đúng *
+          select.form-control(name='correctAnswer', required)
+            option(value='') -- Chọn đáp án --
+            each option, index in question.options
+              option(value=String.fromCharCode(65 + index), selected=question.correctAnswer === String.fromCharCode(65 + index))= String.fromCharCode(65 + index)
+
+      // Part 2: Question-Response
+      if question.part == 2
+        .mb-3
+          label.form-label(for='questionText') Câu hỏi *
+          textarea.form-control(name='questionText', rows='2', required, pattern='\\S+.*', title='Không được để trống hoặc chỉ chứa khoảng trắng')= question.questionText
+        .mb-3
+          label.form-label Các lựa chọn *
+          each option, index in question.options
+            input.form-control.mb-2(type='text', name=`option${String.fromCharCode(65 + index)}`, value=option, placeholder=`Đáp án ${String.fromCharCode(65 + index)}`, required, pattern='\\S+.*', title='Không được để trống hoặc chỉ chứa khoảng trắng')
+        .mb-3
+          label.form-label(for='correctAnswer') Đáp án đúng *
+          select.form-control(name='correctAnswer', required)
+            option(value='') -- Chọn đáp án --
+            each option, index in question.options
+              option(value=String.fromCharCode(65 + index), selected=question.correctAnswer === String.fromCharCode(65 + index))= String.fromCharCode(65 + index)
+
+      // Part 3: Conversations
+      if question.part == 3
+        .mb-3
+          label.form-label(for='transcript') Transcript (Không bắt buộc)
+          textarea.form-control(name='transcript', rows='3')= question.transcript
+        .mb-3
+          label.form-label Biểu đồ hiện tại:
+          if question.diagramUrl
+            img(src=question.diagramUrl, style='max-width: 300px; display: block; margin-bottom: 10px;')
+          .mt-2
+            label.form-label(for='diagram') Upload biểu đồ mới (nếu muốn thay đổi)
+            input.form-control(type='file', name='diagram', accept='image/*')
+          .mt-2.form-check
+            input.form-check-input(type='checkbox', name='removeDiagram', id='removeDiagram')
+            label.form-check-label(for='removeDiagram') Xóa biểu đồ hiện tại
+        .mb-3
+          label.form-label Danh sách câu hỏi (3 câu) *
+          each q, qIndex in question.questions
+            .card.mb-2
+              .card-body
+                h6 Câu hỏi #{qIndex + 1}
+                .mb-2
+                  label.form-label Nội dung câu hỏi *
+                  textarea.form-control(name=`question${qIndex + 1}Text`, rows='2', required, pattern='\\S+.*', title='Không được để trống hoặc chỉ chứa khoảng trắng')= q.text
+                .mb-2
+                  label.form-label Các lựa chọn *
+                  each opt, optIndex in q.options
+                    input.form-control.mb-1(type='text', name=`question${qIndex + 1}Option${String.fromCharCode(65 + optIndex)}`, value=opt, placeholder=`Đáp án ${String.fromCharCode(65 + optIndex)}`, required, pattern='\\S+.*', title='Không được để trống hoặc chỉ chứa khoảng trắng')
+                .mb-2
+                  label.form-label Đáp án đúng *
+                  select.form-control(name=`question${qIndex + 1}CorrectAnswer`, required)
+                    option(value='') -- Chọn đáp án --
+                    each opt, optIndex in q.options
+                      option(value=String.fromCharCode(65 + optIndex), selected=q.correctAnswer === String.fromCharCode(65 + optIndex))= String.fromCharCode(65 + optIndex)
+                .mb-2
+                  label.form-label Giải thích (Không bắt buộc)
+                  textarea.form-control(name=`question${qIndex + 1}Explanation`, rows='2')= q.explanation
+
+      // Part 4: Talks
+      if question.part == 4
+        .mb-3
+          label.form-label(for='transcript') Transcript (Không bắt buộc)
+          textarea.form-control(name='transcript', rows='3')= question.transcript
+        .mb-3
+          label.form-label Biểu đồ hiện tại:
+          if question.diagramUrl
+            img(src=question.diagramUrl, style='max-width: 300px; display: block; margin-bottom: 10px;')
+          .mt-2
+            label.form-label(for='diagram') Upload biểu đồ mới (nếu muốn thay đổi)
+            input.form-control(type='file', name='diagram', accept='image/*')
+          .mt-2.form-check
+            input.form-check-input(type='checkbox', name='removeDiagram', id='removeDiagram')
+            label.form-check-label(for='removeDiagram') Xóa biểu đồ hiện tại
+        .mb-3
+          label.form-label Danh sách câu hỏi (3 câu) *
+          each q, qIndex in question.questions
+            .card.mb-2
+              .card-body
+                h6 Câu hỏi #{qIndex + 1}
+                .mb-2
+                  label.form-label Nội dung câu hỏi *
+                  textarea.form-control(name=`question${qIndex + 1}Text`, rows='2', required, pattern='\\S+.*', title='Không được để trống hoặc chỉ chứa khoảng trắng')= q.text
+                .mb-2
+                  label.form-label Các lựa chọn *
+                  each opt, optIndex in q.options
+                    input.form-control.mb-1(type='text', name=`question${qIndex + 1}Option${String.fromCharCode(65 + optIndex)}`, value=opt, placeholder=`Đáp án ${String.fromCharCode(65 + optIndex)}`, required, pattern='\\S+.*', title='Không được để trống hoặc chỉ chứa khoảng trắng')
+                .mb-2
+                  label.form-label Đáp án đúng *
+                  select.form-control(name=`question${qIndex + 1}CorrectAnswer`, required)
+                    option(value='') -- Chọn đáp án --
+                    each opt, optIndex in q.options
+                      option(value=String.fromCharCode(65 + optIndex), selected=q.correctAnswer === String.fromCharCode(65 + optIndex))= String.fromCharCode(65 + optIndex)
+                .mb-2
+                  label.form-label Giải thích (Không bắt buộc)
+                  textarea.form-control(name=`question${qIndex + 1}Explanation`, rows='2')= q.explanation
+
+      .mt-3
+        button.btn.btn-primary(type='submit') Cập nhật câu hỏi
+        a.btn.btn-secondary.ms-2(href='/admin/listeningTOEIC') Quay lại
+
+  script.
+    document.addEventListener('DOMContentLoaded', function () {
+      const form = document.getElementById('editListeningForm');
+      const part = document.querySelector('input[name="part"]').value;
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        // Xóa trạng thái lỗi trước đó
+        document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+
+        try {
+          const questionNumber = document.querySelector('input[name="questionNumber"]');
+          if (!questionNumber.value || questionNumber.value < 1 || questionNumber.value > 100) {
+            questionNumber.classList.add('is-invalid');
+            throw new Error('Số câu hỏi phải từ 1 đến 100');
+          }
+
+          const removeAudio = document.querySelector('input[name="removeAudio"]').checked;
+          const audioInput = document.querySelector('input[name="audio"]');
+          if (removeAudio && (!audioInput.files || audioInput.files.length === 0)) {
+            audioInput.classList.add('is-invalid');
+            throw new Error('Bạn phải upload file audio mới nếu xóa file hiện tại');
+          }
+
+          if (part === '1') {
+            const removeImage = document.querySelector('input[name="removeImage"]').checked;
+            const imageInput = document.querySelector('input[name="image"]');
+            if (removeImage && (!imageInput.files || imageInput.files.length === 0)) {
+              imageInput.classList.add('is-invalid');
+              throw new Error('Bạn phải upload hình ảnh mới nếu xóa hình ảnh hiện tại');
+            }
+
+            const paragraph = document.querySelector('textarea[name="paragraph"]');
+            if (!paragraph || !paragraph.value.trim()) {
+              paragraph.classList.add('is-invalid');
+              throw new Error('Câu hỏi mô tả hình ảnh là bắt buộc');
+            }
+
+            const optionA = document.querySelector('input[name="optionA"]');
+            const optionB = document.querySelector('input[name="optionB"]');
+            const optionC = document.querySelector('input[name="optionC"]');
+            const optionD = document.querySelector('input[name="optionD"]');
+            const correctAnswer = document.querySelector('select[name="correctAnswer"]');
+
+            if (!optionA || !optionA.value.trim()) {
+              optionA.classList.add('is-invalid');
+              throw new Error('Đáp án A (Part 1): Không được để trống');
+            }
+            if (!optionB || !optionB.value.trim()) {
+              optionB.classList.add('is-invalid');
+              throw new Error('Đáp án B (Part 1): Không được để trống');
+            }
+            if (!optionC || !optionC.value.trim()) {
+              optionC.classList.add('is-invalid');
+              throw new Error('Đáp án C (Part 1): Không được để trống');
+            }
+            if (!optionD || !optionD.value.trim()) {
+              optionD.classList.add('is-invalid');
+              throw new Error('Đáp án D (Part 1): Không được để trống');
+            }
+            if (!correctAnswer || !['A', 'B', 'C', 'D'].includes(correctAnswer.value)) {
+              correctAnswer.classList.add('is-invalid');
+              throw new Error('Đáp án đúng (Part 1): Phải là A, B, C hoặc D');
+            }
+          }
+
+          if (part === '2') {
+            const questionText = document.querySelector('textarea[name="questionText"]');
+            if (!questionText || !questionText.value.trim()) {
+              questionText.classList.add('is-invalid');
+              throw new Error('Câu hỏi (Part 2): Không được để trống');
+            }
+
+            const optionA = document.querySelector('input[name="optionA"]');
+            const optionB = document.querySelector('input[name="optionB"]');
+            const optionC = document.querySelector('input[name="optionC"]');
+            const correctAnswer = document.querySelector('select[name="correctAnswer"]');
+
+            if (!optionA || !optionA.value.trim()) {
+              optionA.classList.add('is-invalid');
+              throw new Error('Đáp án A (Part 2): Không được để trống');
+            }
+            if (!optionB || !optionB.value.trim()) {
+              optionB.classList.add('is-invalid');
+              throw new Error('Đáp án B (Part 2): Không được để trống');
+            }
+            if (!optionC || !optionC.value.trim()) {
+              optionC.classList.add('is-invalid');
+              throw new Error('Đáp án C (Part 2): Không được để trống');
+            }
+            if (!correctAnswer || !['A', 'B', 'C'].includes(correctAnswer.value)) {
+              correctAnswer.classList.add('is-invalid');
+              throw new Error('Đáp án đúng (Part 2): Phải là A, B hoặc C');
+            }
+          }
+
+          if (part === '3') {
+            const removeDiagram = document.querySelector('input[name="removeDiagram"]').checked;
+            const diagramInput = document.querySelector('input[name="diagram"]');
+            if (removeDiagram && (!diagramInput.files || diagramInput.files.length === 0)) {
+              console.log('Diagram check:', { removeDiagram, hasNewFile: diagramInput.files.length });
+            }
+
+            for (let i = 1; i <= 3; i++) {
+              const text = document.querySelector(`textarea[name="question${i}Text"]`);
+              const optionA = document.querySelector(`input[name="question${i}OptionA"]`);
+              const optionB = document.querySelector(`input[name="question${i}OptionB"]`);
+              const optionC = document.querySelector(`input[name="question${i}OptionC"]`);
+              const optionD = document.querySelector(`input[name="question${i}OptionD"]`);
+              const correctAnswer = document.querySelector(`select[name="question${i}CorrectAnswer"]`);
+
+              if (!text || !text.value.trim()) {
+                text.classList.add('is-invalid');
+                throw new Error(`Câu hỏi ${i} (Part 3): Nội dung câu hỏi không được để trống`);
+              }
+              if (!optionA || !optionA.value.trim()) {
+                optionA.classList.add('is-invalid');
+                throw new Error(`Câu hỏi ${i} (Part 3) - Đáp án A: Không được để trống`);
+              }
+              if (!optionB || !optionB.value.trim()) {
+                optionB.classList.add('is-invalid');
+                throw new Error(`Câu hỏi ${i} (Part 3) - Đáp án B: Không được để trống`);
+              }
+              if (!optionC || !optionC.value.trim()) {
+                optionC.classList.add('is-invalid');
+                throw new Error(`Câu hỏi ${i} (Part 3) - Đáp án C: Không được để trống`);
+              }
+              if (!optionD || !optionD.value.trim()) {
+                optionD.classList.add('is-invalid');
+                throw new Error(`Câu hỏi ${i} (Part 3) - Đáp án D: Không được để trống`);
+              }
+              if (!correctAnswer || !['A', 'B', 'C', 'D'].includes(correctAnswer.value)) {
+                correctAnswer.classList.add('is-invalid');
+                throw new Error(`Câu hỏi ${i} (Part 3): Đáp án đúng phải là A, B, C hoặc D`);
+              }
+            }
+          }
+
+          if (part === '4') {
+            const removeDiagram = document.querySelector('input[name="removeDiagram"]').checked;
+            const diagramInput = document.querySelector('input[name="diagram"]');
+            if (removeDiagram && (!diagramInput.files || diagramInput.files.length === 0)) {
+              console.log('Diagram check:', { removeDiagram, hasNewFile: diagramInput.files.length });
+            }
+
+            for (let i = 1; i <= 3; i++) {
+              const text = document.querySelector(`textarea[name="question${i}Text"]`);
+              const optionA = document.querySelector(`input[name="question${i}OptionA"]`);
+              const optionB = document.querySelector(`input[name="question${i}OptionB"]`);
+              const optionC = document.querySelector(`input[name="question${i}OptionC"]`);
+              const optionD = document.querySelector(`input[name="question${i}OptionD"]`);
+              const correctAnswer = document.querySelector(`select[name="question${i}CorrectAnswer"]`);
+
+              if (!text || !text.value.trim()) {
+                text.classList.add('is-invalid');
+                throw new Error(`Câu hỏi ${i} (Part 4): Nội dung câu hỏi không được để trống`);
+              }
+              if (!optionA || !optionA.value.trim()) {
+                optionA.classList.add('is-invalid');
+                throw new Error(`Câu hỏi ${i} (Part 4) - Đáp án A: Không được để trống`);
+              }
+              if (!optionB || !optionB.value.trim()) {
+                optionB.classList.add('is-invalid');
+                throw new Error(`Câu hỏi ${i} (Part 4) - Đáp án B: Không được để trống`);
+              }
+              if (!optionC || !optionC.value.trim()) {
+                optionC.classList.add('is-invalid');
+                throw new Error(`Câu hỏi ${i} (Part 4) - Đáp án C: Không được để trống`);
+              }
+              if (!optionD || !optionD.value.trim()) {
+                optionD.classList.add('is-invalid');
+                throw new Error(`Câu hỏi ${i} (Part 4) - Đáp án D: Không được để trống`);
+              }
+              if (!correctAnswer || !['A', 'B', 'C', 'D'].includes(correctAnswer.value)) {
+                correctAnswer.classList.add('is-invalid');
+                throw new Error(`Câu hỏi ${i} (Part 4): Đáp án đúng phải là A, B, C hoặc D`);
+              }
+            }
+          }
+
+          const formData = new FormData(form);
+          console.log('Dữ liệu gửi lên:');
+          for (let [key, value] of formData.entries()) {
+            console.log(`${key}: ${value}`);
+          }
+
+          form.submit();
+        } catch (err) {
+          console.error('Validation error:', err.message);
+          alert('Lỗi: ' + err.message);
+        }
+      });
+    });

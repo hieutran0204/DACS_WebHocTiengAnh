@@ -1,24 +1,23 @@
 const express = require('express');
 const router = express.Router();
 const listeningController = require('../../controllers/admin/CRUD_listeningTOEIC.controller');
-const upload = require('../../middlewares/uploadAudio.middleware');
-
-// Lấy danh sách tất cả câu hỏi listening
-router.get('/', listeningController.getAllListeningQuestions);
-
-// Hiển thị form tạo mới câu hỏi listening
-router.get('/create', listeningController.getCreateListeningQuestion);
-
-// Xử lý tạo mới câu hỏi (form submit)
-router.post('/create', upload.single('audio'), listeningController.createListeningQuestion);
-
-// Hiển thị form chỉnh sửa câu hỏi
-router.get('/edit/:id', listeningController.getEditListeningQuestion);
-
-// Xử lý cập nhật câu hỏi
-router.post('/edit/:id', upload.single('audio'), listeningController.updateListeningQuestion);
-
-// Xử lý xóa câu hỏi
-router.get('/delete/:id', listeningController.deleteListeningQuestion);
+const uploadMulti = require('../../middlewares/uploadMulti.middleware');
+const upload = require("../../middlewares/upload.middleware");
+// Định tuyến cho các thao tác CRUD
+router.get('/', listeningController.getAllQuestions);
+router.get('/create', listeningController.showCreateForm);
+router.post('/create', uploadMulti.fields([
+  { name: 'audio', maxCount: 1 },
+  { name: 'image', maxCount: 1 },
+  { name: 'diagram', maxCount: 1 }
+]), listeningController.createListeningQuestion);
+router.get('/edit/:id', listeningController.showEditForm);
+router.post('/update/:id', uploadMulti.fields([
+  { name: 'audio', maxCount: 1 },
+  { name: 'image', maxCount: 1 },
+  { name: 'diagram', maxCount: 1 }
+]), listeningController.updateQuestion);
+router.get('/delete/:id', listeningController.deleteQuestion);
+router.get('/part/:part', listeningController.getQuestionsByPart);
 
 module.exports = router;

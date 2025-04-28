@@ -33,7 +33,8 @@ exports.login = async (req, res) => {
     const user = await User.findOne({ email });
     
     if (!user || !(await user.comparePassword(password))) {
-      return res.render('client/pages/login', { error: 'Email hoặc mật khẩu không đúng' });
+      // return res.render('client/pages/login', { error: 'Email hoặc mật khẩu không đúng' });
+      return res.render('shared/login', { error: 'Email hoặc mật khẩu không đúng' });
     }
 
     // Tạo token và lưu vào cookie
@@ -43,7 +44,8 @@ exports.login = async (req, res) => {
     // Chuyển hướng sau khi đăng nhập thành công
     res.redirect('/home');
   } catch (error) {
-    res.render('client/pages/login', { error: 'Lỗi hệ thống: ' + error.message });
+    // res.render('client/pages/login', { error: 'Lỗi hệ thống: ' + error.message });
+    return res.render('shared/login', { error: 'Email hoặc mật khẩu không đúng' });
   }
 };
 

@@ -4,30 +4,379 @@ block content
   .container.mt-5
     h1 Tạo câu hỏi Listening TOEIC
 
-    form(method='POST', action='/admin/listening/create', enctype='multipart/form-data')
+    form(method='POST', action='/admin/listeningTOEIC/create', enctype='multipart/form-data', id='listeningForm', novalidate)
       .mb-3
-        label.form-label(for='part') Part
-        input.form-control(type='number', name='part', min='1', max='4', required)
+        label.form-label(for='part') Chọn Part *
+        select.form-control(name='part', id='partSelect', required)
+          option(value='') -- Chọn Part --
+          option(value='1') Part 1: Mô tả hình ảnh
+          option(value='2') Part 2: Hỏi - Đáp
+          option(value='3') Part 3: Hội thoại
+          option(value='4') Part 4: Bài nói
 
       .mb-3
-        label.form-label(for='audio') Upload file audio (MP3)
+        label.form-label(for='audio') File Audio (MP3) *
         input.form-control(type='file', name='audio', accept='audio/mp3,audio/mpeg', required)
+        small.text-muted (Bắt buộc cho tất cả các part)
 
       .mb-3
-        label.form-label(for='questionText') Câu hỏi (nếu có)
-        textarea.form-control(name='questionText', rows='2')
+        label.form-label(for='questionNumber') Số câu hỏi *
+        input.form-control(type='number', name='questionNumber', min='1', max='100', required)
 
-      .mb-3
-        label.form-label(for='options') Các đáp án (dạng JSON)
-        textarea.form-control(name='options', rows='2' required)
-        small.text-muted Ví dụ: ["A", "B", "C", "D"]
+      // Part 1: Picture Description
+      #part1-fields(style='display: none;')
+        .mb-3
+          label.form-label(for='image') Hình ảnh minh họa *
+          input.form-control(type='file', name='image', accept='image/*', required)
+          small.text-muted (Bắt buộc cho Part 1)
+        .mb-3
+          label.form-label(for='paragraph') Câu hỏi mô tả hình ảnh *
+          textarea.form-control(name='paragraph', rows='2', required, pattern='\\S+.*', title='Không được để trống hoặc chỉ chứa khoảng trắng')
+        .mb-3
+          label.form-label Các lựa chọn *
+          input.form-control(type='text', name='optionA', placeholder='Đáp án A', required, pattern='\\S+.*', title='Không được để trống hoặc chỉ chứa khoảng trắng')
+          input.form-control.mt-2(type='text', name='optionB', placeholder='Đáp án B', required, pattern='\\S+.*', title='Không được để trống hoặc chỉ chứa khoảng trắng')
+          input.form-control.mt-2(type='text', name='optionC', placeholder='Đáp án C', required, pattern='\\S+.*', title='Không được để trống hoặc chỉ chứa khoảng trắng')
+          input.form-control.mt-2(type='text', name='optionD', placeholder='Đáp án D', required, pattern='\\S+.*', title='Không được để trống hoặc chỉ chứa khoảng trắng')
+        .mb-3
+          label.form-label(for='correctAnswer') Đáp án đúng *
+          select.form-control(name='correctAnswer', required)
+            option(value='') -- Chọn đáp án --
+            option(value='A') A
+            option(value='B') B
+            option(value='C') C
+            option(value='D') D
+        .mb-3
+          label.form-label(for='explanation') Giải thích (Không bắt buộc)
+          textarea.form-control(name='explanation', rows='3')
 
-      .mb-3
-        label.form-label(for='correctAnswer') Đáp án đúng (ví dụ: A, B, C, D)
-        input.form-control(type='text', name='correctAnswer', maxlength='1', required)
+      // Part 2: Question-Response
+      #part2-fields(style='display: none;')
+        .mb-3
+          label.form-label(for='questionText') Câu hỏi *
+          textarea.form-control(name='questionText', rows='2', required, pattern='\\S+.*', title='Không được để trống hoặc chỉ chứa khoảng trắng')
+        .mb-3
+          label.form-label Các lựa chọn *
+          input.form-control(type='text', name='optionA', placeholder='Đáp án A', required, pattern='\\S+.*', title='Không được để trống hoặc chỉ chứa khoảng trắng')
+          input.form-control.mt-2(type='text', name='optionB', placeholder='Đáp án B', required, pattern='\\S+.*', title='Không được để trống hoặc chỉ chứa khoảng trắng')
+          input.form-control.mt-2(type='text', name='optionC', placeholder='Đáp án C', required, pattern='\\S+.*', title='Không được để trống hoặc chỉ chứa khoảng trắng')
+        .mb-3
+          label.form-label(for='correctAnswer') Đáp án đúng *
+          select.form-control(name='correctAnswer', required)
+            option(value='') -- Chọn đáp án --
+            option(value='A') A
+            option(value='B') B
+            option(value='C') C
+        .mb-3
+          label.form-label(for='explanation') Giải thích (Không bắt buộc)
+          textarea.form-control(name='explanation', rows='3')
 
-      .mb-3
-        label.form-label(for='explanation') Giải thích (nếu có)
-        textarea.form-control(name='explanation', rows='2')
+      // Part 3: Conversations
+      #part3-fields(style='display: none;')
+        .mb-3
+          label.form-label(for='diagram') Biểu đồ minh họa (Không bắt buộc)
+          input.form-control(type='file', name='diagram', accept='image/*')
+        .mb-3
+          label.form-label(for='transcript') Transcript (Không bắt buộc)
+          textarea.form-control(name='transcript', rows='3')
+        .mb-3
+          label.form-label Danh sách câu hỏi (3 câu) *
+          each i in [1, 2, 3]
+            .card.mb-2
+              .card-body
+                h6 Câu hỏi #{i}
+                .mb-2
+                  label.form-label(for=`question${i}Text`) Nội dung câu hỏi *
+                  textarea.form-control(name=`question${i}Text`, rows='2', required, pattern='\\S+.*', title='Không được để trống hoặc chỉ chứa khoảng trắng')
+                .mb-2
+                  label.form-label Các lựa chọn *
+                  input.form-control(type='text', name=`question${i}OptionA`, placeholder='Đáp án A', required, pattern='\\S+.*', title='Không được để trống hoặc chỉ chứa khoảng trắng')
+                  input.form-control.mt-1(type='text', name=`question${i}OptionB`, placeholder='Đáp án B', required, pattern='\\S+.*', title='Không được để trống hoặc chỉ chứa khoảng trắng')
+                  input.form-control.mt-1(type='text', name=`question${i}OptionC`, placeholder='Đáp án C', required, pattern='\\S+.*', title='Không được để trống hoặc chỉ chứa khoảng trắng')
+                  input.form-control.mt-1(type='text', name=`question${i}OptionD`, placeholder='Đáp án D', required, pattern='\\S+.*', title='Không được để trống hoặc chỉ chứa khoảng trắng')
+                .mb-2
+                  label.form-label(for=`question${i}CorrectAnswer`) Đáp án đúng *
+                  select.form-control(name=`question${i}CorrectAnswer`, required)
+                    option(value='') -- Chọn đáp án --
+                    option(value='A') A
+                    option(value='B') B
+                    option(value='C') C
+                    option(value='D') D
+                .mb-2
+                  label.form-label(for=`question${i}Explanation`) Giải thích (Không bắt buộc)
+                  textarea.form-control(name=`question${i}Explanation`, rows='2')
+
+      // Part 4: Talks
+      #part4-fields(style='display: none;')
+        .mb-3
+          label.form-label(for='diagram') Biểu đồ minh họa (Không bắt buộc)
+          input.form-control(type='file', name='diagram', accept='image/*')
+        .mb-3
+          label.form-label(for='transcript') Transcript (Không bắt buộc)
+          textarea.form-control(name='transcript', rows='3')
+        .mb-3
+          label.form-label Danh sách câu hỏi (3 câu) *
+          each i in [1, 2, 3]
+            .card.mb-2
+              .card-body
+                h6 Câu hỏi #{i}
+                .mb-2
+                  label.form-label(for=`question${i}Text`) Nội dung câu hỏi *
+                  textarea.form-control(name=`question${i}Text`, rows='2', required, pattern='\\S+.*', title='Không được để trống hoặc chỉ chứa khoảng trắng')
+                .mb-2
+                  label.form-label Các lựa chọn *
+                  input.form-control(type='text', name=`question${i}OptionA`, placeholder='Đáp án A', required, pattern='\\S+.*', title='Không được để trống hoặc chỉ chứa khoảng trắng')
+                  input.form-control.mt-1(type='text', name=`question${i}OptionB`, placeholder='Đáp án B', required, pattern='\\S+.*', title='Không được để trống hoặc chỉ chứa khoảng trắng')
+                  input.form-control.mt-1(type='text', name=`question${i}OptionC`, placeholder='Đáp án C', required, pattern='\\S+.*', title='Không được để trống hoặc chỉ chứa khoảng trắng')
+                  input.form-control.mt-1(type='text', name=`question${i}OptionD`, placeholder='Đáp án D', required, pattern='\\S+.*', title='Không được để trống hoặc chỉ chứa khoảng trắng')
+                .mb-2
+                  label.form-label(for=`question${i}CorrectAnswer`) Đáp án đúng *
+                  select.form-control(name=`question${i}CorrectAnswer`, required)
+                    option(value='') -- Chọn đáp án --
+                    option(value='A') A
+                    option(value='B') B
+                    option(value='C') C
+                    option(value='D') D
+                .mb-2
+                  label.form-label(for=`question${i}Explanation`) Giải thích (Không bắt buộc)
+                  textarea.form-control(name=`question${i}Explanation`, rows='2')
 
       button.btn.btn-primary(type='submit') Tạo câu hỏi
+
+  script.
+    document.addEventListener('DOMContentLoaded', function () {
+      const partSelect = document.getElementById('partSelect');
+      const form = document.getElementById('listeningForm');
+      let currentPart = '';
+
+      function togglePartFields() {
+        currentPart = partSelect.value;
+        console.log('Current Part:', currentPart);
+
+        // Reset toàn bộ form để đảm bảo không có dữ liệu cũ
+        form.querySelectorAll('input, textarea, select').forEach(field => {
+          if (field.name !== 'part' && field.name !== 'questionNumber' && field.name !== 'audio') {
+            if (field.type === 'file') {
+              field.value = null;
+            } else if (field.type === 'select-one') {
+              field.selectedIndex = 0; // Reset select về giá trị mặc định
+            } else {
+              field.value = '';
+            }
+            field.classList.remove('is-invalid');
+            field.disabled = true;
+            field.removeAttribute('required');
+          }
+        });
+
+        // Ẩn tất cả các phần
+        document.querySelectorAll('[id^="part"][id$="-fields"]').forEach(el => {
+          el.style.display = 'none';
+        });
+
+        // Hiển thị và kích hoạt các fields của Part được chọn
+        if (currentPart) {
+          const activeField = document.getElementById(`part${currentPart}-fields`);
+          if (activeField) {
+            activeField.style.display = 'block';
+            activeField.querySelectorAll('input, textarea, select').forEach(field => {
+              field.disabled = false;
+              if (field.name !== 'diagram' && field.name !== 'explanation' && field.name !== 'transcript' && !field.name.includes('Explanation')) {
+                field.setAttribute('required', 'true');
+              }
+            });
+          } else {
+            console.error(`Không tìm thấy #part${currentPart}-fields`);
+            alert('Lỗi: Không tìm thấy trường nhập liệu cho Part ' + currentPart);
+          }
+        }
+      }
+
+      partSelect.addEventListener('change', function() {
+        console.log('Part selected:', partSelect.value);
+        togglePartFields();
+      });
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        // Xóa trạng thái lỗi trước đó
+        document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+
+        try {
+          const part = partSelect.value;
+          if (!part) {
+            partSelect.classList.add('is-invalid');
+            throw new Error('Vui lòng chọn Part');
+          }
+
+          const audioInput = document.querySelector('input[name="audio"]');
+          if (!audioInput.files || audioInput.files.length === 0) {
+            audioInput.classList.add('is-invalid');
+            throw new Error('Vui lòng chọn file audio');
+          }
+
+          const questionNumber = document.querySelector('input[name="questionNumber"]');
+          if (!questionNumber.value || questionNumber.value < 1 || questionNumber.value > 100) {
+            questionNumber.classList.add('is-invalid');
+            throw new Error('Số câu hỏi phải từ 1 đến 100');
+          }
+
+          if (part === '1') {
+            const imageInput = document.querySelector('input[name="image"]:not([disabled])');
+            if (!imageInput.files || imageInput.files.length === 0) {
+              imageInput.classList.add('is-invalid');
+              throw new Error('Vui lòng chọn file hình ảnh cho Part 1');
+            }
+
+            const paragraph = document.querySelector('[name="paragraph"]:not([disabled])');
+            if (!paragraph || !paragraph.value.trim()) {
+              paragraph.classList.add('is-invalid');
+              throw new Error('Câu hỏi mô tả hình ảnh là bắt buộc');
+            }
+
+            const optionA = document.querySelector('[name="optionA"]:not([disabled])');
+            const optionB = document.querySelector('[name="optionB"]:not([disabled])');
+            const optionC = document.querySelector('[name="optionC"]:not([disabled])');
+            const optionD = document.querySelector('[name="optionD"]:not([disabled])');
+            const correctAnswer = document.querySelector('[name="correctAnswer"]:not([disabled])');
+
+            if (!optionA || !optionA.value.trim()) {
+              optionA.classList.add('is-invalid');
+              throw new Error('Đáp án A (Part 1): Không được để trống');
+            }
+            if (!optionB || !optionB.value.trim()) {
+              optionB.classList.add('is-invalid');
+              throw new Error('Đáp án B (Part 1): Không được để trống');
+            }
+            if (!optionC || !optionC.value.trim()) {
+              optionC.classList.add('is-invalid');
+              throw new Error('Đáp án C (Part 1): Không được để trống');
+            }
+            if (!optionD || !optionD.value.trim()) {
+              optionD.classList.add('is-invalid');
+              throw new Error('Đáp án D (Part 1): Không được để trống');
+            }
+            if (!correctAnswer || !['A', 'B', 'C', 'D'].includes(correctAnswer.value)) {
+              correctAnswer.classList.add('is-invalid');
+              throw new Error('Đáp án đúng (Part 1): Phải là A, B, C hoặc D');
+            }
+          }
+
+          if (part === '2') {
+            const questionText = document.querySelector('[name="questionText"]:not([disabled])');
+            if (!questionText || !questionText.value.trim()) {
+              questionText.classList.add('is-invalid');
+              throw new Error('Câu hỏi (Part 2): Không được để trống');
+            }
+
+            const optionA = document.querySelector('[name="optionA"]:not([disabled])');
+            const optionB = document.querySelector('[name="optionB"]:not([disabled])');
+            const optionC = document.querySelector('[name="optionC"]:not([disabled])');
+            const correctAnswer = document.querySelector('[name="correctAnswer"]:not([disabled])');
+
+            if (!optionA || !optionA.value.trim()) {
+              optionA.classList.add('is-invalid');
+              throw new Error('Đáp án A (Part 2): Không được để trống');
+            }
+            if (!optionB || !optionB.value.trim()) {
+              optionB.classList.add('is-invalid');
+              throw new Error('Đáp án B (Part 2): Không được để trống');
+            }
+            if (!optionC || !optionC.value.trim()) {
+              optionC.classList.add('is-invalid');
+              throw new Error('Đáp án C (Part 2): Không được để trống');
+            }
+            if (!correctAnswer || !['A', 'B', 'C'].includes(correctAnswer.value)) {
+              correctAnswer.classList.add('is-invalid');
+              throw new Error('Đáp án đúng (Part 2): Phải là A, B hoặc C');
+            }
+          }
+
+          if (part === '3') {
+            for (let i = 1; i <= 3; i++) {
+              const text = document.querySelector(`[name="question${i}Text"]:not([disabled])`);
+              const optionA = document.querySelector(`[name="question${i}OptionA"]:not([disabled])`);
+              const optionB = document.querySelector(`[name="question${i}OptionB"]:not([disabled])`);
+              const optionC = document.querySelector(`[name="question${i}OptionC"]:not([disabled])`);
+              const optionD = document.querySelector(`[name="question${i}OptionD"]:not([disabled])`);
+              const correctAnswer = document.querySelector(`[name="question${i}CorrectAnswer"]:not([disabled])`);
+
+              if (!text || !text.value.trim()) {
+                text.classList.add('is-invalid');
+                throw new Error(`Câu hỏi ${i} (Part 3): Nội dung câu hỏi không được để trống`);
+              }
+              if (!optionA || !optionA.value.trim()) {
+                optionA.classList.add('is-invalid');
+                throw new Error(`Câu hỏi ${i} (Part 3) - Đáp án A: Không được để trống`);
+              }
+              if (!optionB || !optionB.value.trim()) {
+                optionB.classList.add('is-invalid');
+                throw new Error(`Câu hỏi ${i} (Part 3) - Đáp án B: Không được để trống`);
+              }
+              if (!optionC || !optionC.value.trim()) {
+                optionC.classList.add('is-invalid');
+                throw new Error(`Câu hỏi ${i} (Part 3) - Đáp án C: Không được để trống`);
+              }
+              if (!optionD || !optionD.value.trim()) {
+                optionD.classList.add('is-invalid');
+                throw new Error(`Câu hỏi ${i} (Part 3) - Đáp án D: Không được để trống`);
+              }
+              if (!correctAnswer || !['A', 'B', 'C', 'D'].includes(correctAnswer.value)) {
+                correctAnswer.classList.add('is-invalid');
+                throw new Error(`Câu hỏi ${i} (Part 3): Đáp án đúng phải là A, B, C hoặc D`);
+              }
+            }
+          }
+
+          if (part === '4') {
+            for (let i = 1; i <= 3; i++) {
+              const text = document.querySelector(`[name="question${i}Text"]:not([disabled])`);
+              const optionA = document.querySelector(`[name="question${i}OptionA"]:not([disabled])`);
+              const optionB = document.querySelector(`[name="question${i}OptionB"]:not([disabled])`);
+              const optionC = document.querySelector(`[name="question${i}OptionC"]:not([disabled])`);
+              const optionD = document.querySelector(`[name="question${i}OptionD"]:not([disabled])`);
+              const correctAnswer = document.querySelector(`[name="question${i}CorrectAnswer"]:not([disabled])`);
+
+              if (!text || !text.value.trim()) {
+                text.classList.add('is-invalid');
+                throw new Error(`Câu hỏi ${i} (Part 4): Nội dung câu hỏi không được để trống`);
+              }
+              if (!optionA || !optionA.value.trim()) {
+                optionA.classList.add('is-invalid');
+                throw new Error(`Câu hỏi ${i} (Part 4) - Đáp án A: Không được để trống`);
+              }
+              if (!optionB || !optionB.value.trim()) {
+                optionB.classList.add('is-invalid');
+                throw new Error(`Câu hỏi ${i} (Part 4) - Đáp án B: Không được để trống`);
+              }
+              if (!optionC || !optionC.value.trim()) {
+                optionC.classList.add('is-invalid');
+                throw new Error(`Câu hỏi ${i} (Part 4) - Đáp án C: Không được để trống`);
+              }
+              if (!optionD || !optionD.value.trim()) {
+                optionD.classList.add('is-invalid');
+                throw new Error(`Câu hỏi ${i} (Part 4) - Đáp án D: Không được để trống`);
+              }
+              if (!correctAnswer || !['A', 'B', 'C', 'D'].includes(correctAnswer.value)) {
+                correctAnswer.classList.add('is-invalid');
+                throw new Error(`Câu hỏi ${i} (Part 4): Đáp án đúng phải là A, B, C hoặc D`);
+              }
+            }
+          }
+
+          const formData = new FormData(form);
+          console.log('Dữ liệu gửi lên:');
+          for (let [key, value] of formData.entries()) {
+            console.log(`${key}: ${value}`);
+          }
+
+          form.submit();
+        } catch (err) {
+          console.error('Validation error:', err.message);
+          alert('Lỗi: ' + err.message);
+        }
+      });
+
+      togglePartFields();
+    });
