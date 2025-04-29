@@ -74,35 +74,43 @@ block content
           .stat-number 450+
           .stat-text Điểm TOEIC Trung Bình
 
+  //- NEWS SECTION - Đã thay đổi theo news-list.pug
   //- NEWS SECTION
   section.news-section
     .container
       h2.section-title Tin Tức & Sự Kiện
-      .news-grid
-        .news-card
-          .news-image
-            img(src="/client/images/news1.jpg", alt="Tin tức tiếng Anh")
-          .news-content
-            .news-date 26 tháng 4 · DOL IELTS Đình Lực
-            h3.news-title Phát hiện thêm 2 sản phẩm dinh dưỡng trẻ em giả
-            p.news-excerpt Các chuyên gia cảnh báo về tình trạng hàng giả, hàng nhái trên thị trường...
-            a.read-more(href="#") Đọc tiếp →
-        .news-card
-          .news-image
-            img(src="/client/images/news2.jpg", alt="Tin giáo dục")
-          .news-content
-            .news-date 25 tháng 4 · DOL IELTS Đình Lực
-            h3.news-title Khảo sát trình độ tiếng Anh ở TP.HCM khiến giáo viên sốc
-            p.news-excerpt Kết quả khảo sát mới nhất về trình độ tiếng Anh của học sinh TP.HCM...
-            a.read-more(href="#") Đọc tiếp →
-        .news-card
-          .news-image
-            img(src="/client/images/news3.jpg", alt="Sự kiện")
-          .news-content
-            .news-date 24 tháng 4 · TEIC Education
-            h3.news-title Workshop "Bí quyết đạt TOEIC 450+ trong 3 tháng"
-            p.news-excerpt Sự kiện miễn phí dành cho các bạn đang luyện thi TOEIC với nhiều...
-            a.read-more(href="#") Đọc tiếp →
+      .news-grid(style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px;")
+        each news in newsList
+          article.news-item(
+            style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: transform 0.3s;"
+            onmouseover="this.style.transform='translateY(-5px)'"
+            onmouseout="this.style.transform=''"
+          )
+            a.news-link(
+              href=`/news/${news._id}`,
+              style="text-decoration: none; color: inherit; display: block;"
+            )
+              .news-image-container(style="height: 200px; overflow: hidden;")
+                img.news-item-image(
+                  src=news.image, 
+                  alt=news.title,
+                  style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s;"
+                  onmouseover="this.style.transform='scale(1.05)'"
+                  onmouseout="this.style.transform='scale(1)'"
+                )
+              
+              .news-content(style="padding: 20px;")
+                h3.news-item-title(
+                  style="margin: 0 0 10px 0; font-size: 18px; color: #2c3e50; min-height: 54px;"
+                )= news.title
+                
+                p.news-item-excerpt(
+                  style="color: #7f8c8d; margin: 0 0 15px 0; line-height: 1.5;"
+                )= news.content.substring(0, 100) + '...'
+                
+                .news-meta(style="display: flex; justify-content: space-between; color: #95a5a6; font-size: 14px;")
+                  span.news-author= news.author
+                  span.news-date= news.createdAt.toLocaleDateString()
 
   //- TESTIMONIALS SECTION
   section.testimonials-section
@@ -173,3 +181,5 @@ block content
       window.addEventListener('load', animateOnScroll);
       window.addEventListener('scroll', animateOnScroll);
     });
+
+
