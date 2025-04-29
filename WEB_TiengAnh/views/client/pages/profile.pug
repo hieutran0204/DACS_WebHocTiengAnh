@@ -1,0 +1,90 @@
+extends ../layouts/default
+
+
+block content
+  .container.mt-5
+    h2.text-center Hồ Sơ Người Dùng
+    .row
+      // Cột trái: Menu và thông tin người dùng
+      .col-md-4
+        .card.mb-3
+          .card-body
+            h5 Thông Tin Người Dùng
+            .form-group
+              label(for="username") Tên người dùng
+              input#username.form-control(type="text" value=user.username readonly)
+            
+            .form-group
+              label(for="email") Email
+              input#email.form-control(type="email" value=user.email readonly)
+
+        // Menu chức năng
+        .list-group
+          a.list-group-item.list-group-item-action(href="#change-password" data-toggle="tab") Thay Đổi Mật Khẩu
+          a.list-group-item.list-group-item-action(href="#change-email" data-toggle="tab") Thay Đổi Email
+
+      // Cột phải: Nội dung chức năng
+      .col-md-8
+        .tab-content
+          // Tab Thay đổi mật khẩu
+          .tab-pane.fade(id="change-password")
+            .card
+              .card-body
+                h4 Thay Đổi Mật Khẩu
+                form(action="/profile/change-password" method="POST")
+                  .form-group
+                    label(for="currentPassword") Mật khẩu hiện tại
+                    input#currentPassword.form-control(type="password" name="currentPassword" required)
+                  
+                  .form-group
+                    label(for="newPassword") Mật khẩu mới
+                    input#newPassword.form-control(type="password" name="newPassword" required minlength="6")
+                  
+                  .form-group
+                    label(for="confirmNewPassword") Xác nhận mật khẩu mới
+                    input#confirmNewPassword.form-control(type="password" name="confirmNewPassword" required minlength="6")
+                  
+                  // Hiển thị thông báo lỗi nếu có
+                  if error && activeTab === 'change-password'
+                    .alert.alert-danger #{error}
+                  
+                  // Hiển thị thông báo thành công nếu có
+                  if success && activeTab === 'change-password'
+                    .alert.alert-success #{success}
+
+                  button.btn.btn-primary(type="submit") Cập Nhật Mật Khẩu
+
+          // Tab Thay đổi email
+          .tab-pane.fade(id="change-email")
+            .card
+              .card-body
+                h4 Thay Đổi Email
+                form(action="/profile/change-email" method="POST")
+                  .form-group
+                    label(for="newEmail") Email mới
+                    input#newEmail.form-control(type="email" name="newEmail" required)
+                  
+                  .form-group
+                    label(for="confirmEmail") Xác nhận email mới
+                    input#confirmEmail.form-control(type="email" name="confirmEmail" required)
+                  
+                  // Hiển thị thông báo lỗi nếu có
+                  if error && activeTab === 'change-email'
+                    .alert.alert-danger #{error}
+                  
+                  // Hiển thị thông báo thành công nếu có
+                  if success && activeTab === 'change-email'
+                    .alert.alert-success #{success}
+
+                  button.btn.btn-primary(type="submit") Cập Nhật Email
+
+block scripts
+  script.
+    $(document).ready(function() {
+      const activeTab = "#{activeTab || ''}";
+      if (activeTab) {
+        $(`.list-group-item[href="#${activeTab}"]`).tab('show');
+      } else {
+        $('.list-group-item:first').tab('show');
+      }
+    });

@@ -2,14 +2,6 @@ extends ../layouts/default
 
 block content
     .container.mt-5
-        .d-flex.justify-content-end.mb-3
-            a.btn.btn-outline-primary.mr-2(href="/auth/login")
-                i.fas.fa-sign-in-alt.mr-1
-                | Đăng nhập
-            a.btn.btn-outline-success(href="/auth/register")
-                i.fas.fa-user-plus.mr-1
-                | Đăng ký
-
         .text-center.mb-5
             h1.text-primary.display-4 Chào mừng đến với Trang luyện thi TOEIC/IELTS
             p.lead Nâng cao kỹ năng tiếng Anh của bạn với các bài thi mô phỏng thực tế!
@@ -17,7 +9,7 @@ block content
         .row.g-4
             .col-md-4
                 .card.shadow-sm.border-0
-                    img.card-img-top(src="https://images.unsplash.com/photo-1584697964194-e6d7b31df8b9?auto=format&fit=crop&w=800&q=80", alt="Listening")
+                    img.card-img-top(src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=800&q=80", alt="Listening")
                     .card-body.text-center
                         h5.card-title.text-info Bài Test Listening
                         p.card-text Luyện kỹ năng nghe với giọng đọc chuẩn và bài nghe sát đề thật.
@@ -33,7 +25,30 @@ block content
 
             .col-md-4
                 .card.shadow-sm.border-0
-                    img.card-img-top(src="https://images.unsplash.com/photo-1584697964329-b22d3fcfb0c0?auto=format&fit=crop&w=800&q=80", alt="Writing")
+                    img.card-img-top(src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=800&q=80", alt="Writing")
+                    .card-body.text-center
+                        h5.card-title.text-danger Bài Test Writing
+                        p.card-text Phát triển kỹ năng viết luận với các đề thi thực tế và phản hồi chi tiết.
+                        a.btn.btn-outline-danger.mt-2(href="/test/writing") Bắt đầu Writing
+            .col-md-4
+                .card.shadow-sm.border-0
+                    img.card-img-top(src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=800&q=80", alt="Listening")
+                    .card-body.text-center
+                        h5.card-title.text-info Bài Test Listening
+                        p.card-text Luyện kỹ năng nghe với giọng đọc chuẩn và bài nghe sát đề thật.
+                        a.btn.btn-outline-info.mt-2(href="/test/listening") Bắt đầu Listening
+
+            .col-md-4
+                .card.shadow-sm.border-0
+                    img.card-img-top(src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=800&q=80", alt="Reading")
+                    .card-body.text-center
+                        h5.card-title.text-success Bài Test Reading
+                        p.card-text Ôn luyện các đoạn văn dài, tìm ý chính và luyện tốc độ đọc hiểu.
+                        a.btn.btn-outline-success.mt-2(href="/test/reading") Bắt đầu Reading
+
+            .col-md-4
+                .card.shadow-sm.border-0
+                    img.card-img-top(src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=800&q=80", alt="Writing")
                     .card-body.text-center
                         h5.card-title.text-danger Bài Test Writing
                         p.card-text Phát triển kỹ năng viết luận với các đề thi thực tế và phản hồi chi tiết.
