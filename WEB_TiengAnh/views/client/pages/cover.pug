@@ -75,12 +75,13 @@ block content
           .stat-text Điểm TOEIC Trung Bình
 
   //- NEWS SECTION - Đã thay đổi theo news-list.pug
-  //- NEWS SECTION
+    //- NEWS SECTION
   section.news-section
     .container
       h2.section-title Tin Tức & Sự Kiện
       .news-grid(style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px;")
-        each news in newsList
+        //- Chỉ hiển thị 3 tin mới nhất (sắp xếp theo ngày tạo giảm dần)
+        each news, index in newsList.slice(0, 3)
           article.news-item(
             style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: transform 0.3s;"
             onmouseover="this.style.transform='translateY(-5px)'"
@@ -111,6 +112,13 @@ block content
                 .news-meta(style="display: flex; justify-content: space-between; color: #95a5a6; font-size: 14px;")
                   span.news-author= news.author
                   span.news-date= news.createdAt.toLocaleDateString()
+    
+    //- Nút xem thêm tin tức (nếu cần)
+    .view-more-container(style="text-align: center; margin-top: 30px;")
+      a.view-more-button(
+        href="/news", 
+        style="display: inline-block; padding: 10px 20px; background-color: #3498db; color: white; text-decoration: none; border-radius: 4px;"
+      ) Xem thêm tin tức
 
   //- TESTIMONIALS SECTION
   section.testimonials-section
