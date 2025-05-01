@@ -1,19 +1,26 @@
+h1 Thêm từ mới cho trò chơi
 
+form(action="/admin/wordgame/create" method="POST")
+  label(for="word") Từ:
+  input#word(type="text" name="word" required)
 
-block content
-  h1 Thêm từ mới cho trò chơi
+  label(for="hint") Gợi ý:
+  input#hint(type="text" name="hint")
 
-  form(action="/admin/wordgame/create" method="POST")
-    label(for="word") Từ:
-    input#word(type="text" name="word" required)
+  button(type="submit") Thêm
 
-    label(for="hint") Gợi ý:
-    input#hint(type="text" name="hint")
-
-    button(type="submit") Thêm
-
-  hr
-  h2 Danh sách từ
-  ul
+hr
+h2 Danh sách từ
+table(border="1")
+  thead
+    tr
+      th Từ
+      th Gợi ý
+      th Hành động
+  tbody
     each word in words
-      li #{word.word} - #{word.hint}
+      tr
+        td #{word.word}
+        td #{word.hint}
+        td
+          a(href=`/admin/wordgame/delete/${word._id}` onclick="return confirm('Bạn có chắc muốn xóa từ này?')") Xóa
