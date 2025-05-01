@@ -1,0 +1,19 @@
+
+
+block content
+  h1 Thêm từ mới cho trò chơi
+
+  form(action="/admin/wordgame/create" method="POST")
+    label(for="word") Từ:
+    input#word(type="text" name="word" required)
+
+    label(for="hint") Gợi ý:
+    input#hint(type="text" name="hint")
+
+    button(type="submit") Thêm
+
+  hr
+  h2 Danh sách từ
+  ul
+    each word in words
+      li #{word.word} - #{word.hint}

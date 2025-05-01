@@ -7,6 +7,7 @@ const authMiddleware = require('../../middlewares/auth.middleware.js');
 const dashboardController = require('../../controllers/admin/dashboard.controller.js');
 const newsRoute = require('./news.route.js');
 
+
 // Sử dụng tên route ngắn gọn hơn
 // router.use('/',
 //     authMiddleware.verifyToken, 

@@ -55,6 +55,8 @@ app.use('/', clientRoutes);
 app.use('/admin', adminRoutes);
 app.use('/admin/questions', questionRoutes);
 app.use('/admin/listening', listeningRoutes);
+app.use('/admin/wordgame', require('./routes/admin/wordgame.route'));
+
 
 // Khởi động server
 app.listen(port, () => {

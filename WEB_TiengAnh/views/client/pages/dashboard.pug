@@ -1,26 +1,54 @@
 extends ../layouts/default
 
 block content
-  .container.mt-5
+  .container.py-5
     .row.justify-content-center
-      .col-md-8
-        .card.shadow
-          .card-body
-            h1.text-center.mb-4 Chào mừng bạn đến với Dashboard
-            p.text-center Đây là trang thông tin dành cho người dùng.
+      .col-md-8.col-lg-6
+        .card.border-0.shadow-lg
+          .card-header.bg-primary.text-white
+            h4.card-title.text-center.mb-0 
+              i.bi.bi-speedometer2.me-2
+              | Bảng điều khiển
+          .card-body.p-4
+            .text-center.mb-4
+              img.rounded-circle(src='/client/images/hinhnen1.jpg' width='100' height='100' alt='User avatar')
+              h3.mt-3 #{user.name}
+              p.text-muted #{user.email}
 
-            .user-info.mt-4
-              h3.mb-3 Thông tin cá nhân
-              ul.list-group
-                li.list-group-item
-                  strong Tên: 
-                  |  #{user.name}
-                li.list-group-item
-                  strong Email: 
-                  |  #{user.email}
+            .user-info.mb-4
+              h5.text-uppercase.text-muted.mb-3 
+                i.bi.bi-person-lines-fill.me-2
+                | Thông tin cá nhân
+              .list-group.list-group-flush
+                .list-group-item.d-flex.justify-content-between.align-items-center
+                  span
+                    i.bi.bi-person.me-2
+                    | Tên đăng nhập
+                  strong #{user.username}
+                .list-group-item.d-flex.justify-content-between.align-items-center
+                  span
+                    i.bi.bi-envelope.me-2
+                    | Email
+                  strong #{user.email}
+                .list-group-item.d-flex.justify-content-between.align-items-center
+                  span
+                    i.bi.bi-calendar.me-2
+                    | Ngày tham gia
+                  strong 15/10/2023
 
-            .actions.mt-4
-              h3.mb-3 Hành động nhanh
-              .d-grid.gap-2
-                a.btn.btn-primary(href='/user/update-profile') Cập nhật hồ sơ
-                a.btn.btn-outline-danger(href='/auth/logout') Đăng xuất
+            .quick-actions
+              h5.text-uppercase.text-muted.mb-3 
+                i.bi.bi-lightning-charge.me-2
+                | Thao tác nhanh
+              .row.g-3
+                .col-md-6
+                  a.btn.btn-outline-primary.w-100(href='/user/update-profile')
+                    i.bi.bi-pencil-square.me-2
+                    | Cập nhật hồ sơ
+                .col-md-6
+                  a.btn.btn-outline-danger.w-100(href='/auth/logout')
+                    i.bi.bi-box-arrow-right.me-2
+                    | Đăng xuất
+
+          .card-footer.bg-light.text-center
+            small.text-muted Lần đăng nhập cuối: Hôm nay, 10:15 AM

@@ -5,6 +5,8 @@ const authMiddleware = require('../../middlewares/auth.middleware');
 const toeicRoute = require("./toeic.route");
 const coverRoute = require('./cover.route');
 const newsRoute = require('./news.route'); // <- thêm dòng này
+const wordgameRoute = require('./wordgame.route');
+router.use('/game', wordgameRoute);
 
 // <- mount route tin tức
 

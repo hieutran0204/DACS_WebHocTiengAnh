@@ -1,0 +1,30 @@
+block head
+  link(rel="stylesheet", href="/client/css/game.css")
+  title Trò chơi xáo chữ
+block content
+  div.game-container
+    h1.title Trò chơi xáo chữ
+    div.instructions
+      h2 Hướng dẫn
+      p Các chữ cái của một từ tiếng Anh đã bị xáo trộn.
+      p Nhiệm vụ của bạn là sắp xếp lại các chữ cái để tìm ra từ gốc.
+      p Nhập từ của bạn vào ô bên dưới và nhấn "Kiểm tra" hoặc phím Enter.
+    
+    div.game-area
+      div.scrambled-word
+        p.label Từ xáo trộn:
+        p#shuffled-word.word-display Đang tải từ...
+      
+      div.hint
+        p#hint-text Gợi ý: Đang tải...
+      
+      div.input-area
+        input(type="text", id="user-input", placeholder="Nhập từ đúng", autofocus)
+        button#submit-btn Kiểm tra
+      
+      div#message.message
+    
+    div.stats
+      p Bạn có thể nhấn F5 để chơi với từ mới bất cứ lúc nào!
+
+  script(src="/client/css/js/wordgame.js")
