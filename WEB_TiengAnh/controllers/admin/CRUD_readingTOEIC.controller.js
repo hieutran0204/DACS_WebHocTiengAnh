@@ -1,5 +1,5 @@
 const Question = require("../../models/TOEIC/readingToiec.model");
-const upload = require('../../middlewares/upload.middleware');
+const upload = require('../../middlewares/uploadMulti.middleware');
 const Exam = require("../../models/TOEIC/exam.model");
 // Lấy danh sách câu hỏi
 exports.getAllQuestions = async (req, res) => {

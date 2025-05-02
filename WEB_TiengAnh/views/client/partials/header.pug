@@ -1,0 +1,38 @@
+head
+  link(rel="stylesheet" href="/css/header.css")
+  link(rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css")
+  link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css")
+  script(src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js")
+  script(src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js")
+body
+  header.header
+    div.container.d-flex.align-items-center
+      // Logo
+      div.logo-container
+        a(href="/")
+          img(src="/images/logo/67133d06115ea.png" alt="Logo" style="height: 40px;")
+      // Menu
+      nav.nav-menu.mx-auto
+        a.nav-link(href="/news") Tin tức tiếng Anh
+        a.nav-link(href="/toeic-dashboard.pug") TOEIC ONLINE TEST
+        a.nav-link(href="#") Chép chính tả
+        a.nav-link(href="#") Bài mẫu TOEIC
+      // Nút Đăng ký hoặc Dropdown
+      div.account-container
+        if !isLoggedIn
+          a.btn.btn-login(href="/auth/login") Đăng nhập
+          a.btn.btn-register(href="/auth/register") Đăng ký
+        else
+          div.dropdown
+            button.btn.btn-outline-primary.dropdown-toggle(type="button" id="accountDropdown" data-toggle="dropdown" aria-expanded="false")
+              i.fas.fa-user.mr-1
+              | #{userName || 'User Name'}
+            ul.dropdown-menu.dropdown-menu-right(aria-labelledby="accountDropdown")
+              li
+                a.dropdown-item(href="/profile") Hồ sơ
+              li
+                a.dropdown-item(href="/settings") Cài đặt
+              li
+                hr
+              li
+                a.dropdown-item(href="/logout") Đăng xuất

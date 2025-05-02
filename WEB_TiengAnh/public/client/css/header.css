@@ -1,0 +1,171 @@
+/* Định dạng header */
+.header {
+    background-color: #fff;
+    border-bottom: 1px solid #e9ecef;
+    padding: 10px 0;
+}
+
+/* Container chính */
+.container {
+    width: 70%;
+    margin: 0 auto;
+}
+
+/* Định dạng logo */
+.logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.logo-container img {
+    height: 40px;
+    transition: opacity 0.3s ease;
+}
+
+.logo-container img:hover {
+    opacity: 0.8;
+}
+
+.logo-container small {
+    font-size: 0.7rem;
+    color: #6c757d;
+}
+
+/* Định dạng menu */
+.nav-menu {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px; /* Khoảng cách giữa các mục menu */
+}
+
+.nav-link {
+    color: #333;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #007bff;
+}
+
+/* Định dạng nút Đăng nhập */
+.btn-login {
+    background-color: #dc3545; /* Màu đỏ giống trong hình */
+    color: #dc3545;
+    border: none;
+    border-radius: 20px; /* Bo góc tròn */
+    padding: 8px 20px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.btn-login:hover {
+    background-color: #c82333;
+    color: #c82333;
+}
+
+/* Định dạng nút Đăng ký */
+.btn-register {
+    background-color: #dc3545; /* Màu đỏ giống trong hình */
+    color: #dc3545;
+    border: none;
+    border-radius: 20px; /* Bo góc tròn */
+    padding: 8px 20px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.btn-register:hover {
+    background-color: #c82333;
+    color: #c82333;
+}
+
+/* Định dạng dropdown */
+.dropdown-toggle {
+    display: flex;
+    align-items: center;
+    border-color: #007bff;
+    color: #007bff;
+    border-radius: 5px;
+    padding: 8px 16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.dropdown-toggle:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.dropdown-menu {
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-item {
+    font-size: 0.9rem;
+    padding: 8px 20px;
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+}
+
+/* Định dạng thanh ngang trong dropdown */
+.dropdown-menu hr {
+    border-top: 2px solid #6c757d; /* Tăng độ dày và đổi màu đậm hơn */
+    margin: 2px 0; /* Giảm khoảng cách trên dưới */
+}
+
+/* Định dạng icon */
+.fas {
+    margin-right: 5px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        width: 90%;
+    }
+
+    .nav-menu {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .account-container {
+        margin-top: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .header {
+        padding: 15px 0;
+    }
+
+    .container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .logo-container {
+        margin-bottom: 10px;
+    }
+
+    .nav-menu {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .account-container {
+        margin-top: 15px;
+    }
+}

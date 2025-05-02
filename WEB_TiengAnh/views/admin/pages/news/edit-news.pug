@@ -1,0 +1,29 @@
+
+block content
+  .container.mt-5
+    h1.text-center.mb-4 Chỉnh sửa Tin tức
+    form(action=`/admin/news/edit/${news._id}` method="POST")
+      .mb-3
+        label.form-label(for="title") Tiêu đề
+        input.form-control(type="text" id="title" name="title" value=news.title required)
+      .mb-3
+        label.form-label(for="image") URL Hình ảnh
+        input.form-control(type="text" id="image" name="image" value=news.image required)
+      .mb-3
+        label.form-label(for="content") Nội dung
+        textarea.form-control(id="content" name="content" rows="5" required)= news.content
+      .mb-3
+        label.form-label(for="question") Câu hỏi
+        input.form-control(type="text" id="question" name="question" value=news.question required)
+      .mb-3
+        label.form-label(for="options") Các lựa chọn (mỗi lựa chọn trên một dòng)
+        textarea.form-control(id="options" name="options" rows="4" required)= news.options.join('\n')
+      .mb-3
+        label.form-label(for="correctAnswer") Đáp án đúng (số thứ tự, bắt đầu từ 0)
+        input.form-control(type="number" id="correctAnswer" name="correctAnswer" min="0" value=news.correctAnswer required)
+      .mb-3
+        label.form-label(for="author") Tác giả
+        input.form-control(type="text" id="author" name="author" value=news.author required)
+      .d-flex.justify-content-center
+        button.btn.btn-primary(type="submit") Lưu thay đổi
+        a.btn.btn-secondary.ms-2(href="/admin/news/list") Hủy

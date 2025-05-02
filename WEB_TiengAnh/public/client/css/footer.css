@@ -1,0 +1,77 @@
+/* Định dạng footer */
+.footer {
+    background-color: #f8f9fa; /* Màu nền nhạt */
+    padding: 30px 0;
+    border-top: 1px solid #e9ecef; /* Đường viền trên */
+    color: #333; /* Màu chữ */
+  }
+  
+  /* Container chính */
+  .container {
+    width: 70%; /* Giữ cùng chiều rộng với header */
+    margin: 0 auto;
+  }
+  
+  /* Nội dung footer */
+  .footer-content {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  
+  /* Định dạng từng section trong footer */
+  .footer-section {
+    flex: 1;
+    min-width: 200px;
+  }
+  
+  .footer-section h4 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: #007bff; /* Màu xanh dương giống header */
+  }
+  
+  .footer-section p {
+    margin: 5px 0;
+    font-size: 0.9rem;
+  }
+  
+  /* Định dạng liên kết mạng xã hội */
+  .social-links a {
+    margin-right: 15px;
+    color: #333;
+    font-size: 1.2rem;
+    transition: color 0.3s ease;
+  }
+  
+  .social-links a:hover {
+    color: #007bff; /* Màu xanh dương khi hover */
+  }
+  
+  /* Định dạng phần bản quyền */
+  .footer-bottom {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #e9ecef;
+    font-size: 0.9rem;
+    width: 100%;
+  }
+  
+  /* Responsive */
+  @media (max-width: 576px) {
+    .container {
+      width: 90%; /* Tăng chiều rộng trên màn hình nhỏ */
+    }
+  
+    .footer-content {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+  
+    .social-links a {
+      margin: 0 10px;
+    }
+  }

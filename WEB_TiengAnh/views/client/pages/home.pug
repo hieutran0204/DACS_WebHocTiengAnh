@@ -1,40 +1,208 @@
 extends ../layouts/default
 
 block content
-    .container.mt-5
-        .d-flex.justify-content-end.mb-3
-            a.btn.btn-outline-primary.mr-2(href="/auth/login")
-                i.fas.fa-sign-in-alt.mr-1
-                | Đăng nhập
-            a.btn.btn-outline-success(href="/auth/register")
-                i.fas.fa-user-plus.mr-1
-                | Đăng ký
+  link(rel="stylesheet", href="/client/css/home.css")
 
-        .text-center.mb-5
-            h1.text-primary.display-4 Chào mừng đến với Trang luyện thi TOEIC/IELTS
-            p.lead Nâng cao kỹ năng tiếng Anh của bạn với các bài thi mô phỏng thực tế!
+  //- HERO SLIDER
+  section.hero.carousel.slide(data-bs-ride="carousel" id="heroCarousel")
+    .carousel-inner
+      .carousel-item.active
+        .overlay(style="background: rgba(0,0,0,0.5); position: absolute; top: 0; left: 0; width: 100%; height: 100%;")
+        img(src="/client/images/slide1.png", alt="TSE - TOEIC", style="width: 100%; height: 100vh; object-fit: cover;")
+        .carousel-caption.d-flex.flex-column.justify-content-center.h-100
+          h2.display-3.fw-bold.text-white Nâng Cao Trình Độ Tiếng Anh
+          p.lead.text-white Hệ thống học tập thông minh giúp bạn chinh phục IELTS, TOEIC dễ dàng
+          a.btn.btn-primary.btn-lg.mt-3(href="/auth/register") Bắt đầu ngay
+      .carousel-item
+        .overlay(style="background: rgba(0,0,0,0.5); position: absolute; top: 0; left: 0; width: 100%; height: 100%;")
+        img(src="/client/images/slide2.jpg", alt="LEARN ENGLISH", style="width: 100%; height: 100vh; object-fit: cover;")
+        .carousel-caption.d-flex.flex-column.justify-content-center.h-100
+          h2.display-3.fw-bold.text-white Luyện Thi IELTS Hiệu Quả
+          p.lead.text-white Kho đề thi mô phỏng thực tế với đánh giá chi tiết từ chuyên gia
+          a.btn.btn-primary.btn-lg.mt-3(href="/toeic") Luyện tập ngay
+      .carousel-item
+        .overlay(style="background: rgba(0,0,0,0.5); position: absolute; top: 0; left: 0; width: 100%; height: 100%;")
+        img(src="/client/images/slide3.jpg", alt="NGUS", style="width: 100%; height: 100vh; object-fit: cover;")
+        .carousel-caption.d-flex.flex-column.justify-content-center.h-100
+          h2.display-3.fw-bold.text-white Cộng Đồng Học Tập
+          p.lead.text-white Kết nối với hàng ngàn học viên và giáo viên giàu kinh nghiệm
+          a.btn.btn-primary.btn-lg.mt-3(href="/auth/register") Tham gia cộng đồng
+    button.carousel-control-prev(type="button" data-bs-target="#heroCarousel" data-bs-slide="prev")
+      span.carousel-control-prev-icon(aria-hidden="true")
+      span.visually-hidden Previous
+    button.carousel-control-next(type="button" data-bs-target="#heroCarousel" data-bs-slide="next")
+      span.carousel-control-next-icon(aria-hidden="true")
+      span.visually-hidden Next
 
+  //- INTRO SECTION
+  section.intro-section.py-5.bg-light
+    .container
+      .text-center
+        h1.display-4.fw-bold.text-primary TOEIC
+        h2.h4.text-muted Test of English for International Communication
+        p.lead.mt-3 Chúng tôi cung cấp giải pháp học tiếng Anh toàn diện từ cơ bản đến nâng cao, giúp bạn chinh phục chứng chỉ quốc tế TOEIC một cách hiệu quả nhất.
+        a.btn.btn-primary.btn-lg.mt-4(href="/auth/register") Đăng Ký Học Ngay
+
+  //- TEST CARDS SECTION
+  section.test-section.py-5
+    .container
+      .text-center.mb-5
+        h2.display-5.fw-bold.text-primary Chào mừng đến với Trang luyện thi TOEIC/IELTS
+        p.lead.text-muted Nâng cao kỹ năng tiếng Anh với các bài thi mô phỏng thực tế!
+      .row.g-4
+        .col-md-4
+          .card.border-0.shadow-lg.h-100
+            img.card-img-top(src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=800&q=80", alt="Listening")
+            .card-body.text-center
+              h5.card-title.text-info.fw-bold Bài Test Listening
+              p.card-text Luyện kỹ năng nghe với giọng đọc chuẩn và bài nghe sát đề thật.
+              a.btn.btn-outline-info.mt-3(href="/test/listening") Bắt đầu Listening
+        .col-md-4
+          .card.border-0.shadow-lg.h-100
+            img.card-img-top(src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80", alt="Reading")
+            .card-body.text-center
+              h5.card-title.text-success.fw-bold Bài Test Reading
+              p.card-text Ôn luyện các đoạn văn dài, tìm ý chính và luyện tốc độ đọc hiểu.
+              a.btn.btn-outline-success.mt-3(href="/test/reading") Bắt đầu Reading
+        .col-md-4
+          .card.border-0.shadow-lg.h-100
+            img.card-img-top(src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=800&q=80", alt="Writing")
+            .card-body.text-center
+              h5.card-title.text-danger.fw-bold Bài Test Writing
+              p.card-text Phát triển kỹ năng viết luận với các đề thi thực tế và phản hồi chi tiết.
+              a.btn.btn-outline-danger.mt-3(href="/test/writing") Bắt đầu Writing
+
+  //- FEATURES SECTION
+  section.features-section.py-5.bg-light
+    .container
+      h2.display-5.fw-bold.text-center.mb-5 Nâng Trình Tiếng Anh Cùng TOEIC
+      .row.g-4
+        .col-md-4
+          .card.border-0.shadow-sm.h-100.text-center
+            .card-body
+              span.feature-icon.display-4.mb-3 📝
+              h3.card-title.fw-bold IELTS Online Test
+              p.card-text Đề thi IELTS Online Test với trải nghiệm thi thật và kho đề khủng kèm giải thích chi tiết từ chuyên gia.
+              a.btn.btn-outline-primary.mt-3(href="/toeic") Bắt đầu làm bài
+        .col-md-4
+          .card.border-0.shadow-sm.h-100.text-center
+            .card-body
+              span.feature-icon.display-4.mb-3 🎧
+              h3.card-title.fw-bold Luyện Listening & Reading
+              p.card-text Kho đề luyện tập IELTS Listening & Reading với phân loại theo dạng câu hỏi và chủ đề đa dạng.
+              a.btn.btn-outline-primary.mt-3(href="/toeic") Luyện tập ngay
+        .col-md-4
+          .card.border-0.shadow-sm.h-100.text-center
+            .card-body
+              span.feature-icon.display-4.mb-3 ✍️
+              h3.card-title.fw-bold Bài Mẫu Writing & Speaking
+              p.card-text Tuyển tập bài mẫu chất lượng cao với phân tích chi tiết từ giám khảo IELTS band 8.0+.
+              a.btn.btn-outline-primary.mt-3(href="/toeic") Xem bài mẫu
+
+  //- STATS SECTION
+  section.stats-section.py-5.bg-dark.text-white
+    .container
+      h2.display-5.fw-bold.text-center.mb-5 TOEIC Trong Những Con Số
+      .row.g-4.text-center
+        .col-md-3
+          .stat-item
+            h3.stat-number.fw-bold 10,000+
+            p.stat-text Học Viên Đang Theo Học
+        .col-md-3
+          .stat-item
+            h3.stat-number.fw-bold 98%
+            p.stat-text Hài Lòng Với Chất Lượng
+        .col-md-3
+          .stat-item
+            h3.stat-number.fw-bold 500+
+            p.stat-text Đề Thi Chất Lượng
+        .col-md-3
+          .stat-item
+            h3.stat-number.fw-bold 450+
+            p.stat-text Điểm TOEIC Trung Bình
+
+  //- NEWS SECTION
+  section.news-section.py-5
+    .container
+      h2.display-5.fw-bold.text-center.mb-5 Tin Tức & Sự Kiện
+      if newsList && newsList.length
         .row.g-4
+          each news in newsList.slice(0, 3)
             .col-md-4
-                .card.shadow-sm.border-0
-                    img.card-img-top(src="https://images.unsplash.com/photo-1584697964194-e6d7b31df8b9?auto=format&fit=crop&w=800&q=80", alt="Listening")
-                    .card-body.text-center
-                        h5.card-title.text-info Bài Test Listening
-                        p.card-text Luyện kỹ năng nghe với giọng đọc chuẩn và bài nghe sát đề thật.
-                        a.btn.btn-outline-info.mt-2(href="/test/listening") Bắt đầu Listening
+              .card.border-0.shadow-sm.h-100
+                a(href=`/news/${news._id}`, style="text-decoration: none; color: inherit;")
+                  img.card-img-top(
+                    src=news.image || '/client/images/placeholder.jpg',
+                    alt=news.title || 'Hình ảnh tin tức',
+                    style="height: 200px; object-fit: cover;"
+                  )
+                  .card-body
+                    h5.card-title.fw-bold= news.title || 'Không có tiêu đề'
+                    p.card-text.text-muted= news.content ? news.content.substring(0, 100) + '...' : 'Không có nội dung'
+                    .d-flex.justify-content-between.text-muted.small
+                      span= news.author || 'Không rõ tác giả'
+                      span= news.createdAt ? news.createdAt.toLocaleDateString() : 'Không rõ ngày'
+      else
+        p.text-center.text-muted.fs-5 Không có tin tức nào để hiển thị.
+      .text-center.mt-5
+        a.btn.btn-primary.btn-lg(href="/news") Xem thêm tin tức
 
-            .col-md-4
-                .card.shadow-sm.border-0
-                    img.card-img-top(src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=800&q=80", alt="Reading")
-                    .card-body.text-center
-                        h5.card-title.text-success Bài Test Reading
-                        p.card-text Ôn luyện các đoạn văn dài, tìm ý chính và luyện tốc độ đọc hiểu.
-                        a.btn.btn-outline-success.mt-2(href="/test/reading") Bắt đầu Reading
+  //- TESTIMONIALS SECTION
+  section.testimonials-section.py-5.bg-light
+    .container
+      h2.display-5.fw-bold.text-center.mb-5 Cảm Nhận Học Viên
+      .row.justify-content-center
+        .col-md-6
+          .card.border-0.shadow-sm
+            .card-body.text-center
+              p.card-text.fs-5.text-muted "TOEIC đã giúp tôi nâng điểm IELTS từ 400 lên 650 chỉ sau 3 tháng. Phương pháp học thông minh và hệ thống bài tập phong phú khiến việc học trở nên dễ dàng hơn bao giờ hết."
+              p.card-text.fw-bold.mt-3 - Nguyễn Văn A, TOEIC 650
 
-            .col-md-4
-                .card.shadow-sm.border-0
-                    img.card-img-top(src="https://images.unsplash.com/photo-1584697964329-b22d3fcfb0c0?auto=format&fit=crop&w=800&q=80", alt="Writing")
-                    .card-body.text-center
-                        h5.card-title.text-danger Bài Test Writing
-                        p.card-text Phát triển kỹ năng viết luận với các đề thi thực tế và phản hồi chi tiết.
-                        a.btn.btn-outline-danger.mt-2(href="/test/writing") Bắt đầu Writing
+  //- CTA SECTION
+  section.cta-section.py-5.bg-primary.text-white
+    .container.text-center
+      h2.display-5.fw-bold Sẵn Sàng Chinh Phục Tiếng Anh?
+      p.lead.mt-3 Đăng ký ngay để trải nghiệm hệ thống học tập thông minh và nhận ưu đãi lên đến 40% khóa học.
+      a.btn.btn-light.btn-lg.mt-4(href="/auth/register") Đăng Ký Ngay
+
+  script.
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize Bootstrap Carousel
+      const heroCarousel = new bootstrap.Carousel(document.getElementById('heroCarousel'), {
+        interval: 5000,
+        pause: 'hover'
+      });
+
+      // Smooth scroll for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+          e.preventDefault();
+          document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth'
+          });
+        });
+      });
+
+      // Animation on scroll
+      const animateOnScroll = function() {
+        const elements = document.querySelectorAll('.card, .stat-item');
+        elements.forEach(element => {
+          const elementPosition = element.getBoundingClientRect().top;
+          const windowHeight = window.innerHeight;
+          if (elementPosition < windowHeight - 100) {
+            element.style.opacity = '1';
+            element.style.transform = 'translateY(0)';
+          }
+        });
+      };
+
+      // Initialize elements with hidden state
+      document.querySelectorAll('.card, .stat-item').forEach(element => {
+        element.style.opacity = '0';
+        element.style.transform = 'translateY(30px)';
+        element.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      });
+
+      window.addEventListener('load', animateOnScroll);
+      window.addEventListener('scroll', animateOnScroll);
+    });

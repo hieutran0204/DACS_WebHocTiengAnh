@@ -1,31 +1,33 @@
 doctype html
-html
+html(lang='en')
   head
-    title
-      block title
-        | Trang Admin Quản Lý Web Học Tiếng Anh
-    block head
-      link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css")
-      link(rel='stylesheet', href='https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css')
-      link(rel="stylesheet", href="/client/css/style_client_default.css")
-      script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js", defer)
-
+    meta(charset='UTF-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    title TOEIC Admin Dashboard
+    link(rel='stylesheet', href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css')
+    link(rel='stylesheet', href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css')
+    block styles
   body
-    include ../partials/header.pug
-    include ../partials/menu.pug
-    include ../partials/sidebar.pug
+    nav.navbar.navbar-expand-lg.navbar-dark.bg-primary
+      .container-fluid
+        a.navbar-brand(href='/admin') TOEIC Admin
+        button.navbar-toggler(type='button', data-bs-toggle='collapse', data-bs-target='#navbarNav', aria-controls='navbarNav', aria-expanded='false', aria-label='Toggle navigation')
+          span.navbar-toggler-icon
+        #navbarNav.collapse.navbar-collapse
+          ul.navbar-nav.ms-auto
+            li.nav-item
+              a.nav-link(href='/admin') Dashboard
+            li.nav-item
+              a.nav-link(href='/admin/exam-parts') Quản lý đề thi
+            li.nav-item
+              a.nav-link(href='/logout') Đăng xuất
 
-    .container.mt-5
-      block content
+    block content
 
-    // Các script để dưới cuối body cho đúng thứ tự load
-    script(src='https://code.jquery.com/jquery-3.6.0.min.js')
-    script(src='https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js')
-    script.
-      $(document).ready(function() {
-        $('#toeic-questions').DataTable({
-          language: {
-            url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/vi.json'
-          }
-        });
-      });
+    script(src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js')
+    script(src='https://cdn.jsdelivr.net/npm/sweetalert2@11')
+
+//-     block scripts
+//- cdn.jsdelivr.net
+
+//-     block scripts

@@ -1,43 +1,315 @@
 extends ../../layouts/default
 
 block content
-  .container.mt-5
-    h1 Danh sách câu hỏi Listening TOEIC
+  .container-fluid.py-4
+    .row.mb-4
+      .col-12
+        .card.shadow
+          .card-header.bg-primary.text-white
+            .d-flex.justify-content-between.align-items-center
+              h4.mb-0 Danh sách câu hỏi Listening TOEIC
+              a.btn.btn-light(href='/admin/listeningTOEIC/create')
+                i.bi.bi-plus-circle.me-2
+                | Thêm câu hỏi
 
-    a.btn.btn-primary.mb-3(href='/admin/listening/create') + Thêm câu hỏi
+    .row
+      .col-12
+        .card.shadow
+          .card-body.p-0
+            if questions.length
+              .table-responsive
+                table.table.table-hover.align-middle.mb-0#listening-questions
+                  thead.bg-light
+                    tr
+                      th.text-center(style="width: 50px") STT
+                      th.text-center(style="width: 80px") Part
+                      th Nội dung
+                      th.text-center(style="width: 100px") Đáp án
+                      th.text-center(style="width: 150px") Ngày tạo
+                      th.text-center(style="width: 120px") Hành động
+                  tbody
+                    each question, index in questions
+                      tr
+                        td.text-center #{index + 1}
+                        td.text-center
+                          span.badge(class={
+                            'bg-info': question.part === 1,
+                            'bg-primary': question.part === 2,
+                            'bg-warning text-dark': question.part === 3,
+                            'bg-success': question.part === 4
+                          }) Part #{question.part}
 
-    if questions.length
-      table.table.table-bordered.table-hover
-        thead
-          tr
-            th(scope='col') # 
-            th(scope='col') Part
-            th(scope='col') Audio
-            th(scope='col') Question
-            th(scope='col') Options
-            th(scope='col') Đáp án đúng
-            th(scope='col') Thời gian tạo
-            th(scope='col') Hành động
+                        td
+                          .question-content
+                            if question.audioUrl
+                              .audio-player.mb-3
+                                audio(controls, style="width: 100%; max-width: 400px").shadow-sm
+                                  source(src=question.audioUrl, type='audio/mpeg')
 
-        tbody
-          each question, index in questions
-            tr
-              td #{index + 1}
-              td #{question.part}
-              td 
-                audio(controls)
-                  source(src=question.audioUrl, type='audio/mpeg')
-                  | Trình duyệt của bạn không hỗ trợ audio
-              td= question.questionText || '—'
-              td 
-                ul
-                  each option in question.options
-                    li= option
-              td.text-center.text-success #{question.correctAnswer}
-              td= question.createdAt.toLocaleString()
-              td
-                a.btn.btn-sm.btn-warning(href=`/admin/listening/edit/${question._id}`) Sửa
-                a.btn.btn-sm.btn-danger.ms-2(href=`/admin/listening/delete/${question._id}` onclick="return confirm('Xác nhận xóa?')") Xóa
+                            if question.part === 1
+                              if question.imageUrl
+                                .image-container.mb-3
+                                  img.img-fluid.rounded.shadow-sm(src=question.imageUrl, style="max-height: 150px")
+                              .question-text.fw-bold.mb-2 Câu hỏi: #{question.paragraph}
+                              if question.options && question.options.length
+                                .options-list
+                                  each opt, i in question.options
+                                    .option-item(class={'correct-answer': String.fromCharCode(65 + i) === question.correctAnswer})
+                                      span.option-number #{String.fromCharCode(65 + i)}.
+                                      span.option-text #{opt}
 
-    else
-      p.text-muted Không có câu hỏi nào.
+                            if question.part === 2
+                              .question-text.fw-bold.mb-2 Câu hỏi: #{question.questionText}
+                              if question.options && question.options.length
+                                .options-list
+                                  each opt, i in question.options
+                                    .option-item(class={'correct-answer': String.fromCharCode(65 + i) === question.correctAnswer})
+                                      span.option-number #{String.fromCharCode(65 + i)}.
+                                      span.option-text #{opt}
+
+                            if question.part === 3
+                              if question.transcript
+                                .transcript.mb-2
+                                  small.text-muted
+                                    i.bi.bi-chat-left-text.me-1
+                                    | Transcript: #{question.transcript}
+                              if question.diagramUrl
+                                .chart-container.mb-3
+                                  img.img-fluid.rounded.shadow-sm(src=question.diagramUrl, style="max-height: 150px")
+                              each subQ, idx in question.questions
+                                .sub-question.card.mb-2.shadow-sm
+                                  .card-body
+                                    h6.card-subtitle.mb-2.text-primary Câu #{idx + 1}: #{subQ.text}
+                                    .options-list
+                                      each opt, i in subQ.options
+                                        .option-item(class={'correct-answer': String.fromCharCode(65 + i) === subQ.correctAnswer})
+                                          span.option-number #{String.fromCharCode(65 + i)}.
+                                          span.option-text #{opt}
+                                    if subQ.explanation
+                                      .explanation.mt-2
+                                        small.text-muted
+                                          i.bi.bi-info-circle.me-1
+                                          | Giải thích: #{subQ.explanation}
+
+                            if question.part === 4
+                              if question.transcript
+                                .transcript.mb-2
+                                  small.text-muted
+                                    i.bi.bi-chat-left-text.me-1
+                                    | Transcript: #{question.transcript}
+                              if question.diagramUrl
+                                .chart-container.mb-3
+                                  img.img-fluid.rounded.shadow-sm(src=question.diagramUrl, style="max-height: 150px")
+                              each subQ, idx in question.questions
+                                .sub-question.card.mb-2.shadow-sm
+                                  .card-body
+                                    h6.card-subtitle.mb-2.text-primary Câu #{idx + 1}: #{subQ.text}
+                                    .options-list
+                                      each opt, i in subQ.options
+                                        .option-item(class={'correct-answer': String.fromCharCode(65 + i) === subQ.correctAnswer})
+                                          span.option-number #{String.fromCharCode(65 + i)}.
+                                          span.option-text #{opt}
+                                    if subQ.explanation
+                                      .explanation.mt-2
+                                        small.text-muted
+                                          i.bi.bi-info-circle.me-1
+                                          | Giải thích: #{subQ.explanation}
+
+                        td.text-center
+                          if question.part === 1 || question.part === 2
+                            span.badge.bg-success.rounded-pill.fs-6 #{question.correctAnswer}
+                          if question.part === 3
+                            - let correctCountPart3 = question.questions.filter(q => q.correctAnswer).length;
+                            - let totalCountPart3 = question.questions.length;
+                            span.badge.bg-success.rounded-pill.fs-6 #{correctCountPart3}/#{totalCountPart3}
+                          if question.part === 4
+                            - let correctCountPart4 = question.questions.filter(q => q.correctAnswer).length;
+                            - let totalCountPart4 = question.questions.length;
+                            span.badge.bg-success.rounded-pill.fs-6 #{correctCountPart4}/#{totalCountPart4}
+
+                        td.text-center #{question.createdAt ? question.createdAt.toLocaleString('vi-VN') : 'N/A'}
+                        td.text-center
+                          .btn-group(role="group")
+                            a.btn.btn-sm.btn-outline-primary.rounded-start(href=`/admin/listeningTOEIC/edit/${question._id}`, title="Chỉnh sửa")
+                              i.bi.bi-pencil
+                            button.btn.btn-sm.btn-outline-danger.rounded-end(type='button', onclick=`confirmDelete('${question._id}')`, title="Xóa")
+                              i.bi.bi-trash
+
+            else
+              .text-center.py-5
+                i.bi.bi-question-circle.display-4.text-muted
+                h4.mt-3.text-muted Không có câu hỏi nào
+                p.text-muted Hãy thêm câu hỏi mới để bắt đầu
+                a.btn.btn-primary.mt-3(href='/admin/listeningTOEIC/create')
+                  i.bi.bi-plus-circle.me-2
+                  | Thêm câu hỏi
+
+  // DataTables và các thư viện cần thiết
+  link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css")
+  link(rel="stylesheet", href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css")
+  link(rel="stylesheet", href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.bootstrap5.min.css")
+
+  script(src="https://code.jquery.com/jquery-3.7.0.js")
+  script(src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js")
+  script(src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js")
+  script(src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js")
+  script(src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js")
+  script(src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js")
+  script(src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js")
+  script(src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js")
+  script(src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js")
+  script(src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js")
+  script(src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.colVis.min.js")
+
+  script.
+    function confirmDelete(id) {
+      Swal.fire({
+        title: 'Bạn có chắc chắn?',
+        text: "Bạn sẽ không thể hoàn tác hành động này!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Xóa',
+        cancelButtonText: 'Hủy'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          fetch(`/admin/listeningTOEIC/delete/${id}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          }).then(response => {
+            if (response.ok) {
+              location.reload();
+            } else {
+              Swal.fire('Lỗi!', 'Có lỗi xảy ra khi xóa câu hỏi.', 'error');
+            }
+          });
+        }
+      });
+    }
+
+    $(document).ready(function() {
+      $('#listening-questions thead tr').clone(true).appendTo('#listening-questions thead');
+      $('#listening-questions thead tr:eq(1) th').each(function(i) {
+        if (i !== 5) { // Bỏ qua cột hành động
+          var title = $(this).text();
+          $(this).html('<input type="text" class="form-control form-control-sm" placeholder="Tìm ' + title + '" />');
+          $('input', this).on('keyup change', function() {
+            if (table.column(i).search() !== this.value) {
+              table.column(i).search(this.value).draw();
+            }
+          });
+        } else {
+          $(this).empty();
+        }
+      });
+
+      const table = $('#listening-questions').DataTable({
+        dom: '<"top d-flex justify-content-between align-items-center"Bf>rt<"bottom d-flex justify-content-between align-items-center mt-3"lip>',
+        buttons: [
+          {
+            extend: 'copy',
+            className: 'btn btn-sm btn-outline-secondary',
+            text: '<i class="bi bi-clipboard"></i> Copy'
+          },
+          {
+            extend: 'excel',
+            className: 'btn btn-sm btn-outline-success',
+            text: '<i class="bi bi-file-excel"></i> Excel'
+          },
+          {
+            extend: 'pdf',
+            className: 'btn btn-sm btn-outline-danger',
+            text: '<i class="bi bi-file-pdf"></i> PDF'
+          },
+          {
+            extend: 'print',
+            className: 'btn btn-sm btn-outline-primary',
+            text: '<i class="bi bi-printer"></i> Print'
+          }
+        ],
+        language: {
+          url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/vi.json'
+        },
+        responsive: true,
+        orderCellsTop: true,
+        fixedHeader: true,
+        columnDefs: [
+          { targets: [0, 1, 3, 5], orderable: false },
+          { targets: 4, type: 'date' }
+        ],
+        pageLength: 10,
+        lengthMenu: [5, 10, 25, 50, 100],
+        initComplete: function() {
+          $('.dt-buttons .btn').removeClass('btn-secondary');
+        }
+      });
+    });
+
+  style.
+    .card {
+      border: none;
+      border-radius: 10px;
+    }
+    .card-header {
+      border-radius: 10px 10px 0 0 !important;
+    }
+    .badge {
+      font-size: 0.8rem;
+      padding: 0.35em 0.65em;
+      font-weight: 500;
+    }
+    .question-content {
+      max-height: 300px;
+      overflow-y: auto;
+      padding-right: 10px;
+    }
+    .sub-question {
+      border-left: 3px solid #0d6efd;
+    }
+    .option-item {
+      padding: 0.25rem 0;
+      margin: 0.1rem 0;
+    }
+    .option-number {
+      font-weight: bold;
+      margin-right: 5px;
+    }
+    .correct-answer {
+      color: #198754;
+      font-weight: 500;
+    }
+    .explanation {
+      background-color: #f8f9fa;
+      padding: 0.5rem;
+      border-radius: 5px;
+      border-left: 3px solid #6c757d;
+    }
+    .transcript {
+      background-color: #e9ecef;
+      padding: 0.5rem;
+      border-radius: 5px;
+      border-left: 3px solid #6c757d;
+    }
+    audio::-webkit-media-controls-panel {
+      background-color: #f8f9fa;
+    }
+    .table th, .table td {
+      vertical-align: middle;
+      white-space: normal;
+    }
+    .table th {
+      white-space: nowrap;
+    }
+    .dataTables_wrapper .dataTables_filter input {
+      border-radius: 5px;
+      border: 1px solid #dee2e6;
+      padding: 0.375rem 0.75rem;
+    }
+    .dataTables_wrapper .dataTables_length select {
+      border-radius: 5px;
+      border: 1px solid #dee2e6;
+      padding: 0.375rem 0.75rem;
+    }
