@@ -1,11 +1,16 @@
 // controllers/client/home.controller.js
 
-exports.renderHomePage = (req, res) => {
-    res.render('client/pages/home', {
-      title: 'Trang chủ',
-      user: req.user || null
-    });
-  };
+const News = require('../../models/TOEIC/news.model');
+
+exports.renderHomePage = async (req, res) => {
+  try {
+    const newsList = await News.find().sort({ createdAt: -1 }).limit(3);
+    res.render('client/pages/home', { newsList });
+  } catch (error) {
+    console.error('Error fetching news for homepage:', error);
+    res.render('client/pages/home', { newsList: [] });
+  }
+};
   
   exports.renderDashboard = (req, res) => {
     res.render('client/pages/dashboard', {

@@ -55,6 +55,7 @@ const clientRoutes = require('./routes/client/index.route');
 const adminRoutes = require('./routes/admin/index.route');
 const listeningRoutes = require('./routes/admin/CRUD_listeningTOEIC.route.js');
 const examRoutes = require('./routes/admin/CRUD_TOEIC_Part.route.js');
+const newsRoutes = require('./routes/client/news.route.js'); // <- thêm dòng này
 app.use('/auth', authRoutes);
 app.use('/', authRoutes);
 app.use('/', clientRoutes);
@@ -62,7 +63,7 @@ app.use('/admin', adminRoutes);
 app.use('/admin/questions', questionRoutes);
 app.use('/admin/listeningTOEIC', listeningRoutes);
 app.use('/admin/exam', examRoutes);
-
+app.use('/news', newsRoutes); // <- thêm dòng này
 // Khởi động server
 app.listen(port, () => {
     console.log(`Server đang chạy tại http://localhost:${port}`);

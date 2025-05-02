@@ -1,0 +1,39 @@
+extends ../../layouts/default
+
+block content
+  section.py-5
+    .container
+      .row.justify-content-center
+        .col-md-8
+          .card.shadow-lg.border-0
+            .card-body.p-5
+              h2.text-center.mb-4.fw-bold Tạo Tin Tức Mới
+              form(action="/admin/news/create" method="POST")
+                .mb-3
+                  label.form-label.fw-bold(for="title") Tiêu đề tin tức
+                  input.form-control(type="text" id="title" name="title" placeholder="Nhập tiêu đề..." required)
+                .mb-3
+                  label.form-label.fw-bold(for="image") URL hình ảnh
+                  input.form-control(type="text" id="image" name="image" placeholder="Dán URL hình ảnh..." required)
+                .mb-3
+                  label.form-label.fw-bold(for="content") Nội dung tin tức
+                  textarea.form-control(id="content" name="content" rows="5" placeholder="Nhập nội dung chi tiết..." required)
+                .mb-3
+                  label.form-label.fw-bold(for="question") Câu hỏi kiểm tra
+                  input.form-control(type="text" id="question" name="question" placeholder="Nhập câu hỏi..." required)
+                .mb-3
+                  label.form-label.fw-bold Câu trả lời
+                  .row.g-2
+                    .col-12
+                      input.form-control(type="text" name="options" placeholder="Câu trả lời 1" required)
+                    .col-12
+                      input.form-control(type="text" name="options" placeholder="Câu trả lời 2" required)
+                    .col-12
+                      input.form-control(type="text" name="options" placeholder="Câu trả lời 3" required)
+                .mb-3
+                  label.form-label.fw-bold(for="correctAnswer") Chỉ số đáp án đúng (0, 1 hoặc 2)
+                  input.form-control(type="number" id="correctAnswer" name="correctAnswer" min="0" max="2" placeholder="Nhập chỉ số..." required)
+                .mb-3
+                  label.form-label.fw-bold(for="author") Tên người viết
+                  input.form-control(type="text" id="author" name="author" placeholder="Nhập tên tác giả..." required)
+                button.btn.btn-primary.btn-lg.w-100.mt-4(type="submit") Tạo Tin Tức

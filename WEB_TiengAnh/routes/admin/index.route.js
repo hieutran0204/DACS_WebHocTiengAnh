@@ -19,5 +19,5 @@ router.use('/', require('./dashboard.route'));
 router.use('/reading', require('./CRUD_readingTOEIC.route'));
 router.use('/listening', require('./CRUD_listeningTOEIC.route'));
 router.use('/exam', require('./CRUD_TOEIC_Part.route'));
-
+router.use('/news', require('./news.route'));
 module.exports = router;

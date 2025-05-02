@@ -9,7 +9,7 @@ const Question = require('../../models/TOEIC/readingToiec.model'); // Reading_TO
 exports.getAllExamParts = async (req, res) => {
   try {
     const examParts = await ExamPart.find()
-      .populate('createdBy', 'username') // Giả sử mô hình User có trường username
+      .populate('createdBy', 'username')
       .populate({
         path: 'questions.questionId',
         model: (doc) => doc.questions[0]?.modelName || 'Question',
@@ -23,25 +23,24 @@ exports.getAllExamParts = async (req, res) => {
   } catch (error) {
     console.error(error);
     req.flash('error', 'Lỗi server khi lấy danh sách đề thi');
-    res.render('admin/exam-parts/list', { examParts: [] });
+    res.render('admin/pages/TOEIC/exam-list-Toeic', { examParts: [] });
   }
 };
 
 // Hiển thị form tạo đề thi
 exports.showCreateForm = (req, res) => {
-  res.render('admin/exam-parts/create', {
+  res.render('admin/pages/TOEIC/create-exam', {
     success: req.flash('success'),
     error: req.flash('error'),
   });
 };
 
-// Tạo đề thi mới
+// Tạo đề thi thủ công
 exports.createExamPart = async (req, res) => {
   try {
     const { examType, part, questionIds } = req.body;
-    const adminId = req.user._id; // Giả sử bạn có middleware xác thực để lấy user
+    const adminId = req.user._id;
 
-    // Xác định mô hình dựa trên examType và part
     const modelMap = {
       Listening: {
         1: ListeningTOEICPart1,
@@ -59,26 +58,22 @@ exports.createExamPart = async (req, res) => {
     const Model = modelMap[examType]?.[part];
     if (!Model) {
       req.flash('error', 'Loại đề hoặc phần thi không hợp lệ');
-      return res.redirect('/admin/exam-parts/create');
+      return res.redirect('/admin/exam/create');
     }
 
-    // Kiểm tra xem các câu hỏi có tồn tại không
     const questions = await Model.find({ _id: { $in: questionIds } });
     if (questions.length !== questionIds.length) {
       req.flash('error', 'Một số câu hỏi không tồn tại');
-      return res.redirect('/admin/exam-parts/create');
+      return res.redirect('/admin/exam/create');
     }
 
-    // Tạo danh sách câu hỏi cho ExamPart
     const examQuestions = questionIds.map(id => ({
       questionId: id,
       modelName: Model.modelName,
     }));
 
-    // Tính độ khó trung bình
     const avgDifficulty = questions.reduce((sum, q) => sum + (q.difficulty || 0), 0) / questions.length;
 
-    // Tạo đề thi mới
     const examPart = new ExamPart({
       examType,
       part,
@@ -97,6 +92,99 @@ exports.createExamPart = async (req, res) => {
   }
 };
 
+// Tạo đề thi ngẫu nhiên
+exports.generateRandomExamPart = async (req, res) => {
+  try {
+    const { examType, parts, difficulty, questionCount, minTopic, maxTopic } = req.body;
+    const adminId = req.user._id;
+
+    if (!examType || !parts || !questionCount) {
+      return res.status(400).json({
+        success: false,
+        message: 'Vui lòng cung cấp đầy đủ thông tin: loại đề, phần thi, và số lượng câu hỏi',
+      });
+    }
+
+    const selectedParts = Array.isArray(parts) ? parts : [parts];
+    const numQuestions = parseInt(questionCount);
+
+    const modelMap = {
+      Listening: {
+        1: ListeningTOEICPart1,
+        2: ListeningTOEICPart2,
+        3: ListeningTOEICPart3,
+        4: ListeningTOEICPart4,
+      },
+      Reading: {
+        5: Question,
+        6: Question,
+        7: Question,
+      },
+    };
+
+    const examParts = [];
+    for (const part of selectedParts) {
+      const Model = modelMap[examType]?.[part];
+      if (!Model) {
+        return res.status(400).json({
+          success: false,
+          message: `Phần thi ${part} không hợp lệ cho loại đề ${examType}`,
+        });
+      }
+
+      let query = {};
+      if (difficulty) query.difficulty = parseInt(difficulty);
+      if (minTopic && maxTopic) {
+        query.TopicN = { $gte: parseInt(minTopic), $lte: parseInt(maxTopic) };
+      }
+
+      const questions = await Model.aggregate([
+        { $match: query },
+        { $sample: { size: Math.ceil(numQuestions / selectedParts.length) } },
+      ]);
+
+      if (questions.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: `Không có câu hỏi nào phù hợp cho Part ${part}`,
+        });
+      }
+
+      const examQuestions = questions.map(q => ({
+        questionId: q._id,
+        modelName: Model.modelName,
+      }));
+
+      const avgDifficulty = questions.reduce((sum, q) => sum + (q.difficulty || 0), 0) / questions.length;
+
+      const examPart = new ExamPart({
+        examType,
+        part,
+        questions: examQuestions,
+        createdBy: adminId,
+        difficulty: Math.round(avgDifficulty),
+      });
+
+      await examPart.save();
+      examParts.push(examPart);
+    }
+
+    const examCode = `EXAM-${Date.now()}`;
+    return res.json({
+      success: true,
+      examCode,
+      examId: examParts[0]._id,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: 'Lỗi server khi tạo đề thi ngẫu nhiên',
+      error: error.message,
+    });
+  }
+};
+
 // Cập nhật đề thi (hiển thị form chỉnh sửa)
 exports.showUpdateForm = async (req, res) => {
   try {
@@ -112,7 +200,7 @@ exports.showUpdateForm = async (req, res) => {
       return res.redirect('/admin/exam-parts');
     }
 
-    res.render('admin/exam-parts/edit', {
+    res.render('admin/pages/TOEIC/edit', {
       examPart,
       success: req.flash('success'),
       error: req.flash('error'),
@@ -136,7 +224,6 @@ exports.updateExamPart = async (req, res) => {
       return res.redirect('/admin/exam-parts');
     }
 
-    // Xác định mô hình dựa trên examType và part
     const modelMap = {
       Listening: {
         1: ListeningTOEICPart1,
@@ -157,7 +244,6 @@ exports.updateExamPart = async (req, res) => {
       return res.redirect(`/admin/exam-parts/edit/${examPartId}`);
     }
 
-    // Nếu cập nhật danh sách câu hỏi
     if (questionIds) {
       const questions = await Model.find({ _id: { $in: questionIds } });
       if (questions.length !== questionIds.length) {
@@ -170,12 +256,10 @@ exports.updateExamPart = async (req, res) => {
         modelName: Model.modelName,
       }));
 
-      // Tính lại độ khó trung bình
       const avgDifficulty = questions.reduce((sum, q) => sum + (q.difficulty || 0), 0) / questions.length;
       examPart.difficulty = Math.round(avgDifficulty);
     }
 
-    // Cập nhật trạng thái hoặc độ khó nếu có
     if (status) examPart.status = status;
     if (difficulty !== undefined) examPart.difficulty = difficulty;
 
@@ -258,13 +342,15 @@ exports.getQuestionsForExam = async (req, res) => {
 
     const Model = modelMap[examType.toLowerCase()]?.[part];
     if (!Model) {
-      req.flash('error', 'Loại đề hoặc phần thi không hợp lệ');
-      return res.redirect('/admin/exam-parts/create');
+      return res.status(400).json({
+        success: false,
+        message: 'Loại đề hoặc phần thi không hợp lệ',
+      });
     }
 
     const questions = await Model.find().select('questionNumber questionN paragraph questionText question passage questions');
 
-    res.json({
+    res.status(200).json({
       success: true,
       questions,
     });

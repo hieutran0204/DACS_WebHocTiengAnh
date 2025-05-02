@@ -1,0 +1,40 @@
+
+block content
+  h1.text-center.mb-4 Danh sách Tin tức
+
+  .d-flex.justify-content-end.mb-3
+    a(href="/admin/news/create" class="btn btn-primary") + Tạo tin tức mới
+
+  if newsList.length === 0
+    .alert.alert-info Chưa có tin tức nào được tạo.
+  else
+    table.table.table-striped.table-bordered.align-middle
+      thead.table-dark
+        tr
+          th(scope="col") Tiêu đề
+          th(scope="col") Hình ảnh
+          th(scope="col") Tác giả
+          th(scope="col") Ngày tạo
+          th(scope="col" class="text-center") Hành động
+      tbody
+        each news in newsList
+          tr
+            td= news.title
+            td
+              img(src=news.image, width="100", height="auto", style="object-fit: cover; border-radius: 5px")
+            td= news.author
+            td= new Date(news.createdAt).toLocaleDateString('vi-VN')
+            td.text-center
+              a(href=`/admin/news/edit/${news._id}` class="btn btn-sm btn-warning me-2") Sửa
+              button(type="button" class="btn btn-sm btn-danger" onclick=`deleteNews('${news._id}')`) Xóa
+
+  script.
+    function deleteNews(id) {
+      if (confirm('Bạn chắc chắn muốn xóa?')) {
+        fetch(`/admin/news/delete/${id}`, { method: 'DELETE' })
+          .then(res => {
+            if (res.ok) window.location.reload();
+            else alert('Xóa thất bại.');
+          });
+      }
+    }
