@@ -1,0 +1,27 @@
+
+block head
+  link(rel="stylesheet", href="/client/css/menu-game.css")
+  title Menu trò chơi
+block content
+  .game-menu-container
+    .game-header.text-center.mb-5
+      h1.game-title TRÒ CHƠI TIẾNG ANH
+      p.game-subtitle Chọn trò chơi để bắt đầu luyện tập
+    
+    .game-grid
+      //- Card Word Game
+      a.game-card.word-game-card(href="/game")
+        .game-icon-box
+          img.game-icon(src="/client/images/wordgame.png", alt="Word Game")
+        h3.game-name Word Guess
+        p.game-desc Đoán từ qua các chữ cái ngẫu nhiên
+        .game-hover-effect
+
+      //- Card Hidden Word
+      a.game-card.hidden-word-card(href="/hidden-word")
+        .game-icon-box
+          img.game-icon(src="/client/images/hiddenword.jpg", alt="Hidden Word")
+        h3.game-name Hidden Word
+        p.game-desc Đoán từ qua hình ảnh bị che
+        .game-hover-effect
+

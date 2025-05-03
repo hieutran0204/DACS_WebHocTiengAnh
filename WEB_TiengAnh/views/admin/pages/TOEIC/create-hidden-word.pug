@@ -1,0 +1,43 @@
+
+block content
+  .container-fluid
+    h1 Tạo câu đố đoán từ
+    
+    if error.length > 0
+      .alert.alert-danger= error[0]
+    
+    form(method="POST", enctype="multipart/form-data", action="/admin/hidden-word/create")
+      .form-group
+        label(for="word") Từ tiếng Anh:
+        input.form-control(type="text", name="word", id="word", required)
+      
+      .form-group
+        label(for="image") Hình ảnh:
+        input.form-control(type="file", name="image", id="image", required, accept="image/*")
+      
+      .form-group
+        label(for="hints") Gợi ý (5 dòng - 1 đầu + 4 cho từng ô):
+        textarea.form-control(
+          name="hints", 
+          id="hints", 
+          rows="5", 
+          required,
+          placeholder='Nhập theo định dạng JSON, ví dụ:\n["Đây là gợi ý đầu tiên", "Gợi ý ô 1", "Gợi ý ô 2", "Gợi ý ô 3", "Gợi ý ô 4"]'
+        )
+      
+      button.btn.btn-primary(type="submit") Tạo
+
+  script.
+    // Validate hints input before submit
+    document.querySelector('form').addEventListener('submit', function(e) {
+      try {
+        const hints = JSON.parse(document.getElementById('hints').value);
+        if (!Array.isArray(hints) || hints.length !== 5) {
+          alert('Gợi ý phải là mảng JSON với 5 phần tử');
+          e.preventDefault();
+        }
+      } catch (err) {
+        alert('Gợi ý phải là mảng JSON hợp lệ');
+        e.preventDefault();
+      }
+    });

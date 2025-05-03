@@ -1,0 +1,40 @@
+block content
+  .container-fluid
+    h1.mb-4 Danh sách Hidden Word
+    a.btn.btn-primary.mb-3(href="/admin/hidden-word/create") Tạo mới
+    
+    if success.length > 0
+      each msg in success
+        .alert.alert-success= msg
+    
+    if error.length > 0
+      each msg in error
+        .alert.alert-danger= msg
+
+    .card
+      .card-body
+        table.table.table-striped
+          thead
+            tr
+              th STT
+              th Từ khóa
+              th Hình ảnh
+              th Ngày tạo
+              th Thao tác
+          tbody
+            each word, index in hiddenWords
+              tr
+                td= index + 1
+                td= word.word
+                td
+                  img(src=`/admin/img/uploads_reading_TOEIC/${word.image}`, width="100")
+                td= word.createdAt.toLocaleDateString()
+                td
+                  button.btn.btn-sm.btn-danger.ml-2(onclick=`confirmDelete('${word._id}')`) Xóa
+
+  script.
+    function confirmDelete(id) {
+      if(confirm('Bạn có chắc muốn xóa?')) {
+        window.location.href = `/admin/hidden-word/delete/${id}`;
+      }
+    }

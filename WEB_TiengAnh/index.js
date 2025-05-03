@@ -56,6 +56,7 @@ app.use('/admin', adminRoutes);
 app.use('/admin/questions', questionRoutes);
 app.use('/admin/listening', listeningRoutes);
 app.use('/admin/wordgame', require('./routes/admin/wordgame.route'));
+app.use('/admin/hidden-word', require('./routes/admin/hiddenWord.route'));
 
 
 // Khởi động server

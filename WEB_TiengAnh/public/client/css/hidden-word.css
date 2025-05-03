@@ -1,0 +1,235 @@
+
+    :root {
+      --primary-color: #4a6fa5;
+      --secondary-color: #166088;
+      --accent-color: #4fc3f7;
+      --correct-color: #4caf50;
+      --wrong-color: #f44336;
+      --dark-color: #333;
+      --light-color: #f8f9fa;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .game-container {
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
+      animation: fadeIn 0.5s ease-out;
+    }
+    
+    .title {
+      color: var(--secondary-color);
+      margin-bottom: 20px;
+      font-size: 28px;
+      font-weight: 600;
+    }
+    
+    .hint-container {
+      margin: 20px 0;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    #hintDisplay {
+      font-size: 18px;
+      color: var(--dark-color);
+      padding: 10px 20px;
+      border-radius: 8px;
+      background-color: #f0f8ff;
+      transition: all 0.3s ease;
+    }
+    
+    .glow-text {
+      animation: glow 2s infinite alternate;
+    }
+    
+    .image-section {
+      margin: 25px 0;
+      display: flex;
+      justify-content: center;
+    }
+    
+    .image-container {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .main-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    
+    .image-mask {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 0;
+    }
+    
+    .mask-piece {
+      background-color: #000;
+      transition: background-color 0.5s ease;
+      cursor: pointer;
+    }
+    
+    .game-form {
+      margin-top: 25px;
+    }
+    
+    .input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    
+    input[type="text"] {
+      flex: 1;
+      padding: 12px 15px;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      font-size: 16px;
+      transition: border 0.3s;
+    }
+    
+    input[type="text"]:focus {
+      border-color: var(--accent-color);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(79, 195, 247, 0.2);
+    }
+    
+    .submit-btn {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 12px 20px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .submit-btn:hover {
+      background-color: var(--secondary-color);
+      transform: translateY(-2px);
+    }
+    
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+    
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 0.3s;
+    }
+    
+    .modal-content {
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    .modal-title {
+      color: var(--secondary-color);
+      margin-bottom: 20px;
+    }
+    
+    #resultText {
+      font-size: 18px;
+      margin-bottom: 25px;
+      line-height: 1.5;
+    }
+    
+    .btn-next, .btn-again {
+      padding: 12px 25px;
+      margin: 0 10px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-next {
+      background-color: var(--correct-color);
+      color: white;
+    }
+    
+    .btn-again {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .btn-next:hover, .btn-again:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes glow {
+      from {
+        text-shadow: 0 0 5px rgba(79, 195, 247, 0.5);
+      }
+      to {
+        text-shadow: 0 0 10px rgba(79, 195, 247, 0.8), 0 0 15px rgba(79, 195, 247, 0.5);
+      }
+    }
+    
+    .correct {
+      color: var(--correct-color);
+      font-weight: bold;
+    }
+    
+    .wrong {
+      color: var(--wrong-color);
+    }

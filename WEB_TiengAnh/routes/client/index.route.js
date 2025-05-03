@@ -6,6 +6,17 @@ const toeicRoute = require("./toeic.route");
 const coverRoute = require('./cover.route');
 const newsRoute = require('./news.route'); // <- thêm dòng này
 const wordgameRoute = require('./wordgame.route');
+const hiddenWordRoute = require('./hiddenWord.route'); // Thêm dòng này
+
+// ... các import khác
+const menuGameRoute = require('./menugame.route');
+
+// ... các route khác
+router.use('/menugame', menuGameRoute); // Sử dụng '/games' làm URL chính
+// ... các route khác ...
+
+router.use('/hidden-word', hiddenWordRoute); // Thêm dòng này
+
 router.use('/game', wordgameRoute);
 
 // <- mount route tin tức
