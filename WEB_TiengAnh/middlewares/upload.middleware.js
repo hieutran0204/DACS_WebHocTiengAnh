@@ -1,6 +1,7 @@
 const multer = require('multer');
 const path = require('path');
 
+
 // Cấu hình lưu trữ file
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -32,3 +33,4 @@ const upload = multer({
 });
 
 module.exports = upload;
+

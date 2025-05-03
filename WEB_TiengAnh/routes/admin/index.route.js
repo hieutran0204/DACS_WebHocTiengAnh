@@ -20,4 +20,6 @@ router.use('/reading', require('./CRUD_readingTOEIC.route'));
 router.use('/listening', require('./CRUD_listeningTOEIC.route'));
 router.use('/exam', require('./CRUD_TOEIC_Part.route'));
 router.use('/news', require('./news.route'));
+router.use('/toeic-writing', require('./CRUD_writingTOEIC.route'));
+
 module.exports = router;
