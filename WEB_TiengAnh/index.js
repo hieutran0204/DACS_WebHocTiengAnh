@@ -15,16 +15,23 @@ database.connectDB();
 const app = express();
 const port = process.env.PORT || 10000; // Dự phòng port 10000 nếu không có trong .env
 
+
+
+// Cấu hình encoding UTF-8
+app.use(express.json({ type: 'application/json', charset: 'utf-8' }));
+app.use(express.urlencoded({ extended: true, charset: 'utf-8' }));
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static('public'));
+
 // Phục vụ file âm thanh từ shared/audio/listening_TOEIC
 app.use('/audio', express.static('public/shared/audio/listening_TOEIC'));
 
-// Phục vụ hình ảnh từ shared/images (đã sửa đường dẫn)
-app.use('/images', express.static('public/shared/images'));
+// Phục vụ hình ảnh từ images (bao gồm writing)
+app.use('/images', express.static('public/images'));
 
 // Sử dụng JWT_SECRET từ .env
 app.use(session({
@@ -54,16 +61,20 @@ const questionRoutes = require('./routes/admin/CRUD_readingTOEIC.route.js');
 const clientRoutes = require('./routes/client/index.route');
 const adminRoutes = require('./routes/admin/index.route');
 const listeningRoutes = require('./routes/admin/CRUD_listeningTOEIC.route.js');
+const writingRoutes = require('./routes/admin/CRUD_writingTOEIC.route.js'); // Thêm route Writing
 const examRoutes = require('./routes/admin/CRUD_TOEIC_Part.route.js');
-const newsRoutes = require('./routes/client/news.route.js'); // <- thêm dòng này
+const newsRoutes = require('./routes/client/news.route.js');
+
 app.use('/auth', authRoutes);
 app.use('/', authRoutes);
 app.use('/', clientRoutes);
 app.use('/admin', adminRoutes);
 app.use('/admin/questions', questionRoutes);
 app.use('/admin/listeningTOEIC', listeningRoutes);
+app.use('/admin/writingTOEIC', writingRoutes); // Thêm route Writing
 app.use('/admin/exam', examRoutes);
-app.use('/news', newsRoutes); // <- thêm dòng này
+app.use('/news', newsRoutes);
+
 // Khởi động server
 app.listen(port, () => {
     console.log(`Server đang chạy tại http://localhost:${port}`);

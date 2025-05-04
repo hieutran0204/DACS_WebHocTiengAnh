@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../../controllers/admin/CRUD_writingTOEIC.controller');
-const upload = require('../../middlewares/upload.middleware'); // nhớ xử lý upload file
+const upload = require('../../middlewares/uploadMulti.middleware'); // Sửa tên middleware
 
 router.get('/create', controller.showCreateForm);
 router.post('/create', upload.any(), controller.createWritingQuestions);

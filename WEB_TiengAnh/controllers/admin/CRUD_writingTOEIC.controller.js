@@ -2,10 +2,8 @@ const WritingTOEIC = require('../../models/TOEIC/writingTOEIC.model');
 const fs = require('fs');
 const path = require('path');
 
-// Xóa hàm createWritingQuestions trùng lặp và chỉ giữ lại phiên bản hoàn chỉnh này
 exports.createWritingQuestions = async (req, res) => {
     try {
-      // Xử lý Part 1
       const part1Questions = Array.isArray(req.body.part1) ? req.body.part1 : [req.body.part1];
       const processedPart1 = part1Questions.map((item, index) => {
         const file = req.files.find(f => f.fieldname.includes(`part1[${index}][image]`));
@@ -14,11 +12,10 @@ exports.createWritingQuestions = async (req, res) => {
         return {
           keyword1: item.keyword1 || '',
           keyword2: item.keyword2 || '',
-          imagePath: path.join('uploads', path.basename(file.path)).replace(/\\/g, '/')
+          imagePath: path.join('images/writing', path.basename(file.path)).replace(/\\/g, '/')
         };
       });
   
-      // Xử lý Part 2
       const part2Questions = Array.isArray(req.body.part2) ? req.body.part2 : [req.body.part2];
       const processedPart2 = part2Questions.map(item => ({
         situation: item.situation || '',
@@ -26,122 +23,58 @@ exports.createWritingQuestions = async (req, res) => {
         sampleAnswer: item.sampleAnswer || ''
       }));
   
-      // Xử lý Part 3
       const part3Questions = Array.isArray(req.body.part3) ? req.body.part3 : [req.body.part3];
       const processedPart3 = part3Questions.map(item => ({
         question: item.question || '',
         sampleAnswer: item.sampleAnswer || ''
       }));
   
-      // Tạo document mới chứa cả 3 parts
       const newTest = new WritingTOEIC({
         part1: processedPart1,
         part2: processedPart2,
-        part3: processedPart3
+        part3: processedPart3,
+        notes: req.body.notes || ''
       });
   
       await newTest.save();
       req.flash('success', 'Tạo đề thi thành công!');
       res.redirect('/admin/toeic-writing');
-  
     } catch (error) {
       console.error('Lỗi khi tạo đề:', error);
-      // Xóa file đã upload nếu có lỗi
       if (req.files) {
         req.files.forEach(file => {
-          fs.unlinkSync(file.path);
+          try {
+            fs.unlinkSync(file.path);
+          } catch (err) {
+            console.error('Lỗi khi xóa file tạm:', err);
+          }
         });
       }
       req.flash('error', error.message);
       res.redirect('/admin/toeic-writing/create');
     }
-  };
-// Các hàm khác giữ nguyên...
+};
+
 exports.listWritingQuestions = async (req, res) => {
-  const writings = await WritingTOEIC.find().sort({ createdAt: -1 });
-  res.render('admin/pages/TOEIC/writing-list', { writings });
+  try {
+    const writings = await WritingTOEIC.find().sort({ createdAt: -1 });
+    console.log('Dữ liệu writings:', writings); // Debug dữ liệu
+    res.render('admin/pages/TOEIC/writing-list', { writings });
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách:', error);
+    res.render('admin/pages/TOEIC/writing-list', { writings: [] });
+  }
 };
 
 exports.showEditForm = async (req, res) => {
   const writing = await WritingTOEIC.findById(req.params.id);
+  if (!writing) {
+    req.flash('error', 'Không tìm thấy bài test');
+    return res.redirect('/admin/toeic-writing');
+  }
   res.render('admin/pages/TOEIC/edit-writing-question', { writing });
 };
 
-// exports.updateWritingQuestion = async (req, res) => {
-//     try {
-//       const id = req.params.id;
-//       const part = req.body.part === '999' ? 999 : parseInt(req.body.part);
-      
-//       if (![1, 2, 3, 999].includes(part)) {
-//         throw new Error('Part không hợp lệ');
-//       }
-
-//       const updateData = {};
-//       const test = await WritingTOEIC.findById(id);
-      
-//       if (!test) {
-//         throw new Error('Không tìm thấy bài test');
-//       }
-
-//       if (part === 1 || part === 999) {
-//         const part1Data = Array.isArray(req.body.part1) ? req.body.part1 : [req.body.part1];
-//         updateData.part1 = part1Data.map((item, index) => {
-//           const file = req.files?.find(f => f.fieldname.includes(`part1[${index}][image]`));
-          
-//           return {
-//             keyword1: item.keyword1 || test.part1[index]?.keyword1 || '',
-//             keyword2: item.keyword2 || test.part1[index]?.keyword2 || '',
-//             imagePath: file 
-//               ? path.join('uploads', path.basename(file.path)).replace(/\\/g, '/')
-//               : item.existingImagePath || test.part1[index]?.imagePath || ''
-//           };
-//         });
-//       } 
-      
-//       if (part === 2 || part === 999) {
-//         const part2Data = Array.isArray(req.body.part2) ? req.body.part2 : [req.body.part2];
-//         updateData.part2 = part2Data.map((item, index) => ({
-//           situation: item.situation || test.part2[index]?.situation || '',
-//           requirements: item.requirements || test.part2[index]?.requirements || '',
-//           sampleAnswer: item.sampleAnswer || test.part2[index]?.sampleAnswer || ''
-//         }));
-//       }
-      
-//       if (part === 3 || part === 999) {
-//         const part3Data = Array.isArray(req.body.part3) ? req.body.part3 : [req.body.part3];
-//         updateData.part3 = part3Data.map((item, index) => ({
-//           question: item.question || test.part3[index]?.question || '',
-//           sampleAnswer: item.sampleAnswer || test.part3[index]?.sampleAnswer || ''
-//         }));
-//       }
-
-//       await WritingTOEIC.findByIdAndUpdate(id, { $set: updateData }, { new: true });
-      
-//       // Xóa file tạm nếu có upload mới
-//       if (req.files && req.files.length > 0) {
-//         req.files.forEach(file => {
-//           fs.unlinkSync(file.path);
-//         });
-//       }
-
-//       req.flash('success', 'Cập nhật thành công!');
-//       res.redirect('/admin/toeic-writing');
-//     } catch (error) {
-//       console.error('Lỗi khi cập nhật:', error);
-//       // Xóa file đã upload nếu có lỗi
-//       if (req.files && req.files.length > 0) {
-//         req.files.forEach(file => {
-//           fs.unlinkSync(file.path);
-//         });
-//       }
-//       req.flash('error', error.message);
-//       res.redirect(`/admin/toeic-writing/edit/${req.params.id}`);
-//     }
-// };
-exports.deleteWritingQuestion = async (req, res) => {
-  await WritingTOEIC.findByIdAndDelete(req.params.id);
-  res.redirect('/admin/toeic-writing');
-};
 exports.updateWritingQuestion = async (req, res) => {
     try {
       const id = req.params.id;
@@ -158,16 +91,19 @@ exports.updateWritingQuestion = async (req, res) => {
         throw new Error('Không tìm thấy bài test');
       }
 
-      // Xử lý upload file trước khi cập nhật dữ liệu
+      console.log('req.body.notes:', req.body.notes); // Debug giá trị notes
+
       if (req.files && req.files.length > 0) {
-        // Xóa ảnh cũ nếu có ảnh mới
         if (part === 1 || part === 999) {
           const part1Data = Array.isArray(req.body.part1) ? req.body.part1 : [req.body.part1];
           part1Data.forEach((item, index) => {
             const file = req.files.find(f => f.fieldname.includes(`part1[${index}][image]`));
             if (file && item.existingImagePath) {
               try {
-                fs.unlinkSync(path.join(__dirname, '../../../public', item.existingImagePath));
+                const oldImagePath = path.join(__dirname, '../../../public', item.existingImagePath);
+                if (fs.existsSync(oldImagePath)) {
+                  fs.unlinkSync(oldImagePath);
+                }
               } catch (err) {
                 console.error('Lỗi khi xóa ảnh cũ:', err);
               }
@@ -181,10 +117,9 @@ exports.updateWritingQuestion = async (req, res) => {
         updateData.part1 = part1Data.map((item, index) => {
           const file = req.files?.find(f => f.fieldname.includes(`part1[${index}][image]`));
           
-          // Kiểm tra và xử lý đường dẫn ảnh
           let imagePath = item.existingImagePath || test.part1[index]?.imagePath || '';
           if (file) {
-            imagePath = path.join('uploads', path.basename(file.path)).replace(/\\/g, '/');
+            imagePath = path.join('images/writing', path.basename(file.path)).replace(/\\/g, '/');
           }
 
           return {
@@ -195,7 +130,26 @@ exports.updateWritingQuestion = async (req, res) => {
         });
       }
       
-      // ... (phần xử lý part 2 và 3 giữ nguyên)
+      if (part === 2 || part === 999) {
+        const part2Data = Array.isArray(req.body.part2) ? req.body.part2 : [req.body.part2];
+        updateData.part2 = part2Data.map((item, index) => ({
+          situation: item.situation || test.part2[index]?.situation || '',
+          requirements: item.requirements || test.part2[index]?.requirements || '',
+          sampleAnswer: item.sampleAnswer || test.part2[index]?.sampleAnswer || ''
+        }));
+      }
+      
+      if (part === 3 || part === 999) {
+        const part3Data = Array.isArray(req.body.part3) ? req.body.part3 : [req.body.part3];
+        updateData.part3 = part3Data.map((item, index) => ({
+          question: item.question || test.part3[index]?.question || '',
+          sampleAnswer: item.sampleAnswer || test.part3[index]?.sampleAnswer || ''
+        }));
+      }
+
+      if (req.body.notes) {
+        updateData.notes = req.body.notes;
+      }
 
       await WritingTOEIC.findByIdAndUpdate(id, { $set: updateData }, { new: true });
       
@@ -216,9 +170,36 @@ exports.updateWritingQuestion = async (req, res) => {
       res.redirect(`/admin/toeic-writing/edit/${req.params.id}`);
     }
 };
+
+exports.deleteWritingQuestion = async (req, res) => {
+  try {
+    const test = await WritingTOEIC.findById(req.params.id);
+    if (test) {
+      test.part1.forEach(item => {
+        if (item.imagePath) {
+          try {
+            const imagePath = path.join(__dirname, '../../../public', item.imagePath);
+            if (fs.existsSync(imagePath)) {
+              fs.unlinkSync(imagePath);
+            }
+          } catch (err) {
+            console.error('Lỗi khi xóa ảnh:', err);
+          }
+        }
+      });
+      await WritingTOEIC.findByIdAndDelete(req.params.id);
+      req.flash('success', 'Xóa đề thi thành công!');
+    } else {
+      req.flash('error', 'Không tìm thấy đề thi');
+    }
+    res.redirect('/admin/toeic-writing');
+  } catch (error) {
+    console.error('Lỗi khi xóa:', error);
+    req.flash('error', error.message);
+    res.redirect('/admin/toeic-writing');
+  }
+};
+
 exports.showCreateForm = (req, res) => {
     res.render('admin/pages/TOEIC/create-writing-question');
-  };
-  
-  
-  
+};

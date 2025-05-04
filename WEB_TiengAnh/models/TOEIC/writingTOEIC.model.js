@@ -21,6 +21,7 @@ const writingTOEICSchema = new mongoose.Schema({
     part1: [part1Schema],  // Mảng câu hỏi Part 1
     part2: [part2Schema],  // Mảng câu hỏi Part 2
     part3: [part3Schema],  // Mảng câu hỏi Part 3
+    notes: String,
     createdAt: { type: Date, default: Date.now } // Thêm trường thời gian tạo
 });
 

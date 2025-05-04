@@ -10,21 +10,37 @@ const ensureDirectoryExists = (directory) => {
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const skillType = req.path.includes('listening') ? 'listening' : 'reading';
-    
-    let uploadPath;
-    
-    if (file.fieldname === 'audio') {
-      uploadPath = path.join('public', 'audio', skillType);
+    let skillType;
+    if (req.path.includes('listening')) {
+      skillType = 'listening';
+    } else if (req.path.includes('reading')) {
+      skillType = 'reading';
+    } else if (req.path.includes('writing')) {
+      skillType = 'writing';
     } else {
-      uploadPath = path.join('public', 'images', skillType);
+      skillType = 'common';
+    }
+    
+    let uploadPath = path.join('public', 'images', skillType);
+    if (file.fieldname.includes('audio')) {
+      uploadPath = path.join('public', 'audio', skillType);
     }
     
     ensureDirectoryExists(uploadPath);
     cb(null, uploadPath);
   },
   filename: function (req, file, cb) {
-    const skillType = req.path.includes('listening') ? 'listening' : 'reading';
+    let skillType;
+    if (req.path.includes('listening')) {
+      skillType = 'listening';
+    } else if (req.path.includes('reading')) {
+      skillType = 'reading';
+    } else if (req.path.includes('writing')) {
+      skillType = 'writing';
+    } else {
+      skillType = 'common';
+    }
+    
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     const extname = path.extname(file.originalname);
     
@@ -37,13 +53,19 @@ const checkFileType = (req, file, cb) => {
   const validAudioTypes = ['audio/mpeg', 'audio/mp3', 'audio/wav'];
   const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
   
-  if (file.fieldname === 'audio') {
+  if (file.fieldname.includes('audio')) {
     if (validAudioTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
       cb(new Error('Chỉ chấp nhận file âm thanh định dạng MP3, WAV'), false);
     }
-  } else if (['image', 'diagram'].includes(file.fieldname)) {
+  } else if (file.fieldname.includes('image')) { // Sửa để kiểm tra fieldname chứa 'image'
+    if (validImageTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Chỉ chấp nhận file ảnh định dạng JPEG, PNG, GIF, WEBP'), false);
+    }
+  } else if (file.fieldname.includes('diagram')) { // Thêm kiểm tra cho diagram
     if (validImageTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
@@ -61,8 +83,12 @@ const checkFileSize = (req, file, cb) => {
     diagram: 5 * 1024 * 1024
   };
 
-  const maxSize = limits[file.fieldname];
-  if (!maxSize) {
+  let maxSize;
+  if (file.fieldname.includes('audio')) {
+    maxSize = limits.audio;
+  } else if (file.fieldname.includes('image') || file.fieldname.includes('diagram')) {
+    maxSize = limits.image;
+  } else {
     return cb(new Error('Trường upload không hợp lệ'), false);
   }
 
