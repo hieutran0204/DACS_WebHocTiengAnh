@@ -1,15 +1,30 @@
+
 block head
+  title Luyện nói - #{speech.title}
   link(rel="stylesheet" href="/client/css/speech-recognition.css")
   link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css")
+
 block content
   .practice-container
-    h1= speech.title
+    h1.mb-4= speech.title
+    
     .original-text#originalText= speech.content
-    button#recordBtn 🎤 Bắt đầu ghi âm
-    #status.alert.alert-info.mt-3(style="display: none")
-    #result.mt-3.p-3.bg-light.rounded
-    #accuracy-score.mt-3
-    #word-feedback.mt-3.p-3.bg-white.border.rounded
+    
+    .controls
+      button#recordBtn
+        i.fas.fa-microphone
+        span Bắt đầu ghi âm
+    
+    #status.alert
+    
+    .result-container
+      h3.mt-4 Kết quả nhận diện:
+      #result.mt-2
+    
+    .feedback-container
+      h3.mt-4 Đánh giá phát âm:
+      #accuracy-score.mt-3
+      #word-feedback.mt-3
 
 block scripts
   script.
