@@ -1,0 +1,8 @@
+
+block content
+  h1 Luyện Speaking TOEIC
+  each speech in speeches
+    .card
+      h3= speech.title
+      p= speech.content.slice(0, 100) + '...'
+      a(href=`/speaking/practice/${speech._id}`) Luyện ngay

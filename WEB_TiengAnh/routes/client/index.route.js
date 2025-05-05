@@ -4,6 +4,8 @@ const homeController = require('../../controllers/client/home.controller');
 const authMiddleware = require('../../middlewares/auth.middleware');
 const toeicRoute = require("./toeic.route");
 const newsRoute = require('./news.route'); // <- thêm dòng này
+const speakingRoutes = require('./speaking.route');
+router.use('/speaking', speakingRoutes);
 router.use("/toeic", toeicRoute);
 
 // --- Route chính ---

@@ -1,0 +1,10 @@
+block content
+  h1 Danh sách đề Speaking
+  a(href="/admin/speaking/create") Tạo đề mới +  <!-- Thêm nút này -->
+  ul
+    each speech in speeches
+      li
+        h3= speech.title
+        p= speech.content
+        form(action=`/admin/speaking/delete/${speech._id}` method="POST")
+          button(type="submit") Xóa

@@ -1,0 +1,116 @@
+/* === Phần chung === */
+.practice-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  #originalText {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+  }
+  
+  /* === Nút ghi âm === */
+  #recordBtn {
+    background: #4285f4;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s;
+  }
+  
+  #recordBtn:hover {
+    background: #3367d6;
+  }
+  
+  #recordBtn i {
+    margin-right: 8px;
+  }
+  
+  /* === Kết quả === */
+  #status {
+    display: none;
+    padding: 10px;
+    margin: 15px 0;
+    border-radius: 5px;
+  }
+  
+  .alert-info { background: #d1ecf1; color: #0c5460; }
+  .alert-error { background: #f8d7da; color: #721c24; }
+  .alert-success { background: #d4edda; color: #155724; }
+  
+  #result {
+    background: #e9ecef;
+    padding: 15px;
+    border-radius: 5px;
+    margin: 10px 0;
+  }
+  
+  /* === Hiển thị từ ngữ === */
+  .word-feedback {
+    margin-top: 20px;
+    line-height: 1.8;
+  }
+  
+  .correct {
+    color: #28a745;
+    font-weight: bold;
+  }
+  
+  .incorrect {
+    color: #dc3545;
+    position: relative;
+    display: inline-block;
+  }
+  
+  .tooltip {
+    visibility: hidden;
+    width: 120px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  
+  .incorrect:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+  }
+  
+  /* === Thanh tiến trình === */
+  .accuracy {
+    margin: 20px 0;
+  }
+  
+  .score {
+    font-size: 24px;
+    font-weight: bold;
+    color: #343a40;
+  }
+  
+  .progress {
+    height: 10px;
+    background-color: #e9ecef;
+    border-radius: 5px;
+    margin-top: 5px;
+    overflow: hidden;
+  }
+  
+  .progress-bar {
+    height: 100%;
+    background-color: #28a745;
+    transition: width 0.3s ease;
+  }
