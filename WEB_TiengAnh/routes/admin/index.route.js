@@ -21,5 +21,6 @@ router.use('/listening', require('./CRUD_listeningTOEIC.route'));
 router.use('/exam', require('./CRUD_TOEIC_Part.route'));
 router.use('/news', require('./news.route'));
 router.use('/speaking', require('./speaking.route'));
+router.use('/transcription', require('./transcription.route'));
 
 module.exports = router;

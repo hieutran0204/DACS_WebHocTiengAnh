@@ -1,0 +1,21 @@
+
+block content
+  .container.mt-4
+    h2 Tạo Transcription Mới
+    form(action="/admin/transcription/create", method="POST", enctype="multipart/form-data")
+      .form-group
+        label(for="title") Tiêu đề:
+        input#title.form-control(type="text", name="title", required)
+      
+      .form-group.mt-3
+        label(for="audio") File Âm thanh:
+        input#audio.form-control(type="file", name="audio", accept="audio/mpeg,audio/mp3,audio/wav", required)
+        small.form-text.text-muted Chỉ chấp nhận file MP3, WAV (tối đa 10MB)
+      
+      .form-group.mt-3
+        label(for="transcriptText") Nội dung Transcription:
+        textarea#transcriptText.form-control(name="transcriptText", rows="10", required)
+      
+      .form-group.mt-4
+        button.btn.btn-primary(type="submit") Tạo Transcription
+        a.btn.btn-secondary.ml-2(href="/admin/transcription/list") Quay lại

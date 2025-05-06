@@ -1,0 +1,225 @@
+
+block content
+  .transcription-practice-container
+    h1.title= item.title
+    .audio-player-container
+      audio#transcriptionAudio(controls, src=`/${item.audioPath}`, controlsList="nodownload")
+        Your browser does not support the audio element.
+      .audio-controls
+        button.play-button(type="button") ▶ Play
+        button.pause-button(type="button") ⏸ Pause
+        span.current-time 0:00
+        span.duration-time / 0:00
+    
+    .transcription-box
+      form(action=`/transcription/${item._id}`, method="POST")
+        label(for="userText") Type what you hear:
+        textarea#userText(name="userText", rows="10", placeholder="Type the transcription here...")
+        button.compare-button(type="submit") Check Accuracy
+        
+        if result !== undefined
+          .result-container
+            h3.result-title Your Result
+            .accuracy-meter
+              .accuracy-fill(style=`width: ${result}%`)
+              .accuracy-text= `${result}% Accuracy`
+            if result >= 80
+              .feedback.good Great job! You understood most of the content.
+            else if result >= 50
+              .feedback.average Not bad! Keep practicing to improve.
+            else
+              .feedback.poor Try listening again and pay attention to details.
+            
+            .original-transcript
+              h4 Original Transcript:
+              .transcript-content= item.transcriptText
+    
+    script.
+      const audio = document.getElementById('transcriptionAudio');
+      const playButton = document.querySelector('.play-button');
+      const pauseButton = document.querySelector('.pause-button');
+      const currentTime = document.querySelector('.current-time');
+      const durationTime = document.querySelector('.duration-time');
+      
+      // Format time from seconds to MM:SS
+      function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+      }
+      
+      // Update time display
+      audio.addEventListener('timeupdate', () => {
+        currentTime.textContent = formatTime(audio.currentTime);
+      });
+      
+      // Set duration when metadata is loaded
+      audio.addEventListener('loadedmetadata', () => {
+        durationTime.textContent = formatTime(audio.duration);
+      });
+      
+      // Play/pause controls
+      playButton.addEventListener('click', () => {
+        audio.play();
+      });
+      
+      pauseButton.addEventListener('click', () => {
+        audio.pause();
+      });
+    
+  style.
+    .transcription-practice-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .title {
+      color: #2c3e50;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .audio-player-container {
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    audio {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+      display: block;
+    }
+    .audio-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+    .play-button, .pause-button {
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .play-button:hover, .pause-button:hover {
+      background: #2980b9;
+    }
+    .current-time, .duration-time {
+      font-family: monospace;
+      font-size: 0.9rem;
+      color: #7f8c8d;
+    }
+    .transcription-box {
+      background: #fff;
+      border-radius: 8px;
+      padding: 2rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #2c3e50;
+    }
+    textarea {
+      width: 100%;
+      padding: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+      min-height: 200px;
+      resize: vertical;
+    }
+    textarea:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    }
+    .compare-button {
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .compare-button:hover {
+      background: #2980b9;
+    }
+    .result-container {
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid #eee;
+    }
+    .result-title {
+      color: #2c3e50;
+      margin-bottom: 1rem;
+    }
+    .accuracy-meter {
+      height: 30px;
+      background: #ecf0f1;
+      border-radius: 15px;
+      margin-bottom: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .accuracy-fill {
+      height: 100%;
+      background: linear-gradient(to right, #2ecc71, #27ae60);
+      border-radius: 15px;
+      transition: width 0.5s ease;
+    }
+    .accuracy-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-weight: bold;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+    .feedback {
+      padding: 1rem;
+      border-radius: 4px;
+      font-weight: 500;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .feedback.good {
+      background: #d5f5e3;
+      color: #27ae60;
+    }
+    .feedback.average {
+      background: #fef9e7;
+      color: #f39c12;
+    }
+    .feedback.poor {
+      background: #fadbd8;
+      color: #e74c3c;
+    }
+    .original-transcript {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 4px;
+      border-left: 4px solid #3498db;
+    }
+    .original-transcript h4 {
+      margin-top: 0;
+      color: #2c3e50;
+    }
+    .transcript-content {
+      white-space: pre-wrap;
+      line-height: 1.6;
+    }
