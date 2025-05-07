@@ -1,0 +1,37 @@
+extends ../../layouts/default
+block content
+  .container-fluid
+    h1 Quản lý người dùng
+    if success
+      .alert.alert-success #{success}
+    if error
+      .alert.alert-danger #{error}
+    
+    .mb-3
+      a.btn.btn-primary(href='/admin/users/create') Thêm người dùng mới
+    
+    .card
+      .card-body
+        .table-responsive
+          table.table.table-hover
+            thead
+              tr
+                th Username
+                th Email
+                th Vai trò
+                th Ngày tạo
+                th Hành động
+            tbody
+              if users && users.length > 0
+                each user in users
+                  tr
+                    td #{user.username}
+                    td #{user.email}
+                    td #{user.role === 'admin' ? 'Quản trị' : 'Người dùng'}
+                    td #{new Date(user.createdAt).toLocaleDateString('vi-VN')}
+                    td
+                      a.btn.btn-sm.btn-warning.me-2(href=`/admin/users/edit/${user._id}`) Sửa
+                      a.btn.btn-sm.btn-danger(href=`/admin/users/delete/${user._id}`, onclick="return confirm('Bạn có chắc muốn xóa người dùng này?')") Xóa
+              else
+                tr
+                  td(colspan="5").text-center.text-muted Không có người dùng nào.

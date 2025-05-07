@@ -1,0 +1,83 @@
+extends ../../layouts/default
+
+block content
+  div(style="max-width: 800px; margin: 0 auto; padding: 20px;")
+    h1(style="text-align: center; margin-bottom: 30px;") Tạo đề TOEIC Writing
+
+    form(action="/admin/toeic-writing/create" method="POST" enctype="multipart/form-data")
+      //- Phần chọn part (chỉ để hiển thị, không ảnh hưởng submit)
+      div(style="margin-bottom: 20px; text-align: center;")
+        label(for="partSelector" style="font-weight: bold; margin-right: 10px;") Chọn phần hiển thị:
+        select(id="partSelector" onchange="togglePartDisplay()" style="padding: 5px;")
+          option(value="all") Tất cả các phần
+          option(value="1") Chỉ Part 1
+          option(value="2") Chỉ Part 2
+          option(value="3") Chỉ Part 3
+
+      //- Phần 1 - Luôn có trong form nhưng có thể ẩn
+      div.part-section(id="part1-section")
+        h2(style="border-bottom: 1px solid #ddd; padding-bottom: 10px;") Part 1 - Viết câu từ hình và từ khóa
+        each _, i in Array(5)
+          div.question-box(style="margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 5px;")
+            h3 Câu #{i+1}
+            div(style="margin-bottom: 10px;")
+              input(type="text" name=`part1[${i}][keyword1]` placeholder="Từ khóa 1" style="width: 100%; padding: 8px;" required)
+            div(style="margin-bottom: 10px;")
+              input(type="text" name=`part1[${i}][keyword2]` placeholder="Từ khóa 2" style="width: 100%; padding: 8px;" required)
+            div
+              label(style="display: block; margin-bottom: 5px;") Hình ảnh:
+              input(type="file" name=`part1[${i}][image]` accept="image/*" style="width: 100%;" required)
+
+      //- Phần 2 - Luôn có trong form nhưng có thể ẩn
+      div.part-section(id="part2-section" style="display: none;")
+        h2(style="border-bottom: 1px solid #ddd; padding-bottom: 10px;") Part 2 - Viết email
+        each _, i in Array(2)
+          div.question-box(style="margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 5px;")
+            h3 Email #{i+1}
+            div(style="margin-bottom: 10px;")
+              textarea(name=`part2[${i}][situation]` placeholder="Tình huống" style="width: 100%; padding: 8px; min-height: 80px;" required)
+            div(style="margin-bottom: 10px;")
+              textarea(name=`part2[${i}][requirements]` placeholder="Yêu cầu" style="width: 100%; padding: 8px; min-height: 80px;" required)
+            div
+              textarea(name=`part2[${i}][sampleAnswer]` placeholder="Câu trả lời mẫu" style="width: 100%; padding: 8px; min-height: 100px;")
+
+      //- Phần 3 - Luôn có trong form nhưng có thể ẩn
+      div.part-section(id="part3-section" style="display: none;")
+        h2(style="border-bottom: 1px solid #ddd; padding-bottom: 10px;") Part 3 - Viết luận
+        div.question-box(style="margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 5px;")
+          div(style="margin-bottom: 10px;")
+            textarea(name="part3[0][question]" placeholder="Đề bài luận" style="width: 100%; padding: 8px; min-height: 100px;" required)
+          div
+            textarea(name="part3[0][sampleAnswer]" placeholder="Bài luận mẫu" style="width: 100%; padding: 8px; min-height: 150px;")
+
+      div(style="text-align: center; margin-top: 30px;")
+        button(type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;") Tạo Đề
+
+  script.
+    function togglePartDisplay() {
+      const selection = document.getElementById('partSelector').value;
+      
+      // Ẩn tất cả các phần trước
+      document.querySelectorAll('.part-section').forEach(section => {
+        section.style.display = 'none';
+      });
+
+      // Hiển thị theo lựa chọn
+      if (selection === 'all') {
+        document.getElementById('part1-section').style.display = 'block';
+        document.getElementById('part2-section').style.display = 'block';
+        document.getElementById('part3-section').style.display = 'block';
+      } else if (selection === '1') {
+        document.getElementById('part1-section').style.display = 'block';
+      } else if (selection === '2') {
+        document.getElementById('part2-section').style.display = 'block';
+      } else if (selection === '3') {
+        document.getElementById('part3-section').style.display = 'block';
+      }
+    }
+
+    // Mặc định hiển thị tất cả khi trang load
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('partSelector').value = 'all';
+      togglePartDisplay();
+    });

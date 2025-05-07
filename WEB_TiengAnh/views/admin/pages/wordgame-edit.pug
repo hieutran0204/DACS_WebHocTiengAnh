@@ -1,0 +1,17 @@
+extends ../layouts/default
+
+block content
+  .container.mt-5
+    h1.mb-4 Chỉnh sửa từ
+
+    form(action=`/admin/wordgame/update/${word._id}` method="POST")
+      .mb-3
+        label.form-label(for="word") Từ:
+        input#word.form-control(type="text" name="word" required value=word.word)
+
+      .mb-3
+        label.form-label(for="hint") Gợi ý:
+        input#hint.form-control(type="text" name="hint" value=word.hint)
+
+      button.btn.btn-primary(type="submit") Cập nhật
+      a.btn.btn-secondary.ms-2(href="/admin/wordgame/create") Hủy

@@ -1,0 +1,12 @@
+extends ../layouts/default
+block content
+  .container.my-5
+    h1.text-center.mb-4 Luyện Speaking TOEIC
+    .row
+      each speech in speeches
+        .col-md-4.mb-4
+          .card.h-100.shadow-sm
+            .card-body
+              h3.card-title= speech.title
+              p.card-text= speech.content.slice(0, 100) + '...'
+              a.btn.btn-primary(href=`/speaking/practice/${speech._id}`) Luyện ngay

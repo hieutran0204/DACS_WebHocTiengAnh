@@ -1,0 +1,44 @@
+extends ../layouts/default
+
+block content
+  div(style="max-width: 1000px; margin: 0 auto; padding: 20px;")
+    h1(style="text-align: center; margin-bottom: 30px; color: #333;") Đề Thi TOEIC Writing - #{writing._id.toString().substring(0, 8)}...
+
+    if success
+      div(style="padding: 10px; background-color: #dff0d8; color: #3c763d; margin-bottom: 20px; border-radius: 5px;") #{success}
+    if error
+      div(style="padding: 10px; background-color: #f2dede; color: #a94442; margin-bottom: 20px; border-radius: 5px;") #{error}
+
+    if writing.notes
+      p(style="margin-bottom: 20px; color: #34495e;") Ghi chú: #{writing.notes}
+
+    //- Part 1
+    h2(style="border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-top: 20px;") Part 1 - Viết câu từ hình và từ khóa
+    each question, i in writing.part1
+      div(style="margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 5px; background-color: #f9f9f9;")
+        h3 Câu #{i+1}
+        if question.imagePath
+          img(src=`/images/${question.imagePath}` alt=`Hình ảnh câu ${i+1}` style="max-width: 300px; display: block; margin-bottom: 10px;")
+        p Từ khóa 1: #{question.keyword1}
+        p Từ khóa 2: #{question.keyword2}
+        textarea(name=`part1[${i}][answer]` placeholder="Viết câu trả lời..." style="width: 100%; padding: 8px; min-height: 80px;")
+
+    //- Part 2
+    h2(style="border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-top: 20px;") Part 2 - Viết email
+    each question, i in writing.part2
+      div(style="margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 5px; background-color: #f9f9f9;")
+        h3 Email #{i+1}
+        p Tình huống: #{question.situation}
+        p Yêu cầu: #{question.requirements}
+        textarea(name=`part2[${i}][answer]` placeholder="Viết email..." style="width: 100%; padding: 8px; min-height: 150px;")
+
+    //- Part 3
+    h2(style="border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-top: 20px;") Part 3 - Viết luận
+    each question, i in writing.part3
+      div(style="margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 5px; background-color: #f9f9f9;")
+        h3 Luận #{i+1}
+        p Đề bài: #{question.question}
+        textarea(name=`part3[${i}][answer]` placeholder="Viết bài luận..." style="width: 100%; padding: 8px; min-height: 200px;")
+
+    div(style="text-align: center; margin-top: 30px;")
+      button(type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;") Nộp Bài

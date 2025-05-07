@@ -1,0 +1,20 @@
+extends ../../layouts/default
+block content
+  .container.my-5
+    h1.text-center.mb-4 Danh sách đề Speaking
+    a.btn.btn-success.mb-3(href="/admin/speaking/create") Tạo đề mới +
+    .table-responsive
+      table#speechTable.table.table-striped.table-bordered
+        thead
+          tr
+            th Tiêu đề
+            th Nội dung
+            th Hành động
+        tbody
+          each speech in speeches
+            tr
+              td= speech.title
+              td= speech.content.length > 100 ? speech.content.slice(0, 100) + '...' : speech.content
+              td
+                form(action=`/admin/speaking/delete/${speech._id}`, method="POST", style="display:inline;")
+                  button.btn.btn-danger.btn-sm(type="submit") Xóa

@@ -1,0 +1,21 @@
+extends ../layouts/default
+
+block content
+  div(style="max-width: 1000px; margin: 0 auto; padding: 20px;")
+    h1(style="text-align: center; margin-bottom: 30px; color: #333;") Danh Sách Đề Thi TOEIC Writing
+
+    if writings && writings.length > 0
+      div(style="display: grid; gap: 20px;")
+        each writing in writings
+          div(style="border: 1px solid #ddd; border-radius: 8px; padding: 20px; background-color: #f9f9f9; box-shadow: 0 2px 5px rgba(0,0,0,0.1);")
+            div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;")
+              h3(style="margin: 0; font-size: 18px; color: #2c3e50;") Đề Thi #{writing._id.toString().substring(0, 8)}...
+              span(style="font-size: 14px; color: #7f8c8d;") Ngày tạo: #{writing.createdAt.toLocaleDateString('vi-VN')}
+            if writing.notes
+              p(style="margin: 10px 0; color: #34495e;") Ghi chú: #{writing.notes}
+            else
+              p(style="margin: 10px 0; color: #7f8c8d; font-style: italic;") Không có ghi chú
+            a(href=`/testtoeic/writing/${writing._id}` style="display: inline-block; padding: 10px 20px; background-color: #3498db; color: white; text-decoration: none; border-radius: 5px; font-size: 16px;") Làm Bài Thi
+    else
+      div(style="text-align: center; padding: 30px; background-color: #f2dede; border-radius: 8px; color: #a94442;")
+        p Không tìm thấy đề thi nào. Vui lòng thử lại sau!

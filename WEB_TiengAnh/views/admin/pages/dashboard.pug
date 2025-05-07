@@ -1,3 +1,235 @@
+//- doctype html
+//- html(lang="en")
+//-   head
+//-     meta(charset="UTF-8")
+//-     meta(name="viewport", content="width=device-width, initial-scale=1.0")
+//-     title Admin Dashboard
+//-     link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css")
+//-     link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css")
+//-     style.
+//-       body {
+//-         font-size: 0.9rem;
+//-       }
+//-       .sidebar {
+//-         min-height: 100vh;
+//-       }
+
+//-   body
+//-     .container-fluid
+//-       .row
+//-         nav#sidebar.col-md-3.col-lg-2.d-md-block.bg-dark.sidebar
+//-           .position-sticky.pt-3
+//-             .sidebar-header
+//-               h3.text-light.text-center Admin Panel
+//-             ul.nav.flex-column
+//-               li.nav-item
+//-                 a.nav-link.active(href='/admin/dashboard_TOEIC')
+//-                   i.fas.fa-tachometer-alt.me-2
+//-                   | Dashboard
+//-               li.nav-item.dropdown
+//-                 a.nav-link.dropdown-toggle(href='#', data-bs-toggle='dropdown', aria-expanded='false')
+//-                   i.fas.fa-question-circle.me-2
+//-                   | Tạo câu hỏi
+//-                 ul.dropdown-menu.dropdown-menu-dark
+//-                   li
+//-                     a.dropdown-item(href='/admin/questions/create') Reading
+//-                   li
+//-                     a.dropdown-item(href='/admin/listening/create') Listening
+//-               li.nav-item.dropdown
+//-                 a.nav-link.dropdown-toggle(href='#', data-bs-toggle='dropdown', aria-expanded='false')
+//-                   i.fas.fa-book.me-2
+//-                   | Quản lý đề thi theo Part
+//-                 ul.dropdown-menu.dropdown-menu-dark
+//-                   li
+//-                     a.dropdown-item(href='/admin/TOEIC/exam-reading') Reading
+//-                   li
+//-                     a.dropdown-item(href='/admin/TOEIC/exam-listening') Listening
+//-               li.nav-item
+//-                 a.nav-link(href='/admin/users')
+//-                   i.fas.fa-users.me-2
+//-                   | Quản lý người dùng
+//-               li.nav-item
+//-                 a.nav-link(href='/admin/settings')
+//-                   i.fas.fa-cog.me-2
+//-                   | Cài đặt
+
+//-         main.col-md-9.ms-sm-auto.col-lg-10.px-md-4
+//-           .d-flex.justify-content-between.flex-wrap.flex-md-nowrap.align-items-center.pt-3.pb-2.mb-3.border-bottom
+//-             h1.h2 Dashboard
+//-             .btn-toolbar.mb-2.mb-md-0
+//-               .btn-group.me-2
+//-                 button.btn.btn-sm.btn-outline-secondary(type='button') Export
+//-               button.btn.btn-sm.btn-outline-secondary.dropdown-toggle(type='button')
+//-                 i.fas.fa-calendar.me-1
+//-                 | Tuần này
+
+//-           .row.mb-4
+//-             .col-md-3
+//-               .card.bg-primary.text-white.mb-3
+//-                 .card-body
+//-                   .d-flex.justify-content-between
+//-                     div
+//-                       h6.card-title Số câu hỏi
+//-                       h2.card-text= totalQuestions || 0
+//-                     i.fas.fa-question-circle.fa-3x
+//-                   a.stretched-link(href='/admin/questions')
+//-             .col-md-3
+//-               .card.bg-success.text-white.mb-3
+//-                 .card-body
+//-                   .d-flex.justify-content-between
+//-                     div
+//-                       h6.card-title Số đề thi
+//-                       h2.card-text= totalExams || 0
+//-                     i.fas.fa-book.fa-3x
+//-                   a.stretched-link(href='/admin/TOEIC/exam-reading')
+//-             .col-md-3
+//-               .card.bg-warning.text-dark.mb-3
+//-                 .card-body
+//-                   .d-flex.justify-content-between
+//-                     div
+//-                       h6.card-title Người dùng
+//-                       h2.card-text= totalUsers || 0
+//-                     i.fas.fa-users.fa-3x
+//-                   a.stretched-link(href='/admin/users')
+//-             .col-md-3
+//-               .card.bg-danger.text-white.mb-3
+//-                 .card-body
+//-                   .d-flex.justify-content-between
+//-                     div
+//-                       h6.card-title Báo cáo lỗi
+//-                       h2.card-text= totalReports || 0
+//-                     i.fas.fa-exclamation-circle.fa-3x
+//-                   a.stretched-link(href='/admin/reports')
+
+//-           .row
+//-             .col-md-8
+//-               .card.mb-4
+//-                 .card-header
+//-                   h5 Hoạt động gần đây
+//-                 .card-body
+//-                   .table-responsive
+//-                     table.table.table-hover
+//-                       thead
+//-                         tr
+//-                           th Thời gian
+//-                           th Hành động
+//-                           th Chi tiết
+//-                           th Người thực hiện
+//-                       tbody
+//-                         if recentActivities && recentActivities.length > 0
+//-                           each activity in recentActivities
+//-                             tr
+//-                               td= new Date(activity.createdAt).toLocaleString()
+//-                               td
+//-                                 span.badge.bg-primary Tạo đề thi
+//-                               td= `${activity.examType} - Part ${activity.part}`
+//-                               td= activity.createdBy && activity.createdBy.username ? activity.createdBy.username : 'Unknown'
+//-                         else
+//-                           tr
+//-                             td(colspan="4").text-center.text-muted Chưa có hoạt động nào.
+
+//-             .col-md-4
+//-               .card.mb-4
+//-                 .card-header
+//-                   h5 Thao tác nhanh
+//-                 .card-body
+//-                   .d-grid.gap-2
+//-                     a.btn.btn-primary(href='/admin/questions/create')
+//-                       i.fas.fa-plus.me-2
+//-                       | Tạo câu hỏi mới
+//-                     a.btn.btn-success(href='/admin/TOEIC/exam-reading/create')
+//-                       i.fas.fa-book-medical.me-2
+//-                       | Tạo đề thi mới
+//-                     a.btn.btn-info(href='/admin/users/create')
+//-                       i.fas.fa-user-plus.me-2
+//-                       | Thêm người dùng
+//-                     a.btn.btn-warning(href='/admin/reports')
+//-                       i.fas.fa-exclamation-triangle.me-2
+//-                       | Xem báo cáo
+
+//-           if questionsByPart && examsByType
+//-             .card.mb-4
+//-               .card-header
+//-                 h5 Thống kê hoạt động
+//-               .card-body
+//-                 .row
+//-                   .col-md-6
+//-                     canvas#questionsChart(height='300')
+//-                   .col-md-6
+//-                     canvas#examsChart(height='300')
+
+//-     script(src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js')
+//-     script(src='https://cdn.jsdelivr.net/npm/chart.js')
+//-     script.
+//-       if (typeof questionsByPart !== 'undefined' && typeof examsByType !== 'undefined') {
+//-         const qCtx = document.getElementById('questionsChart').getContext('2d');
+//-         new Chart(qCtx, {
+//-           type: 'bar',
+//-           data: {
+//-             labels: ['Part 1', 'Part 2', 'Part 3', 'Part 4', 'Part 5', 'Part 6', 'Part 7'],
+//-             datasets: [{
+//-               label: 'Số câu hỏi',
+//-               data: [
+//-                 questionsByPart.part1 || 0,
+//-                 questionsByPart.part2 || 0,
+//-                 questionsByPart.part3 || 0,
+//-                 questionsByPart.part4 || 0,
+//-                 questionsByPart.part5 || 0,
+//-                 questionsByPart.part6 || 0,
+//-                 questionsByPart.part7 || 0
+//-               ],
+//-               backgroundColor: [
+//-                 'rgba(54, 162, 235, 0.7)',
+//-                 'rgba(255, 99, 132, 0.7)',
+//-                 'rgba(75, 192, 192, 0.7)',
+//-                 'rgba(153, 102, 255, 0.7)',
+//-                 'rgba(255, 206, 86, 0.7)',
+//-                 'rgba(255, 159, 64, 0.7)',
+//-                 'rgba(199, 199, 199, 0.7)'
+//-               ]
+//-             }]
+//-           },
+//-           options: {
+//-             responsive: true,
+//-             plugins: {
+//-               title: {
+//-                 display: true,
+//-                 text: 'Phân bổ câu hỏi theo Part'
+//-               }
+//-             }
+//-           }
+//-         });
+
+//-         const eCtx = document.getElementById('examsChart').getContext('2d');
+//-         new Chart(eCtx, {
+//-           type: 'doughnut',
+//-           data: {
+//-             labels: ['Listening', 'Reading'],
+//-             datasets: [{
+//-               label: 'Số đề thi',
+//-               data: [
+//-                 examsByType.listening || 0,
+//-                 examsByType.reading || 0
+//-               ],
+//-               backgroundColor: [
+//-                 'rgba(54, 162, 235, 0.7)',
+//-                 'rgba(255, 99, 132, 0.7)'
+//-               ]
+//-             }]
+//-           },
+//-           options: {
+//-             responsive: true,
+//-             plugins: {
+//-               title: {
+//-                 display: true,
+//-                 text: 'Phân bổ đề thi theo loại'
+//-               }
+//-             }
+//-           }
+//-         });
+//-       }
+
+
 doctype html
 html(lang="en")
   head
@@ -17,7 +249,6 @@ html(lang="en")
   body
     .container-fluid
       .row
-        //- Sidebar Navigation
         nav#sidebar.col-md-3.col-lg-2.d-md-block.bg-dark.sidebar
           .position-sticky.pt-3
             .sidebar-header
@@ -27,18 +258,44 @@ html(lang="en")
                 a.nav-link.active(href='/admin/dashboard_TOEIC')
                   i.fas.fa-tachometer-alt.me-2
                   | Dashboard
-              li.nav-item
-                a.nav-link(href='/admin/questions/create')
+              li.nav-item.dropdown
+                a.nav-link.dropdown-toggle(href='#', data-bs-toggle='dropdown', aria-expanded='false')
                   i.fas.fa-question-circle.me-2
                   | Tạo câu hỏi
-              li.nav-item
-                a.nav-link(href='/admin/listening/create')
-                  i.fas.fa-question-circle.me-2
-                  | Tạo câu hỏi Listening
-              li.nav-item
-                a.nav-link(href='/admin/exams')
+                ul.dropdown-menu.dropdown-menu-dark
+                  li
+                    a.dropdown-item(href='/admin/questions/create') Reading
+                  li
+                    a.dropdown-item(href='/admin/listening/create') Listening
+              li.nav-item.dropdown
+                a.nav-link.dropdown-toggle(href='#', data-bs-toggle='dropdown', aria-expanded='false')
                   i.fas.fa-book.me-2
-                  | Quản lý đề thi
+                  | Quản lý đề thi theo Part
+                ul.dropdown-menu.dropdown-menu-dark
+                  li
+                    a.dropdown-item(href='/admin/TOEIC/exam-reading') Reading
+                  li
+                    a.dropdown-item(href='/admin/TOEIC/exam-listening') Listening
+                  li 
+                    a.dropdown-item(href='/admin/toeic-writing') Writing
+              li.nav-item.dropdown
+                a.nav-link.dropdown-toggle(href='#', data-bs-toggle='dropdown', aria-expanded='false')
+                  i.fas.fa-chalkboard-teacher.me-2
+                  | Quản lý luyện tập
+                ul.dropdown-menu.dropdown-menu-dark
+                  li
+                    a.dropdown-item(href='/admin/speaking') Luyện Nói
+                  li
+                    a.dropdown-item(href='/admin/transcription') Luyện Nghe Viết
+              li.nav-item.dropdown
+                a.nav-link.dropdown-toggle(href='#', data-bs-toggle='dropdown', aria-expanded='false')
+                  i.fas.fa-gamepad.me-2
+                  | Quản lý trò chơi
+                ul.dropdown-menu.dropdown-menu-dark
+                  li
+                    a.dropdown-item(href='/admin/wordgame/create') Xáo Chữ
+                  li
+                    a.dropdown-item(href='/admin/hidden-word/') Đoán Hình
               li.nav-item
                 a.nav-link(href='/admin/users')
                   i.fas.fa-users.me-2
@@ -48,7 +305,6 @@ html(lang="en")
                   i.fas.fa-cog.me-2
                   | Cài đặt
 
-        //- Main Content Area
         main.col-md-9.ms-sm-auto.col-lg-10.px-md-4
           .d-flex.justify-content-between.flex-wrap.flex-md-nowrap.align-items-center.pt-3.pb-2.mb-3.border-bottom
             h1.h2 Dashboard
@@ -59,7 +315,6 @@ html(lang="en")
                 i.fas.fa-calendar.me-1
                 | Tuần này
 
-          //- Stats Cards
           .row.mb-4
             .col-md-3
               .card.bg-primary.text-white.mb-3
@@ -67,7 +322,7 @@ html(lang="en")
                   .d-flex.justify-content-between
                     div
                       h6.card-title Số câu hỏi
-                      h2.card-text 1,024
+                      h2.card-text= totalQuestions || 0
                     i.fas.fa-question-circle.fa-3x
                   a.stretched-link(href='/admin/questions')
             .col-md-3
@@ -76,16 +331,16 @@ html(lang="en")
                   .d-flex.justify-content-between
                     div
                       h6.card-title Số đề thi
-                      h2.card-text 56
+                      h2.card-text= totalExams || 0
                     i.fas.fa-book.fa-3x
-                  a.stretched-link(href='/admin/exams')
+                  a.stretched-link(href='/admin/TOEIC/exam-reading')
             .col-md-3
               .card.bg-warning.text-dark.mb-3
                 .card-body
                   .d-flex.justify-content-between
                     div
                       h6.card-title Người dùng
-                      h2.card-text 128
+                      h2.card-text= totalUsers || 0
                     i.fas.fa-users.fa-3x
                   a.stretched-link(href='/admin/users')
             .col-md-3
@@ -94,13 +349,11 @@ html(lang="en")
                   .d-flex.justify-content-between
                     div
                       h6.card-title Báo cáo lỗi
-                      h2.card-text 12
+                      h2.card-text= totalReports || 0
                     i.fas.fa-exclamation-circle.fa-3x
                   a.stretched-link(href='/admin/reports')
 
-          //- Recent Activity & Quick Actions
           .row
-            //- Recent Activity
             .col-md-8
               .card.mb-4
                 .card-header
@@ -115,26 +368,18 @@ html(lang="en")
                           th Chi tiết
                           th Người thực hiện
                       tbody
-                        tr
-                          td 10 phút trước
-                          td
-                            span.badge.bg-success Thêm câu hỏi
-                          td Part 5 - TOEIC
-                          td admin
-                        tr
-                          td 1 giờ trước
-                          td
-                            span.badge.bg-primary Tạo đề thi
-                          td Đề TOEIC số 15
-                          td teacher1
-                        tr
-                          td 3 giờ trước
-                          td
-                            span.badge.bg-warning.text-dark Sửa câu hỏi
-                          td ID: Q2051
-                          td admin
+                        if recentActivities && recentActivities.length > 0
+                          each activity in recentActivities
+                            tr
+                              td= new Date(activity.createdAt).toLocaleString()
+                              td
+                                span.badge.bg-primary Tạo đề thi
+                              td= `${activity.examType} - Part ${activity.part}`
+                              td= activity.createdBy && activity.createdBy.username ? activity.createdBy.username : 'Unknown'
+                        else
+                          tr
+                            td(colspan="4").text-center.text-muted Chưa có hoạt động nào.
 
-            //- Quick Actions
             .col-md-4
               .card.mb-4
                 .card-header
@@ -144,7 +389,7 @@ html(lang="en")
                     a.btn.btn-primary(href='/admin/questions/create')
                       i.fas.fa-plus.me-2
                       | Tạo câu hỏi mới
-                    a.btn.btn-success(href='/admin/exams/create')
+                    a.btn.btn-success(href='/admin/TOEIC/exam-reading/create')
                       i.fas.fa-book-medical.me-2
                       | Tạo đề thi mới
                     a.btn.btn-info(href='/admin/users/create')
@@ -154,68 +399,84 @@ html(lang="en")
                       i.fas.fa-exclamation-triangle.me-2
                       | Xem báo cáo
 
-          //- Charts Section
-          .card.mb-4
-            .card-header
-              h5 Thống kê hoạt động
-            .card-body
-              .row
-                .col-md-6
-                  canvas#questionsChart(height='300')
-                .col-md-6
-                  canvas#examsChart(height='300')
+          if questionsByPart && examsByType
+            .card.mb-4
+              .card-header
+                h5 Thống kê hoạt động
+              .card-body
+                .row
+                  .col-md-6
+                    canvas#questionsChart(height='300')
+                  .col-md-6
+                    canvas#examsChart(height='300')
 
     script(src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js')
     script(src='https://cdn.jsdelivr.net/npm/chart.js')
     script.
-      const qCtx = document.getElementById('questionsChart').getContext('2d');
-      new Chart(qCtx, {
-        type: 'bar',
-        data: {
-          labels: ['Part 5', 'Part 6', 'Part 7'],
-          datasets: [{
-            label: 'Số câu hỏi',
-            data: [320, 280, 424],
-            backgroundColor: [
-              'rgba(54, 162, 235, 0.7)',
-              'rgba(255, 206, 86, 0.7)',
-              'rgba(75, 192, 192, 0.7)'
-            ]
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            title: {
-              display: true,
-              text: 'Phân bổ câu hỏi theo Part'
+      if (typeof questionsByPart !== 'undefined' && typeof examsByType !== 'undefined') {
+        const qCtx = document.getElementById('questionsChart').getContext('2d');
+        new Chart(qCtx, {
+          type: 'bar',
+          data: {
+            labels: ['Part 1', 'Part 2', 'Part 3', 'Part 4', 'Part 5', 'Part 6', 'Part 7'],
+            datasets: [{
+              label: 'Số câu hỏi',
+              data: [
+                questionsByPart.part1 || 0,
+                questionsByPart.part2 || 0,
+                questionsByPart.part3 || 0,
+                questionsByPart.part4 || 0,
+                questionsByPart.part5 || 0,
+                questionsByPart.part6 || 0,
+                questionsByPart.part7 || 0
+              ],
+              backgroundColor: [
+                'rgba(54, 162, 235, 0.7)',
+                'rgba(255, 99, 132, 0.7)',
+                'rgba(75, 192, 192, 0.7)',
+                'rgba(153, 102, 255, 0.7)',
+                'rgba(255, 206, 86, 0.7)',
+                'rgba(255, 159, 64, 0.7)',
+                'rgba(199, 199, 199, 0.7)'
+              ]
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              title: {
+                display: true,
+                text: 'Phân bổ câu hỏi theo Part'
+              }
             }
           }
-        }
-      });
+        });
 
-      const eCtx = document.getElementById('examsChart').getContext('2d');
-      new Chart(eCtx, {
-        type: 'doughnut',
-        data: {
-          labels: ['TOEIC', 'IELTS', 'TOEFL'],
-          datasets: [{
-            label: 'Số đề thi',
-            data: [35, 12, 9],
-            backgroundColor: [
-              'rgba(255, 99, 132, 0.7)',
-              'rgba(54, 162, 235, 0.7)',
-              'rgba(255, 206, 86, 0.7)'
-            ]
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            title: {
-              display: true,
-              text: 'Phân bổ đề thi theo loại'
+        const eCtx = document.getElementById('examsChart').getContext('2d');
+        new Chart(eCtx, {
+          type: 'doughnut',
+          data: {
+            labels: ['Listening', 'Reading'],
+            datasets: [{
+              label: 'Số đề thi',
+              data: [
+                examsByType.listening || 0,
+                examsByType.reading || 0
+              ],
+              backgroundColor: [
+                'rgba(54, 162, 235, 0.7)',
+                'rgba(255, 99, 132, 0.7)'
+              ]
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              title: {
+                display: true,
+                text: 'Phân bổ đề thi theo loại'
+              }
             }
           }
-        }
-      });
+        });
+      }

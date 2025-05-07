@@ -1,0 +1,32 @@
+
+block head
+  title Luyện nói - #{speech.title}
+  link(rel="stylesheet" href="/client/css/speech-recognition.css")
+  link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css")
+
+block content
+  .practice-container
+    h1.mb-4= speech.title
+    
+    .original-text#originalText= speech.content
+    
+    .controls
+      button#recordBtn
+        i.fas.fa-microphone
+        span Bắt đầu ghi âm
+    
+    #status.alert
+    
+    .result-container
+      h3.mt-4 Kết quả nhận diện:
+      #result.mt-2
+    
+    .feedback-container
+      h3.mt-4 Đánh giá phát âm:
+      #accuracy-score.mt-3
+      #word-feedback.mt-3
+
+block scripts
+  script.
+    const originalText = `#{speech.content.replace(/[^\w\s]/g, '').toLowerCase()}`;
+  script(src="/js/speech-recognition.js")

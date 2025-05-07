@@ -14,9 +14,26 @@ body
       // Menu
       nav.nav-menu.mx-auto
         a.nav-link(href="/news") Tin tức tiếng Anh
-        a.nav-link(href="/toeic-dashboard.pug") TOEIC ONLINE TEST
-        a.nav-link(href="#") Chép chính tả
         a.nav-link(href="#") Bài mẫu TOEIC
+        .nav-item.dropdown 
+          a.nav-link.dropdown-toggle(href="#", id="navbarDropdown", role="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") Test Online
+          .dropdown-menu(aria-labelledby="navbarDropdown")
+            a.dropdown-item(href="/testtoeic/reading-list") Test TOEIC Reading
+            a.dropdown-item(href="/testtoeic/listening-list") Test TOEIC Listening
+            a.dropdown-item(href="/testtoeic/writing-list") Test TOEIC Writing
+        .nav-item.dropdown 
+          a.nav-link.dropdown-toggle(href="#", id="navbarDropdown", role="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") Luyện Tập
+          .dropdown-menu(aria-labelledby="navbarDropdown")
+            a.dropdown-item(href="/speaking") Luyện nói
+            a.dropdown-item(href="/transcription") Luyện nghe viết
+
+        .nav-item.dropdown 
+          a.nav-link.dropdown-toggle(href="#", id="navbarDropdown", role="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") Trò chơi
+          .dropdown-menu(aria-labelledby="navbarDropdown")
+            a.dropdown-item(href="/wordgame") Trò chơi từ vựng
+            a.dropdown-item(href="/hidden-word") Đoán từ ẩn
+            a.dropdown-item(href="/toeic-vocabulary") Từ vựng TOEIC
+
       // Nút Đăng ký hoặc Dropdown
       div.account-container
         if !isLoggedIn

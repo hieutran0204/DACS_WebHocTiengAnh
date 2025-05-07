@@ -1,0 +1,78 @@
+html
+  head
+    title Chi tiết đề thi Reading
+    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css")
+  body
+    .container.mt-5
+      h1.mb-4 Chi tiết đề thi Reading TOEIC Part #{examPart.part.join(', ')}
+
+      .card.mb-4
+        .card-body
+          .d-flex.justify-content-between.align-items-center
+            .mb-2
+              span.badge.bg-secondary.me-2 Trạng thái: #{statusMap[examPart.status]}
+              span.badge.bg-info Độ khó: #{difficultyMap[examPart.difficulty]}
+            p.mb-0 Người tạo: #{examPart.createdBy ? examPart.createdBy.username : 'Không xác định'}
+
+      if Object.keys(questionsByPart).length === 0
+        .alert.alert-danger Không có câu hỏi nào trong đề thi này.
+      else
+        each partKey in Object.keys(questionsByPart)
+          h2.mt-4 #{partKey}
+          .list-group.mb-4
+            each question, index in questionsByPart[partKey]
+              .list-group-item
+                h5.mt-0
+                  strong Câu #{question.questionNumber || question.questionN || (index + 1)}:
+                if question.passage
+                  .mb-3
+                    strong.text-muted Đoạn văn:
+                    p.mt-1 #{question.passage}
+                if question.question && !question.blanks
+                  p.mb-2 #{question.question}
+                if question.blanks && question.blanks.length > 0
+                  .mb-3
+                    if question.question
+                      p.mb-2 #{question.question}
+                    strong.text-muted Điền từ:
+                    ul.list-unstyled
+                      each blank, blankIndex in question.blanks
+                        li.mb-2
+                          p.mb-1
+                            strong Câu #{(question.questionNumber || question.questionN || (index + 1)) + '.' + (blankIndex + 1)}:
+                            |  Điền vào chỗ trống #{blank.blank}:
+                          ul.list-unstyled.ps-4
+                            each opt, j in blank.options
+                              li #{String.fromCharCode(65 + j)}: #{opt}
+                          p.mb-0
+                            strong.text-muted Đáp án đúng:
+                            span.ms-1 #{blank.correctAnswer || 'Không có'}
+                if question.questions && question.questions.length > 0
+                  .mb-3
+                    strong.text-muted Câu hỏi liên quan:
+                    ul.list-unstyled
+                      each q, qIndex in question.questions
+                        li.mb-2
+                          p.mb-1
+                            strong Câu #{(question.questionNumber || question.questionN || (index + 1)) + '.' + (qIndex + 1)}:
+                            |  #{q.question}
+                          ul.list-unstyled.ps-4
+                            each opt, j in q.options
+                              li #{String.fromCharCode(65 + j)}: #{opt}
+                          p.mb-0
+                            strong.text-muted Đáp án đúng:
+                            span.ms-1 #{q.correctAnswer || 'Không có'}
+                if question.options && question.options.length > 0 && !question.blanks && !question.questions
+                  ul.list-unstyled.mb-2
+                    each opt, i in question.options
+                      li #{String.fromCharCode(65 + i)}: #{opt}
+                  .mb-2
+                    strong.text-muted Đáp án đúng:
+                    span.ms-1 #{question.correctAnswer || 'Không có'}
+                .mb-2
+                  strong.text-muted Giải thích:
+                  p.mt-1 #{question.explanation || 'Không có'}
+                if question.imageUrl || question.Img
+                  img(src=question.imageUrl || question.Img, alt="Hình ảnh câu hỏi", style="max-width: 300px;").img-fluid.mt-2
+
+      a.btn.btn-secondary.mt-3(href="/admin/TOEIC/exam-reading") Quay lại

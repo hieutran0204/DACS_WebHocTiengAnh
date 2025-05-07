@@ -1,0 +1,29 @@
+extends ../layouts/default
+
+block content
+  .container.mt-5
+    h1.text-center.mb-4 Danh sách đề thi Listening TOEIC
+    if !examParts.length
+      .alert.alert-info.text-center Không có đề thi Listening nào được public.
+    else
+      .row
+        each examPart in examParts
+          .col-md-4.mb-4
+            .card.h-100
+              .card-header.bg-primary.text-white
+                h5.mb-0 Đề #{examPart._id}
+              .card-body
+                p
+                  strong Part: 
+                  | #{examPart.part.join(', ')}
+                p
+                  strong Độ khó: 
+                  | #{difficultyMap[examPart.difficulty]}
+                p
+                  strong Người tạo: 
+                  | #{examPart.createdBy.username}
+                p
+                  strong Ngày tạo: 
+                  | #{new Date(examPart.createdAt).toLocaleDateString()}
+              .card-footer
+                a.btn.btn-primary.w-100(href=`/toeic/listening/${examPart._id}`) Làm bài

@@ -1,0 +1,7 @@
+extends ../layouts/default
+
+block content
+  h1 Kết quả #{examType} TOEIC
+  p Điểm số: #{score} / #{totalQuestions}
+  p Tỷ lệ đúng: #{percentage.toFixed(2)}%
+  a(href=`/toeic/${examType.toLowerCase()}`) Làm đề khác
