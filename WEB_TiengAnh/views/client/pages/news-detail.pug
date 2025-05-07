@@ -1,78 +1,61 @@
-//- news-details.pug
-article.news-detail(style="max-width: 800px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif;")
-  h1.news-title(style="text-align: center; color: #2c3e50; margin-bottom: 20px;")= news.title
-  
-  div(style="display: flex; justify-content: center; margin: 20px 0;")
-    img.news-image(
-      src=news.image, 
-      width="400", 
-      alt=news.title,
-      style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"
-    )
-  
-  .news-content(
-    style="line-height: 1.6; font-size: 16px; text-align: justify; margin: 20px 0; padding: 0 10px;"
-  )= news.content
-  
-  .news-meta(style="text-align: center; color: #7f8c8d; margin: 30px 0;")
-    p.news-author(style="margin: 5px 0;") Viết bởi: 
-      span(style="font-weight: bold;")= news.author
-    p.news-date(style="margin: 5px 0;") vào #{news.createdAt.toLocaleDateString()}
-  
-  form#quiz.news-quiz(
-    style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 30px auto; max-width: 600px;"
-  )
-    h3.quiz-question(
-      style="text-align: center; color: #2c3e50; margin-bottom: 20px;"
-    )= news.question
-    
-    .quiz-options(style="display: flex; flex-direction: column; gap: 10px;")
-      each option, i in news.options
-        .quiz-option(
-          style="background: white; padding: 12px; border-radius: 4px; border: 1px solid #ddd; cursor: pointer; transition: all 0.3s;"
-        )
-          input(
-            type="radio", 
-            name="answer", 
-            value=i, 
-            id=`option-${i}`, 
-            required,
-            style="margin-right: 10px; cursor: pointer;"
-          )
-          label(
-            for=`option-${i}`,
-            style="cursor: pointer;"
-          )= option
-    
-    div(style="text-align: center; margin-top: 20px;")
-      button.quiz-submit(
-        type="submit",
-        style="padding: 10px 20px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; transition: background 0.3s;"
-        onmouseover="this.style.background='#2980b9'"
-        onmouseout="this.style.background='#3498db'"
-      ) Trả lời
+extends ../layouts/default
+
+block content
+  .container.my-5
+    .row.justify-content-center
+      .col-lg-8
+        article.card.shadow.p-4
+          h1.card-title.text-center.text-primary.mb-4= news.title
+
+          if news.image
+            .text-center.mb-4
+              img.img-fluid.rounded.shadow(src=news.image, alt=news.title, style="max-height: 400px;")
+
+          .card-body
+            .mb-4
+              p.text-justify= news.content
+
+            .text-center.text-muted.mb-4
+              p.mb-1 Viết bởi: 
+                strong= news.author
+              p.mb-0 vào #{news.createdAt.toLocaleDateString()}
+
+            if news.question
+              form#quiz.news-quiz.bg-light.p-4.rounded
+                h4.text-center.text-dark.mb-3= news.question
+
+                .form-check(v-for="(option, i) in news.options", :key="i")
+                  each option, i in news.options
+                    .form-check.mb-2
+                      input.form-check-input(type="radio", name="answer", id=`option-${i}`, value=i, required)
+                      label.form-check-label(for=`option-${i}`)= option
+
+                .text-center.mt-4
+                  button.btn.btn-primary(type="submit") Trả lời
 
   script.
-    const correct = #{news.correctAnswer};
+    const correct = !isNaN(#{news.correctAnswer}) ? #{news.correctAnswer} : -1;
     document.getElementById('quiz').addEventListener('submit', function(e) {
       e.preventDefault();
       const selected = document.querySelector('input[name="answer"]:checked');
       if (!selected) return;
-      
-      // Reset all options first
-      document.querySelectorAll('.quiz-option').forEach(opt => {
-        opt.style.color = '';
-        opt.style.fontWeight = '';
-        opt.style.background = '';
+
+      document.querySelectorAll('.form-check-label').forEach(label => {
+        label.style.color = '';
+        label.style.fontWeight = '';
+        label.style.backgroundColor = '';
+        label.style.padding = '';
       });
-      
-      const optionElement = selected.closest('.quiz-option');
+
+      const selectedLabel = selected.nextElementSibling;
       if (parseInt(selected.value) === correct) {
-        optionElement.style.color = '#27ae60';
-        optionElement.style.fontWeight = 'bold';
-        optionElement.style.background = '#e8f5e9';
+        selectedLabel.style.color = '#27ae60';
+        selectedLabel.style.fontWeight = 'bold';
+        selectedLabel.style.backgroundColor = '#e8f5e9';
+        selectedLabel.style.padding = '5px';
       } else {
-        optionElement.style.color = '#e74c3c';
-        optionElement.style.background = '#fdedec';
+        selectedLabel.style.color = '#e74c3c';
+        selectedLabel.style.backgroundColor = '#fdedec';
+        selectedLabel.style.padding = '5px';
       }
     });

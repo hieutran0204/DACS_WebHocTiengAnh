@@ -1,15 +1,16 @@
-// const express = require("express");
-// const router = express.Router();
-// const toeicClientController = require("../../controllers/client/toeic.controller");
-
-// router.get("/", toeicClientController.showExams);
-
-// module.exports = router;
-
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const toeicClientController = require("../../controllers/client/toeic.controller");
-
-router.get("/", toeicClientController.showExams);
-
+const PublicReadingExams = require('../../controllers/client/toeic_reading.controller');
+const PublicListeningExams = require('../../controllers/client/toeic_listening.controller');
+const PublicWritingExams = require('../../controllers/client/toeic_writing.controller'); 
+// Danh sách đề
+router.get('/reading-list', PublicReadingExams.getExamReadingList);
+router.get('/listening-list', PublicListeningExams.getExamListeningList);
+router.get('/writing-list', PublicWritingExams.getExamWritingList); // Thêm route cho Writing
+// Đề cụ thể
+router.get('/reading/:id', PublicReadingExams.getPublicReadingExams);
+router.post('/reading/submit', PublicReadingExams.submitReadingExam);
+router.get('/listening/:id', PublicListeningExams.getPublicListeningExams);
+router.post('/listening/submit', PublicListeningExams.submitListeningExam);
+router.get('/writing/:id', PublicWritingExams.getPublicWritingExams); 
 module.exports = router;

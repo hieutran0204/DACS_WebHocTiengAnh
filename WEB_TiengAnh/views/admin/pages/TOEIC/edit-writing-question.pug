@@ -1,0 +1,98 @@
+extends ../../layouts/default
+
+block content
+  div(style="max-width: 800px; margin: 0 auto; padding: 20px;")
+    h1(style="text-align: center; margin-bottom: 30px;") Chỉnh sửa đề TOEIC Writing
+
+    form(action=`/admin/toeic-writing/edit/${writing._id}` method="POST" enctype="multipart/form-data")
+      //- Phần Details
+      div(style="margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 5px; background-color: #f9f9f9;")
+        h2(style="border-bottom: 1px solid #ddd; padding-bottom: 10px;") Chi tiết đề thi
+        div(style="margin-bottom: 10px;")
+          label(style="font-weight: bold; margin-right: 10px;") ID Đề:
+          span #{writing._id.toString().substring(0, 8)}...
+        div(style="margin-bottom: 10px;")
+          label(style="font-weight: bold; margin-right: 10px;") Ngày tạo:
+          span #{writing.createdAt.toLocaleDateString('vi-VN')}
+        div(style="margin-bottom: 10px;")
+          label(style="font-weight: bold; margin-right: 10px; display: block;") Ghi chú:
+          textarea(name="notes" placeholder="Nhập ghi chú cho đề thi" style="width: 100%; padding: 8px; min-height: 80px;")= writing.notes || ''
+
+      //- Thêm trường part ẩn để xác định phần cần cập nhật
+      input(type="hidden" name="part" value="all")
+
+      //- Phần chọn part
+      div(style="margin-bottom: 20px; text-align: center;")
+        label(for="partSelector" style="font-weight: bold; margin-right: 10px;") Chọn phần hiển thị:
+        select(id="partSelector" onchange="togglePartDisplay()" style="padding: 5px;")
+          option(value="all") Tất cả các phần
+          option(value="1") Chỉ Part 1
+          option(value="2") Chỉ Part 2
+          option(value="3") Chỉ Part 3
+
+      //- Phần 1
+      div.part-section(id="part1-section")
+        h2(style="border-bottom: 1px solid #ddd; padding-bottom: 10px;") Part 1 - Viết câu từ hình và từ khóa
+        each question, i in writing.part1
+          div.question-box(style="margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 5px;")
+            h3 Câu #{i+1}
+            div(style="margin-bottom: 10px;")
+              input(type="text" name=`part1[${i}][keyword1]` placeholder="Từ khóa 1" style="width: 100%; padding: 8px;" value=question.keyword1 required)
+            div(style="margin-bottom: 10px;")
+              input(type="text" name=`part1[${i}][keyword2]` placeholder="Từ khóa 2" style="width: 100%; padding: 8px;" value=question.keyword2 required)
+            div(style="margin-bottom: 10px;")
+              if question.imagePath
+                div
+                  img(src=`/images/${question.imagePath}` alt="Hình ảnh cũ" style="max-width: 200px; display: block; margin-bottom: 10px;")
+                  input(type="hidden" name=`part1[${i}][existingImagePath]` value=question.imagePath)
+              label(style="display: block; margin-bottom: 5px;") Hình ảnh mới (nếu muốn thay đổi):
+              input(type="file" name=`part1[${i}][image]` accept="image/*" style="width: 100%;")
+
+      //- Phần 2
+      div.part-section(id="part2-section" style="display: none;")
+        h2(style="border-bottom: 1px solid #ddd; padding-bottom: 10px;") Part 2 - Viết email
+        each question, i in writing.part2
+          div.question-box(style="margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 5px;")
+            h3 Email #{i+1}
+            div(style="margin-bottom: 10px;")
+              textarea(name=`part2[${i}][situation]` placeholder="Tình huống" style="width: 100%; padding: 8px; min-height: 80px;" required)= question.situation
+            div(style="margin-bottom: 10px;")
+              textarea(name=`part2[${i}][requirements]` placeholder="Yêu cầu" style="width: 100%; padding: 8px; min-height: 80px;" required)= question.requirements
+            div
+              textarea(name=`part2[${i}][sampleAnswer]` placeholder="Câu trả lời mẫu" style="width: 100%; padding: 8px; min-height: 100px;")= question.sampleAnswer
+
+      //- Phần 3
+      div.part-section(id="part3-section" style="display: none;")
+        h2(style="border-bottom: 1px solid #ddd; padding-bottom: 10px;") Part 3 - Viết luận
+        each question, i in writing.part3
+          div.question-box(style="margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 5px;")
+            div(style="margin-bottom: 10px;")
+              textarea(name=`part3[${i}][question]` placeholder="Đề bài luận" style="width: 100%; padding: 8px; min-height: 100px;" required)= question.question
+            div
+              textarea(name=`part3[${i}][sampleAnswer]` placeholder="Bài luận mẫu" style="width: 100%; padding: 8px; min-height: 150px;")= question.sampleAnswer
+
+      div(style="text-align: center; margin-top: 30px;")
+        button(type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;") Cập nhật
+
+  script.
+    function togglePartDisplay() {
+      const selection = document.getElementById('partSelector').value;
+      document.querySelector('input[name="part"]').value = selection === 'all' ? '999' : selection;
+      
+      document.querySelectorAll('.part-section').forEach(section => {
+        section.style.display = 'none';
+      });
+
+      if (selection === 'all') {
+        document.getElementById('part1-section').style.display = 'block';
+        document.getElementById('part2-section').style.display = 'block';
+        document.getElementById('part3-section').style.display = 'block';
+      } else {
+        document.getElementById(`part${selection}-section`).style.display = 'block';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('partSelector').value = 'all';
+      togglePartDisplay();
+    });

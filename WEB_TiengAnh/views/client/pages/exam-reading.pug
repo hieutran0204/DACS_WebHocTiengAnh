@@ -1,0 +1,35 @@
+extends ../layouts/default
+
+block content
+  .container.mt-5
+    h1.text-center.mb-4 Đề thi Reading TOEIC
+    if !examParts.length
+      p.text-center Không có đề thi Reading nào được public.
+    else
+      each examPart in examParts
+        .card.mb-4
+          .card-header.bg-primary.text-white
+            h2 Đề #{examPart._id} - Part #{examPart.part.join(', ')} (Độ khó: #{difficultyMap[examPart.difficulty]})
+          .card-body
+            form(action='/toeic/reading/submit' method='POST')
+              input(type='hidden' name='examPartId' value=examPart._id)
+              each question, index in examPart.questions
+                .question.mb-3
+                  if question.questionId
+                    p.mb-2
+                      strong Câu #{index + 1}: 
+                      | #{question.questionId.questionText || 'Không có câu hỏi'}
+                    if question.questionId.options && Array.isArray(question.questionId.options)
+                      each option, optIndex in question.questionId.options
+                        .form-check
+                          label.form-check-label
+                            input.form-check-input(type='radio' name=`answers[${index}]` value=optIndex required)
+                            |  #{option}
+                    else
+                      p.text-warning (Không có lựa chọn đáp án)
+                  else
+                    p.text-danger Câu #{index + 1}: (Câu hỏi không tồn tại)
+              .timer.mb-3
+                p Thời gian còn lại: 
+                  span#timer.text-primary 00:00
+              button.btn.btn-primary(type='submit') Nộp bài

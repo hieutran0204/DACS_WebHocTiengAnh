@@ -1,0 +1,324 @@
+extends ../layouts/default
+
+block head
+  title Trò chơi xáo chữ
+  style.
+    .game-container { max-width: 800px; margin: 0 auto; padding: 20px; text-align: center; }
+    .title { color: #2c3e50; margin-bottom: 30px; }
+    .hint-container { margin-bottom: 20px; }
+    .glow-text { font-size: 18px; color: #34495e; animation: glow 1.5s ease-in-out infinite alternate; }
+    .image-section { position: relative; margin-bottom: 20px; }
+    .image-container { position: relative; width: 100%; max-width: 400px; margin: 0 auto; }
+    .main-image { width: 100%; height: auto; display: block; }
+    .image-mask { 
+      position: absolute; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%; 
+      display: grid; 
+      grid-template: repeat(2, 1fr) / repeat(2, 1fr); 
+    }
+    .mask-piece { 
+      background-color: rgba(0, 0, 0, 0.9); 
+      border: 1px solid #333; 
+      transition: opacity 0.5s ease-out; 
+    }
+    .image-mask .mask-piece.revealed { opacity: 0 !important; }
+    .game-form { margin-bottom: 20px; }
+    .input-group { 
+      display: flex; 
+      gap: 10px; 
+      justify-content: center; 
+      max-width: 400px; 
+      margin: 0 auto; 
+    }
+    input[type="text"] { 
+      padding: 10px |important; 
+      width: 70%; 
+      border: 1px solid #ddd; 
+      border-radius: 5px; 
+      font-size: 16px; 
+    }
+    .submit-btn { 
+      padding: 10px 20px; 
+      background-color: #3498db; 
+      color: white; 
+      border: none; 
+      border-radius: 5px; 
+      cursor: pointer; 
+      font-size: 16px; 
+    }
+    .submit-btn:hover { background-color: #2980b9; }
+    .modal { 
+      display: none; 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%; 
+      background-color: rgba(0,0,0,0.5); 
+      justify-content: center; 
+      align-items: center; 
+      z-index: 1050;
+    }
+    .modal-content { 
+      background-color: white; 
+      padding: 20px; 
+      border-radius: 8px; 
+      text-align: center; 
+      max-width: 400px; 
+      width: 90%; 
+    }
+    .modal-title { color: #2c3e50; margin-bottom: 15px; }
+    .btn-next, .btn-again { 
+      padding: 10px 20px; 
+      margin: 10px; 
+      border: none; 
+      border-radius: 5px; 
+      cursor: pointer; 
+      font-size: 16px; 
+    }
+    .btn-next { background-color: #4CAF50; color: white; }
+    .btn-again { background-color: #e74c3c; color: white; }
+    .correct { color: #2ecc71; font-weight: bold; }
+    .wrong { color: #e74c3c; font-weight: bold; }
+    @keyframes glow {
+      from { text-shadow: 0 0 5px #3498db; }
+      to { text-shadow: 0 0 10px #3498db, 0 0 15px #3498db; }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+      20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+block content
+  .game-container
+    h1.title Đoán Từ Qua Hình Ẩn
+
+    .hint-container
+      p#hintDisplay.glow-text Gợi ý: #{question.hints[0]}
+
+    .image-section
+      .image-container
+        img.main-image(src=`/admin/img/uploads_reading_TOEIC/${question.image}` onerror="this.src='https://via.placeholder.com/400'")
+        .image-mask
+          .mask-piece(data-index="0")
+          .mask-piece(data-index="1")
+          .mask-piece(data-index="2")
+          .mask-piece(data-index="3")
+
+    form#guessForm.game-form
+      .input-group
+        input(type="text", name="guess", placeholder="Nhập từ của bạn...", autocomplete="off")
+        button.submit-btn(type="submit") Đoán
+      input(type="hidden", name="revealedPieces", value="0")
+      input(type="hidden", name="currentWord", value=question.word)
+
+    #resultModal.modal
+      .modal-content
+        h2.modal-title Kết Quả
+        p#resultText
+        button#nextWordBtn.btn-next Tiếp Tục
+        button#playAgainBtn.btn-again Chơi Lại
+
+  script.
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('Game loaded');
+      const currentWordData = {
+        id: `#{question._id}`,
+        word: `#{question.word}`.toLowerCase(),
+        image: `#{question.image}`,
+        hints: JSON.parse(`!{JSON.stringify(question.hints)}`)
+      };
+
+      const maskPieces = Array.from(document.querySelectorAll('.mask-piece'));
+      console.log('Mask pieces found:', maskPieces.length);
+      const guessForm = document.getElementById('guessForm');
+      const resultModal = document.getElementById('resultModal');
+      const resultText = document.getElementById('resultText');
+      const nextWordBtn = document.getElementById('nextWordBtn');
+      const playAgainBtn = document.getElementById('playAgainBtn');
+      const hintDisplay = document.getElementById('hintDisplay');
+      
+      let revealedPieces = 0;
+      let incorrectGuesses = 0;
+      let gameEnded = false;
+
+      // Initialize game
+      initGame();
+
+      // Form submission handler
+      guessForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        try {
+          if (gameEnded) return;
+          
+          const guess = this.elements.guess.value.trim().toLowerCase();
+          
+          if (!guess) {
+            alert('Vui lòng nhập từ đoán của bạn!');
+            return;
+          }
+          
+          if (guess === currentWordData.word) {
+            console.log('Correct guess!');
+            revealAllPieces();
+            showResult(true, guess);
+            disableForm();
+          } else {
+            incorrectGuesses++;
+            console.log(`Incorrect guess #${incorrectGuesses}, revealing piece #${revealedPieces}`);
+            
+            if (revealedPieces < maskPieces.length) {
+              revealPiece(revealedPieces);
+              revealedPieces++;
+              this.elements.revealedPieces.value = revealedPieces;
+            }
+            
+            updateHint(revealedPieces);
+            
+            if (incorrectGuesses >= 5) {
+              console.log('Game over: 5 incorrect guesses');
+              revealAllPieces();
+              showResult(false, guess);
+              disableForm();
+            } else {
+              animateWrongGuess();
+            }
+            
+            this.elements.guess.value = '';
+            this.elements.guess.focus();
+          }
+        } catch (error) {
+          console.error('Error in form submission:', error);
+        }
+      });
+
+      nextWordBtn.addEventListener('click', function() {
+        this.disabled = true;
+        this.textContent = 'Đang tải...';
+        fetchRandomWord();
+      });
+
+      playAgainBtn.addEventListener('click', function() {
+        resetGame();
+        resultModal.style.display = 'none';
+      });
+
+      function initGame() {
+        console.log('Initializing game');
+        revealedPieces = 0;
+        incorrectGuesses = 0;
+        gameEnded = false;
+        guessForm.elements.revealedPieces.value = '0';
+        guessForm.elements.guess.value = '';
+        guessForm.elements.guess.disabled = false;
+        guessForm.querySelector('button').disabled = false;
+        
+        maskPieces.forEach(piece => {
+          piece.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+          piece.style.opacity = '1';
+          piece.classList.remove('revealed');
+        });
+        
+        updateHint(0);
+      }
+
+      function revealPiece(index) {
+        console.log(`Revealing piece at index: ${index}`);
+        if (index >= 0 && index < maskPieces.length) {
+          maskPieces[index].classList.add('revealed');
+        }
+      }
+
+      function revealAllPieces() {
+        console.log('Revealing all pieces');
+        maskPieces.forEach(piece => {
+          piece.classList.add('revealed');
+        });
+      }
+
+      function updateHint(revealedCount) {
+        let hintText;
+        if (revealedCount < currentWordData.hints.length) {
+          hintText = currentWordData.hints[revealedCount];
+        } else {
+          hintText = `Đáp án là: ${currentWordData.word}`;
+        }
+        
+        hintDisplay.textContent = `Gợi ý: ${hintText}`;
+        hintDisplay.style.animation = 'none';
+        void hintDisplay.offsetWidth;
+        hintDisplay.style.animation = 'fadeIn 0.3s ease-out';
+      }
+
+      function showResult(isCorrect, userGuess) {
+        console.log('Showing result, correct:', isCorrect);
+        gameEnded = true;
+        
+        if (isCorrect) {
+          resultText.innerHTML = `
+            <span class="correct">Chính xác! 🎉</span><br>
+            Bạn đã đoán đúng từ: <strong>${currentWordData.word}</strong>
+          `;
+        } else {
+          resultText.innerHTML = `
+            <span class="wrong">Bạn đã thua!</span><br>
+            Đáp án là: <strong>${currentWordData.word}</strong><br>
+            ${userGuess ? `Lần đoán cuối: <strong>${userGuess}</strong>` : ''}
+          `;
+        }
+        
+        resultModal.style.display = 'flex';
+      }
+
+      function disableForm() {
+        console.log('Disabling form');
+        guessForm.elements.guess.disabled = true;
+        guessForm.querySelector('button').disabled = true;
+      }
+
+      function resetGame() {
+        console.log('Resetting game');
+        initGame();
+      }
+
+      function animateWrongGuess() {
+        console.log('Animating wrong guess');
+        const input = guessForm.elements.guess;
+        input.style.animation = 'none';
+        void input.offsetWidth;
+        input.style.animation = 'shake 0.5s';
+        
+        setTimeout(() => {
+          input.style.animation = '';
+        }, 500);
+      }
+
+      async function fetchRandomWord() {
+        try {
+          const response = await fetch('/hidden-word/random');
+          if (response.ok) {
+            const data = await response.json();
+            if (data.success && data.word) {
+              window.location.href = `/hidden-word?id=${data.word._id}`;
+            } else {
+              throw new Error('Không nhận được dữ liệu từ server');
+            }
+          } else {
+            throw new Error('Failed to fetch random word');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Không thể tải từ mới. Vui lòng thử lại!');
+          nextWordBtn.disabled = false;
+          nextWordBtn.textContent = 'Tiếp Tục';
+        }
+      }
+    });

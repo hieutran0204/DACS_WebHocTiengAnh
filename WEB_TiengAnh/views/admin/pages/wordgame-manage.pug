@@ -1,0 +1,40 @@
+extends ../layouts/default
+
+block content
+  .container.mt-5
+    h1.mb-4 Thêm từ mới cho trò chơi
+
+    form(action="/admin/wordgame/create" method="POST" class="mb-4")
+      .mb-3
+        label.form-label(for="word") Từ:
+        input#word.form-control(type="text" name="word" required)
+
+      .mb-3
+        label.form-label(for="hint") Gợi ý:
+        input#hint.form-control(type="text" name="hint")
+
+      button.btn.btn-success(type="submit") Thêm
+
+    hr
+
+    h2.mt-5.mb-3 Danh sách từ
+
+    table#wordTable.table.table-striped.table-bordered
+      thead
+        tr
+          th Từ
+          th Gợi ý
+          th Hành động
+      tbody
+        each word in words
+          tr
+            td #{word.word}
+            td #{word.hint}
+            td
+              a.btn.btn-sm.btn-warning(href=`/admin/wordgame/edit/${word._id}`) Sửa
+              a.btn.btn-sm.btn-danger(href=`/admin/wordgame/delete/${word._id}` onclick="return confirm('Bạn có chắc muốn xóa từ này?')") Xóa
+
+  script.
+    $(document).ready(function () {
+      $('#wordTable').DataTable();
+    });

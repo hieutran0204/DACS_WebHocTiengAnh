@@ -1,0 +1,104 @@
+block head
+  style.
+    .writing-container {
+      max-width: 1000px;
+      margin: 20px auto;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+    .title {
+      color: #2c3e50;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 24px;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 10px;
+    }
+    .writing-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .writing-table th {
+      background-color: #3498db;
+      color: white;
+      padding: 12px;
+      text-align: left;
+    }
+    .writing-table td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+    }
+    .writing-table tr:hover {
+      background-color: #f5f5f5;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
+    .edit-btn {
+      color: #2980b9;
+      text-decoration: none;
+      padding: 5px 10px;
+      border-radius: 3px;
+    }
+    .edit-btn:hover {
+      background-color: #eaf2f8;
+    }
+    .delete-btn {
+      background: none;
+      border: none;
+      color: #e74c3c;
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 3px;
+    }
+    .delete-btn:hover {
+      background-color: #fdedec;
+    }
+    .create-btn {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #2ecc71;
+      color: white;
+      text-decoration: none;
+      border-radius: 3px;
+    }
+    .create-btn:hover {
+      background-color: #27ae60;
+    }
+    .button-container {
+      text-align: right;
+      margin-top: 10px;
+    }
+
+block content
+  .writing-container
+    h1.title Danh sách đề TOEIC Writing
+    
+
+    table.writing-table
+      thead
+        tr
+          th(style="width: 15%") #ID
+          th(style="width: 15%") Loại
+          th(style="width: 15%") Ngày tạo
+          th(style="width: 35%") Ghi chú
+          th(style="width: 20%") Hành động
+      tbody
+        each writing in writings
+          tr
+            td #{writing._id.toString().substring(0, 8)}...
+            td Writing Test
+            td #{writing.createdAt.toLocaleDateString('vi-VN')}
+            - const notes = writing.notes && writing.notes.trim() !== '' ? writing.notes : null
+            td(title=notes) #{notes ? notes.substring(0, 50) + (notes.length > 50 ? '...' : '') : 'Không có ghi chú'}
+            td.actions
+              a.edit-btn(href=`/admin/toeic-writing/edit/${writing._id}`) ✏️ Sửa
+              form.delete-form(style="display: inline;", action=`/admin/toeic-writing/delete/${writing._id}`, method="POST")
+                button.delete-btn(type="submit") 🗑️ Xóa
+
+
+    div.button-container
+      a.create-btn(href="/admin/toeic-writing/create") Tạo mới

@@ -1,0 +1,55 @@
+extends ../../layouts/default
+block content
+  .container.mt-4
+    .card.shadow
+      .card-header.bg-primary.text-white
+        h3.mb-0 Tạo câu đố đoán từ
+
+      .card-body
+        if error.length > 0
+          .alert.alert-danger= error[0]
+
+        form(method="POST", enctype="multipart/form-data", action="/admin/hidden-word/create")
+          .mb-3
+            label.form-label(for="word") Từ tiếng Anh:
+            input.form-control(type="text", name="word", id="word", required)
+
+          .mb-3
+            label.form-label(for="image") Hình ảnh:
+            input.form-control(type="file", name="image", id="image", required, accept="image/*")
+
+          .mb-3
+            label.form-label Gợi ý:
+            .mb-2
+              label.form-label(for="hint0") Gợi ý chung:
+              input.form-control(type="text", name="hint0", id="hint0", required, placeholder="Gợi ý chung")
+            .mb-2
+              label.form-label(for="hint1") Gợi ý ô 1:
+              input.form-control(type="text", name="hint1", id="hint1", required, placeholder="Gợi ý ô 1")
+            .mb-2
+              label.form-label(for="hint2") Gợi ý ô 2:
+              input.form-control(type="text", name="hint2", id="hint2", required, placeholder="Gợi ý ô 2")
+            .mb-2
+              label.form-label(for="hint3") Gợi ý ô 3:
+              input.form-control(type="text", name="hint3", id="hint3", required, placeholder="Gợi ý ô 3")
+            .mb-2
+              label.form-label(for="hint4") Gợi ý ô 4:
+              input.form-control(type="text", name="hint4", id="hint4", required, placeholder="Gợi ý ô 4")
+
+          button.btn.btn-success.mt-3(type="submit") Tạo
+
+  script.
+    document.querySelector('form').addEventListener('submit', function(e) {
+      const hints = [
+        document.getElementById('hint0').value.trim(),
+        document.getElementById('hint1').value.trim(),
+        document.getElementById('hint2').value.trim(),
+        document.getElementById('hint3').value.trim(),
+        document.getElementById('hint4').value.trim()
+      ];
+
+      if (hints.some(hint => hint === '')) {
+        alert('Tất cả gợi ý phải được nhập, không được để trống');
+        e.preventDefault();
+      }
+    });

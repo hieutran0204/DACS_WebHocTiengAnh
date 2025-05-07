@@ -1,0 +1,39 @@
+extends ../layouts/default
+
+block head
+  link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css")
+  link(rel="stylesheet", href="/client/css/game.css")
+  title Trò chơi xáo chữ
+
+block content
+  .container.mt-5
+    h1.title.text-center.mb-4 Trò chơi xáo chữ
+    
+    .instructions.mb-4
+      h2 Hướng dẫn
+      p Các chữ cái của một từ tiếng Anh đã bị xáo trộn.
+      p Nhiệm vụ của bạn là sắp xếp lại các chữ cái để tìm ra từ gốc.
+      p Nhập từ của bạn vào ô bên dưới và nhấn "Kiểm tra" hoặc phím Enter.
+    
+    .game-area.card.p-4.shadow-sm
+      .card-body
+        .scrambled-word.mb-4
+          p.label.font-weight-bold Từ xáo trộn:
+          p#shuffled-word.word-display.text-center.text-info= words[0].word.split('').sort(() => Math.random() - 0.5).join('')
+        
+        .hint.mb-4
+          p#hint-text.font-italic Gợi ý: #{words[0].hint}
+          
+        .input-area.form-group
+          input.form-control(type="text", id="user-input", placeholder="Nhập từ đúng", autofocus)
+        
+        button#submit-btn.btn.btn-primary.btn-block Kiểm tra
+        
+        .message.mt-3
+
+    .stats.mt-4.text-center
+      p Bạn có thể nhấn F5 để chơi với từ mới bất cứ lúc nào!
+
+  script(src="https://code.jquery.com/jquery-3.5.1.min.js")
+  script(src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js")
+  script(src="/client/js/wordgame.js")

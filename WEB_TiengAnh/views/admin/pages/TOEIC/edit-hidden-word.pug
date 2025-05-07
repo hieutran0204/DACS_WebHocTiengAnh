@@ -1,0 +1,60 @@
+extends ../../layouts/default
+block content
+  .container.mt-5
+    h1 Chỉnh sửa Hidden Word
+
+    // Hiển thị thông báo flash
+    if success && success.length > 0
+      each msg in success
+        .alert.alert-success= msg
+    
+    if error && error.length > 0
+      each msg in error
+        .alert.alert-danger= msg
+
+    form(method="POST" action=`/admin/hidden-word/update/${hiddenWord._id}` enctype="multipart/form-data")
+      .mb-3
+        label.form-label(for="word") Từ cần đoán
+        input#word.form-control(type="text" name="word" value=hiddenWord.word required)
+      
+      .mb-3
+        label.form-label Gợi ý:
+        .mb-2
+          label.form-label(for="hint0") Gợi ý chung:
+          input.form-control(type="text", name="hint0", id="hint0", required, value=hiddenWord.hints[0] || '')
+        .mb-2
+          label.form-label(for="hint1") Gợi ý ô 1:
+          input.form-control(type="text", name="hint1", id="hint1", required, value=hiddenWord.hints[1] || '')
+        .mb-2
+          label.form-label(for="hint2") Gợi ý ô 2:
+          input.form-control(type="text", name="hint2", id="hint2", required, value=hiddenWord.hints[2] || '')
+        .mb-2
+          label.form-label(for="hint3") Gợi ý ô 3:
+          input.form-control(type="text", name="hint3", id="hint3", required, value=hiddenWord.hints[3] || '')
+        .mb-2
+          label.form-label(for="hint4") Gợi ý ô 4:
+          input.form-control(type="text", name="hint4", id="hint4", required, value=hiddenWord.hints[4] || '')
+
+      .mb-3
+        label.form-label(for="image") Hình ảnh hiện tại: #{hiddenWord.image}
+        input#image.form-control(type="file" name="image" accept="image/*")
+        small.form-text.text-muted Nếu không chọn ảnh mới, ảnh hiện tại sẽ được giữ.
+
+      button.btn.btn-primary(type="submit") Cập nhật
+      a.btn.btn-secondary.ms-2(href="/admin/hidden-word/list") Hủy
+
+  script.
+    document.querySelector('form').addEventListener('submit', function(e) {
+      const hints = [
+        document.getElementById('hint0').value.trim(),
+        document.getElementById('hint1').value.trim(),
+        document.getElementById('hint2').value.trim(),
+        document.getElementById('hint3').value.trim(),
+        document.getElementById('hint4').value.trim()
+      ];
+
+      if (hints.some(hint => hint === '')) {
+        alert('Tất cả gợi ý phải được nhập, không được để trống');
+        e.preventDefault();
+      }
+    });

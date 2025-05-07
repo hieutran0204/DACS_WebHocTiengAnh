@@ -1,0 +1,23 @@
+extends ../../layouts/default
+block content
+  .container.mt-4
+    .d-flex.justify-content-between.align-items-center.mb-4
+      h2 Danh sách Transcription
+      a.btn.btn-success(href="/admin/transcription/create") Tạo mới
+    
+    table.table.table-bordered.table-hover
+      thead.thead-dark
+        tr
+          th(scope="col") STT
+          th(scope="col") Tiêu đề
+          th(scope="col") Ngày tạo
+          th(scope="col") Hành động
+      tbody
+        each item, index in items
+          tr
+            th(scope="row")= index + 1
+            td= item.title
+            td= item.createdAt.toLocaleDateString()
+            td
+              a.btn.btn-sm.btn-info.mr-2(href=`/audio${item.audioPath}`, target="_blank") Nghe
+              a.btn.btn-sm.btn-danger(href=`/admin/transcription/delete/${item._id}`, onclick="return confirm('Bạn có chắc chắn muốn xóa?')") Xóa

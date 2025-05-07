@@ -1,0 +1,29 @@
+extends ../../layouts/default
+block content
+  .container-fluid
+    h1 Thêm người dùng mới
+    if success
+      .alert.alert-success #{success}
+    if error
+      .alert.alert-danger #{error}
+    
+    .card
+      .card-body
+        form(action='/admin/users/create' method='POST')
+          .mb-3
+            label.form-label(for='username') Username
+            input#username.form-control(type='text', name='username', required)
+          .mb-3
+            label.form-label(for='email') Email
+            input#email.form-control(type='email', name='email', required)
+          .mb-3
+            label.form-label(for='password') Mật khẩu
+            input#password.form-control(type='password', name='password', required)
+          .mb-3
+            label.form-label(for='role') Vai trò
+            select#role.form-control(name='role', required)
+              option(value='user') Người dùng
+              option(value='admin') Quản trị
+          .mb-3
+            button.btn.btn-primary(type='submit') Tạo người dùng
+            a.btn.btn-secondary.ms-2(href='/admin/users') Hủy
