@@ -4,6 +4,7 @@ block content
   .container.mt-5
     h1 Tạo câu hỏi Listening TOEIC
 
+    
     form(method='POST', action='/admin/listeningTOEIC/create', enctype='multipart/form-data', id='listeningForm', novalidate)
       .mb-3
         label.form-label(for='part') Chọn Part *
@@ -141,7 +142,11 @@ block content
                   label.form-label(for=`question${i}Explanation`) Giải thích (Không bắt buộc)
                   textarea.form-control(name=`question${i}Explanation`, rows='2')
 
-      button.btn.btn-primary(type='submit') Tạo câu hỏi
+
+      div(style="display: flex; gap: 8px;")
+        button.btn.btn-success(type='submit') Tạo câu hỏi
+        a.btn.btn-secondary(href='/admin/dashboard') Quay lại
+
 
   script.
     document.addEventListener('DOMContentLoaded', function () {

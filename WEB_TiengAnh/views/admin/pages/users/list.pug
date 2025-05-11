@@ -1,15 +1,8 @@
 extends ../../layouts/default
+
 block content
-  .container-fluid
-    h1 Quản lý người dùng
-    if success
-      .alert.alert-success #{success}
-    if error
-      .alert.alert-danger #{error}
-    
-    .mb-3
-      a.btn.btn-primary(href='/admin/users/create') Thêm người dùng mới
-    
+  .container
+    h1.text-center.mb-4 Quản lý người dùng
     .card
       .card-body
         .table-responsive
@@ -35,3 +28,9 @@ block content
               else
                 tr
                   td(colspan="5").text-center.text-muted Không có người dùng nào.
+
+    // Nút thêm người dùng
+    div(style="display: flex; gap: 8px;")
+        a.btn.btn-success.mt-4(href='/admin/users/create') Thêm người dùng mới
+        a.btn.btn-secondary.mt-4(href='/admin/dashboard') Quay lại
+    

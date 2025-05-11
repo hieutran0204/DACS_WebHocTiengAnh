@@ -1,14 +1,20 @@
+extends ../../layouts/default
 
 block content
-  .container-fluid
-    h1 Tạo đề Speaking mới
-    form(method="POST" action="/admin/speaking/create")
-      .form-group
-        label(for="title") Tiêu đề:
-        input#title.form-control(type="text" name="title" required)
-      
-      .form-group
-        label(for="content") Nội dung:
-        textarea#content.form-control(name="content" rows="5" required)
-      
-      button.btn.btn-primary(type="submit") Tạo đề
+  .container.mt-5
+    h2.text-center.mb-4 Tạo đề Speaking mới
+    .card.shadow-sm.p-4
+      form(method="POST" action="/admin/speaking/create")
+        .form-group.mb-3
+          label(for="title") Tiêu đề:
+          input#title.form-control(type="text" name="title" required)
+        
+        .form-group.mb-3
+          label(for="content") Nội dung:
+          textarea#content.form-control(name="content" rows="5" required)
+        
+
+        div(style="display: flex; gap: 8px;")
+          button.btn.btn-success(type="submit") Tạo đề
+          a.btn.btn-secondary(href='/admin/dashboard') Quay lại
+        

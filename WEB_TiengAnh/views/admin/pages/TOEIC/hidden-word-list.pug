@@ -1,18 +1,17 @@
 extends ../../layouts/default
 block content
   .container-fluid
-    h1.mb-4 Danh sách Hidden Word
-    a.btn.btn-primary.mb-3(href="/admin/hidden-word/create") Tạo mới
-    
+    h1.mb-4.text-center Danh sách Hidden Word
+
     if success.length > 0
       each msg in success
         .alert.alert-success= msg
-    
+
     if error.length > 0
       each msg in error
         .alert.alert-danger= msg
 
-    .card
+    .card.w-75.mx-auto
       .card-body
         table#hiddenWordTable.table.table-striped
           thead
@@ -30,10 +29,16 @@ block content
                 td
                   img(src=`/admin/img/uploads_reading_TOEIC/${word.image}`, width="100")
                 td= word.createdAt ? word.createdAt.toLocaleDateString() : 'N/A'
-                td
-                  a.btn.btn-sm.btn-primary.ms-2(href=`/admin/hidden-word/edit/${word._id}`) Chỉnh sửa
-                  form.d-inline(method="POST" action=`/admin/hidden-word/${word._id}?_method=DELETE`)
-                    button.btn.btn-sm.btn-danger.ms-2(type="submit" onclick="return confirm('Bạn có chắc muốn xóa?')") Xóa
+                td.d-flex.gap-2
+                  a.btn.btn-sm.btn-primary(href=`/admin/hidden-word/edit/${word._id}`) Chỉnh sửa
+                  form(method="POST" action=`/admin/hidden-word/${word._id}?_method=DELETE`)
+                    button.btn.btn-sm.btn-danger(type="submit" onclick="return confirm('Bạn có chắc muốn xóa?')") Xóa
+
+    // Các nút nằm dưới bảng, cách bảng một đoạn
+    .w-75.mx-auto.mt-3
+      .d-flex.gap-2
+        a.btn.btn-primary(href="/admin/hidden-word/create") Tạo mới
+        a.btn.btn-secondary(href='/admin/dashboard') Quay lại
 
   script.
     $(document).ready(function() {

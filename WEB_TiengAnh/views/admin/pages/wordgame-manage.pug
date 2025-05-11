@@ -13,7 +13,9 @@ block content
         label.form-label(for="hint") Gợi ý:
         input#hint.form-control(type="text" name="hint")
 
-      button.btn.btn-success(type="submit") Thêm
+      div(style="display: flex; gap: 8px;")
+        button.btn.btn-success(type='submit') Thêm
+        a.btn.btn-secondary(href='/admin/dashboard') Quay lại
 
     hr
 
@@ -31,8 +33,8 @@ block content
             td #{word.word}
             td #{word.hint}
             td
-              a.btn.btn-sm.btn-warning(href=`/admin/wordgame/edit/${word._id}`) Sửa
-              a.btn.btn-sm.btn-danger(href=`/admin/wordgame/delete/${word._id}` onclick="return confirm('Bạn có chắc muốn xóa từ này?')") Xóa
+              a.btn.btn-sm.btn-warning.ms-2(href=`/admin/wordgame/edit/${word._id}`) Sửa
+              a.btn.btn-sm.btn-danger.ms-2(href=`/admin/wordgame/delete/${word._id}` onclick="return confirm('Bạn có chắc muốn xóa từ này?')") Xóa
 
   script.
     $(document).ready(function () {

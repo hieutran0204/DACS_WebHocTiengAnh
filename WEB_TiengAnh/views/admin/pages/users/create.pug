@@ -1,13 +1,9 @@
 extends ../../layouts/default
+
 block content
-  .container-fluid
-    h1 Thêm người dùng mới
-    if success
-      .alert.alert-success #{success}
-    if error
-      .alert.alert-danger #{error}
-    
-    .card
+  .container
+    h1.text-center.mt-4.mb-4 Thêm người dùng mới
+    .card.shadow-sm
       .card-body
         form(action='/admin/users/create' method='POST')
           .mb-3
@@ -24,6 +20,6 @@ block content
             select#role.form-control(name='role', required)
               option(value='user') Người dùng
               option(value='admin') Quản trị
-          .mb-3
-            button.btn.btn-primary(type='submit') Tạo người dùng
+          .mt-4
+            button.btn.btn-success(type='submit') Tạo người dùng
             a.btn.btn-secondary.ms-2(href='/admin/users') Hủy
