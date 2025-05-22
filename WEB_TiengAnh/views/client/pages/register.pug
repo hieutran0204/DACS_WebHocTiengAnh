@@ -3,50 +3,78 @@ html
   head
     meta(charset="UTF-8")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
-    title Đăng ký
+    title Tạo tài khoản mới
     link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css")
-    link(rel="stylesheet", href="/client/css/login.css")
+    link(rel="stylesheet", href="/client/css/register.css")
 
   body
-    #wrapper
-      #form-login
-        h1.form-heading Đăng ký
+    .main
+      .form-container
+        .form-top
+          h1.form-title TẠO TÀI KHOẢN MỚI
+          a.exit(href="#") x
 
-        if error
-          p.error-message(style="color: red; text-align: center; margin-bottom: 10px;")= error
+        .form-main
+          if error
+            p.error-message(style="color: red; text-align: center; margin-bottom: 10px;")= error
 
-        form(action="/auth/register", method="POST")
-          .form-group
-            i(class="fa fa-user")
-            input.form-input(type="text", name="username", placeholder="Tên người dùng", required)
+          form.signup-form#signup(action="/auth/register", method="POST")
+            .field
+              label(for="fullname") Nhập họ và tên:
+              input(type="text", name="fullname", id="fullname", placeholder="Full name", required, minlength="5", maxlength="30")
 
-          .form-group
-            i(class="fa fa-envelope")
-            input.form-input(type="email", name="email", placeholder="Email", required)
+            .field
+              label(for="phonenumber") Nhập số điện thoại:
+              input(type="number", placeholder="Phone Number", id="phonenumber", name="phonenumber", required)
 
-          .form-group
-            i(class="fa fa-lock")
-            input.form-input(type="password", name="password", placeholder="Mật khẩu", required)
-            #eye
-              i(class="fa fa-eye")
+            .field
+              label(for="email") Nhập email của bạn:
+              input(type="email", placeholder="Email", id="email", name="email", required, minlength="8", maxlength="24")
 
-          button.form-submit(type="submit") Đăng ký
+            .field
+              label(for="age") Tuổi của bạn:
+              select(name="age", id="age", required)
+                option(value="underfined") Chọn độ tuổi của bạn...
+                option(value="u18") Dưới 18 tuổi
+                option(value="f18t39") Từ 18 đến 39 tuổi
+                option(value="f40t64") Từ 40 đến 64 tuổi
+                option(value="o65") Từ 65 tuổi trở lên
 
-        p.register-link(style="color: #fff; margin-top: 20px; text-align: center;")
-          | Đã có tài khoản? 
-          a(href="/auth/login", style="color: #54a0ff; text-decoration: none;") Đăng nhập ngay
+            .field
+              label(for="username") Nhập tên người dùng:
+              input(type="text", placeholder="Username", id="username", name="username", required, minlength="6", maxlength="12")
 
-    // jQuery và JS hiện/ẩn mật khẩu
+            .field
+              label(for="password") Nhập mật khẩu:
+              input(type="password", placeholder="Password", id="password", name="password", required, minlength="8", maxlength="24")
+              .eye
+                i.fa.fa-eye
+
+            .field
+              label(for="repassword") Nhập lại mật khẩu:
+              input(type="password", placeholder="Re-Password", id="repassword", name="repassword", required, minlength="8", maxlength="24")
+              .eye
+                i.fa.fa-eye
+
+            .field
+              label(for="sex") Giới tính của bạn:
+              select(name="sex", id="sex", required)
+                option(value="underfined") Chọn giới tính của bạn...
+                option(value="male") Nam
+                option(value="female") Nữ
+                option(value="another") Khác
+
+        .form-bottom
+          button.button(type="submit", form="signup") ĐĂNG KÝ NGAY!
+          a.button(href="/auth/login") ĐÃ CÓ TÀI KHOẢN?
+
     script(src="https://code.jquery.com/jquery-3.6.0.min.js")
     script.
       $(document).ready(function(){
-          $('#eye').click(function(){
-              $(this).toggleClass('open');
-              $(this).children('i').toggleClass('fa-eye-slash fa-eye');
-              if($(this).hasClass('open')){
-                  $(this).prev().attr('type', 'text');
-              }else{
-                  $(this).prev().attr('type', 'password');
-              }
-          });
+        $('.eye').click(function(){
+          $(this).toggleClass('open');
+          $(this).children('i').toggleClass('fa-eye-slash fa-eye');
+          const input = $(this).prev();
+          input.attr('type', input.attr('type') === 'password' ? 'text' : 'password');
+        });
       });

@@ -1,7 +1,30 @@
 extends ../layouts/default
 
 block content
-  h1 Kết quả #{examType} TOEIC
-  p Điểm số: #{score} / #{totalQuestions}
-  p Tỷ lệ đúng: #{percentage.toFixed(2)}%
-  a(href=`/toeic/${examType.toLowerCase()}`) Làm đề khác
+  .container.mt-5
+    h1.text-center.mb-4 Kết quả #{examType} TOEIC
+    if error && error.length
+      .alert.alert-danger.text-center #{error}
+    if examPart
+      .card.mb-4
+        .card-body
+          p.fs-5 Điểm số: #{score} / #{totalQuestions}
+          p.fs-5 Tỷ lệ đúng: #{percentage.toFixed(2)}%
+          p.fs-5 Phần thi: #{examPart.part.join(', ')}
+          if results && results.length
+            .result.mt-4
+              h4 Kết quả chi tiết
+              each result in results
+                p(class=result.isCorrect ? 'text-success' : 'text-danger')
+                  | Câu #{result.questionNumber}
+                  if result.subQuestionIndex
+                    |  (Q#{result.subQuestionIndex + 1})
+                  | : Đáp án của bạn: #{result.userAnswer}, Đáp án đúng: #{result.correctAnswer}
+          else
+            p.text-warning Không có kết quả chi tiết.
+        .card-footer.text-center
+          a.btn.btn-primary(href=`/testtoeic/${examType.toLowerCase()}-list`) Làm đề khác
+    else
+      .alert.alert-info.text-center Không có dữ liệu kết quả.
+
+  script(src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js')

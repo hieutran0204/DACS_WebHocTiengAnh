@@ -3,33 +3,84 @@ extends ../layouts/default
 block content
   .container.mt-5
     h1.text-center.mb-4 Đề thi Reading TOEIC
-    if !examParts.length
-      p.text-center Không có đề thi Reading nào được public.
+
+    if error && error.length
+      .alert.alert-danger.text-center #{error}
+    else if !examPart
+      .alert.alert-info.text-center Không có đề thi Reading nào được tìm thấy hoặc đề thi chưa được public.
     else
-      each examPart in examParts
-        .card.mb-4
-          .card-header.bg-primary.text-white
-            h2 Đề #{examPart._id} - Part #{examPart.part.join(', ')} (Độ khó: #{difficultyMap[examPart.difficulty]})
-          .card-body
-            form(action='/toeic/reading/submit' method='POST')
-              input(type='hidden' name='examPartId' value=examPart._id)
-              each question, index in examPart.questions
-                .question.mb-3
-                  if question.questionId
-                    p.mb-2
-                      strong Câu #{index + 1}: 
-                      | #{question.questionId.questionText || 'Không có câu hỏi'}
-                    if question.questionId.options && Array.isArray(question.questionId.options)
-                      each option, optIndex in question.questionId.options
-                        .form-check
-                          label.form-check-label
-                            input.form-check-input(type='radio' name=`answers[${index}]` value=optIndex required)
-                            |  #{option}
-                    else
-                      p.text-warning (Không có lựa chọn đáp án)
-                  else
-                    p.text-danger Câu #{index + 1}: (Câu hỏi không tồn tại)
-              .timer.mb-3
-                p Thời gian còn lại: 
-                  span#timer.text-primary 00:00
-              button.btn.btn-primary(type='submit') Nộp bài
+      .card.mb-4
+        .card-header.bg-primary.text-white
+          h2.mb-0 
+            | Đề #{examPart._id} - Part #{examPart.part ? examPart.part.join(', ') : 'N/A'} 
+            | (Độ khó: #{difficultyMap[examPart.difficulty] || 'Chưa xác định'})
+
+        .card-body
+          .mb-3
+            p.mb-0.fw-bold
+              | Thời gian còn lại: 
+              span#timer.text-danger.fw-bold.ms-2 30:00
+
+          form(action=`/toeic/reading/${examPart._id}/submit` method="POST")
+            input(type='hidden' name='examPartId' value=examPart._id)
+
+            each partKey, index in Object.keys(questionsByPart)
+              .card.mt-4
+                .card-header.bg-light.fw-bold #{partKey}
+                .card-body
+                  each question in questionsByPart[partKey]
+                    .question.border.p-3.mb-4.rounded.bg-white
+                      h5.mb-3
+                        | Câu #{question.questionN}
+                        if question.blankIndex !== undefined
+                          | (Blank #{question.blankIndex + 1})
+                        else if question.subQuestionIndex !== undefined
+                          | (Q#{question.subQuestionIndex + 1})
+
+                      if question.passage
+                        .mb-3
+                          p.mb-1.fw-bold Passage:
+                          pre.bg-light.p-2.rounded(style='white-space: pre-wrap') #{question.passage}
+
+                      if question.Img
+                        .mb-3
+                          img.img-fluid(src=question.Img alt='Question Image' style='max-height: 300px;')
+
+                      p.mb-2.fw-bold Câu hỏi: 
+                        | #{question.questionText}
+
+                      if question.options && Array.isArray(question.options)
+                        each option, optIndex in question.options
+                          .form-check.mb-2
+                            input.form-check-input(
+                              type='radio'
+                              id=`${question.questionId}-${optIndex}`
+                              name=`answers[${question.questionId}-${question.blankIndex || question.subQuestionIndex || 0}]`
+                              value=String.fromCharCode(65 + optIndex)
+                              required
+                            )
+                            label.form-check-label(for=`${question.questionId}-${optIndex}`)
+                              | #{String.fromCharCode(65 + optIndex)}. #{option}
+                      else
+                        p.text-warning (Không có lựa chọn đáp án)
+
+            button.btn.btn-success.mt-4(type='submit') Nộp bài
+
+  // Load Bootstrap JS
+  script(src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js')
+
+  // Countdown timer
+  script.
+    let time = 1800; // 30 phút
+    const timerDisplay = document.getElementById('timer');
+    const countdown = setInterval(() => {
+      const minutes = Math.floor(time / 60);
+      const seconds = time % 60;
+      timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+      time--;
+      if (time < 0) {
+        clearInterval(countdown);
+        timerDisplay.textContent = 'Hết giờ!';
+        document.querySelector('form').submit();
+      }
+    }, 1000);

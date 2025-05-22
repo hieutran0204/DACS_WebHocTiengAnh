@@ -1,0 +1,51 @@
+extends ../../layouts/default
+
+block content
+  div(style="max-width: 1000px; margin: 0 auto; padding: 20px;")
+    h1(style="text-align: center; margin-bottom: 30px;") Danh Sách Đề Thi TOEIC Writing
+
+    if error && error.length
+      div(style="color: red; margin-bottom: 20px; text-align: center; background-color: #ffe6e6; padding: 10px; border-radius: 4px;") #{error}
+    
+    if success && success.length
+      div(style="color: green; margin-bottom: 20px; text-align: center; background-color: #e6ffe6; padding: 10px; border-radius: 4px;") #{success}
+
+    div(style="margin-bottom: 20px;")
+      a(href="/admin/toeic-writing/exams/create" style="padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 4px;") Tạo Đề Thi Mới
+
+    if exams && exams.length
+      table(style="width: 100%; border-collapse: collapse; margin-top: 20px;")
+        thead
+          tr(style="background-color: #f2f2f2;")
+            th(style="padding: 10px; border: 1px solid #ddd;") Mã Đề
+            th(style="padding: 10px; border: 1px solid #ddd;") Số Câu
+            th(style="padding: 10px; border: 1px solid #ddd;") Parts
+            th(style="padding: 10px; border: 1px solid #ddd;") Độ Khó
+            th(style="padding: 10px; border: 1px solid #ddd;") Người Tạo
+            th(style="padding: 10px; border: 1px solid #ddd;") Trạng Thái
+            th(style="padding: 10px; border: 1px solid #ddd;") Hành Động
+        tbody
+          each exam in exams
+            tr
+              td(style="padding: 10px; border: 1px solid #ddd;") #{exam.examCode || 'N/A'}
+              td(style="padding: 10px; border: 1px solid #ddd;") #{exam.questionCount || 0}
+              td(style="padding: 10px; border: 1px solid #ddd;")
+                if exam.parts && Array.isArray(exam.parts) && exam.parts.length
+                  | #{exam.parts.map(p => `Part ${p}`).join(', ')}
+                else
+                  | N/A
+              td(style="padding: 10px; border: 1px solid #ddd;") #{difficultyMap[exam.difficulty] || 'Chưa xác định'}
+              td(style="padding: 10px; border: 1px solid #ddd;") #{exam.createdBy ? exam.createdBy.username : 'N/A'}
+              td(style="padding: 10px; border: 1px solid #ddd;") #{statusMap[exam.status] || 'Bản nháp'}
+              td(style="padding: 10px; border: 1px solid #ddd;")
+                a(href=`/admin/toeic-writing/exams/${exam._id}` style="margin-right: 10px; color: #4CAF50;") Xem
+                a(href=`/admin/toeic-writing/exams/delete/${exam._id}` onclick="return confirm('Bạn có chắc muốn xóa đề thi này?')" style="color: #ff4444; margin-right: 10px;") Xóa
+
+                if exam.status === 'draft'
+                  form(method="POST" action=`/admin/toeic-writing/exams/${exam._id}/publish` style="display: inline;" onsubmit="return confirm('Bạn có chắc muốn công khai đề thi này?')")
+                    button(type="submit" style="color: #2196F3; background: none; border: none; cursor: pointer; padding: 0; font-size: inherit;") Công khai
+                else
+                  form(method="POST" action=`/admin/toeic-writing/exams/${exam._id}/draft` style="display: inline;" onsubmit="return confirm('Bạn có chắc muốn chuyển về bản nháp?')")
+                    button(type="submit" style="color: #ff9800; background: none; border: none; cursor: pointer; padding: 0; font-size: inherit;") Về Bản Nháp
+    else
+      p(style="text-align: center; color: #555;") Không có đề thi nào.

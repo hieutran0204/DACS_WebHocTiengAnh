@@ -1,0 +1,384 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+body {
+  line-height: 1;
+}
+ol,
+ul {
+  list-style: none;
+}
+blockquote,
+q {
+  quotes: none;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: "";
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* -------------------------------------------- */
+
+body {
+  font-family: "Open Sans", sans-serif;
+}
+.main {
+  width: 50%;
+  height: auto;
+  margin: 0 auto;
+  padding: 10px;
+  box-sizing: border-box;
+}
+.form-container {
+  width: 100%;
+  height: 100%;
+  padding: 5px;
+  box-sizing: border-box;
+  background-color: #caf0f8;
+  border: groove 0.8em #0077b6;
+  border-radius: 1.5em;
+  color: #03045e;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+.form-top {
+  width: 100%;
+  height: 15%;
+  padding: 10px 0;
+  border-bottom: thick double rgba(0, 119, 182, 0.3);
+
+  box-sizing: border-box;
+  position: relative;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.form-title {
+  font-weight: 700;
+  font-size: 1.3rem;
+  padding: 10px 0;
+}
+.exit {
+  color: red;
+  font-weight: 700;
+  font-size: 1rem;
+  position: absolute;
+  top: 0;
+  right: 0;
+  text-decoration: none;
+}
+.exit:hover {
+  font-weight: 900;
+  font-size: 1.2rem;
+  color: #c1121f;
+}
+.form-main {
+  width: 100%;
+  height: 65%;
+  padding: 10px 0;
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.signup-form {
+  width: 100%;
+  height: 240px;
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.field {
+  width: 50%;
+  height: 24%;
+  box-sizing: border-box;
+  padding: 5px;
+  padding-left: 9%;
+  font-size: 0.8rem;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: flex-start;
+}
+.field label {
+  padding: 2px 0;
+  flex: 1 1 auto;
+  height: 40%;
+  line-height: 2;
+}
+.field input,
+.field select {
+  margin-top: 3px;
+  flex: 1 1 auto;
+  border: 1px solid #03045e;
+  border-radius: 5px;
+  width: 73%;
+  height: 60%;
+}
+#age,
+#sex {
+  margin-top: 3px;
+  flex: 1 1 auto;
+  border: 1px solid #03045e;
+  border-radius: 5px;
+  width: 75%;
+}
+.form-bottom {
+  width: 100%;
+  height: 15%;
+  padding: 10px 10px;
+  border-top: 1px solid rgba(0, 119, 182, 0.3);
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+}
+.button {
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: 0;
+  border-radius: 1rem;
+  background-color: #90e0ef;
+  color: #03045e;
+
+  text-decoration: none;
+  text-align: center;
+  padding: 8px 18px;
+}
+button.button:hover {
+  background-color: #48cae4;
+}
+a.button {
+  background-color: #caf0f8;
+}
+a.button:hover {
+  border-bottom: 1px solid #0096c7;
+}
+
+@media screen and (max-width: 880px) {
+  .main {
+    width: 55%;
+  }
+  .form-title {
+    font-size: 1.1rem;
+  }
+  .field {
+    font-size: 0.7rem;
+  }
+  .button {
+    font-size: 0.8rem;
+    padding: 5px 15px;
+  }
+}
+
+@media screen and (max-width: 760px) {
+  .main {
+    width: 60%;
+  }
+  .form-title {
+    font-size: 1rem;
+  }
+  .field {
+    font-size: 0.65rem;
+  }
+  .button {
+    font-size: 0.6rem;
+    padding: 5px 12px;
+  }
+}
+
+@media screen and (max-width: 660px) {
+  .main {
+    width: 65%;
+  }
+  .form-title {
+    font-size: 1rem;
+  }
+  .field {
+    width: 100%;
+    height: auto;
+    padding: 5px 15px;
+    padding-left: 35px;
+    margin: 0;
+    margin-bottom: 5px;
+    font-size: 0.8rem;
+    justify-content: center;
+  }
+  .field > label {
+    padding: 0;
+    height: 35%;
+  }
+  .field > input {
+    width: 82%;
+    height: 65%;
+    margin: 0;
+  }
+  #age,
+  #sex {
+    width: 85%;
+    height: 65%;
+    margin: 0;
+  }
+  .button {
+    font-size: 0.8rem;
+    padding: 5px 18px;
+    margin: 5px auto;
+  }
+  .signup-form {
+    width: 100%;
+    height: auto;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+  }
+  .form-bottom {
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .main {
+    width: 70%;
+  }
+  .form-title {
+    font-size: 0.7rem;
+  }
+  .field {
+    font-size: 0.65rem;
+  }
+  .button {
+    font-size: 0.65rem;
+    padding: 5px 12px;
+  }
+}

@@ -1,24 +1,33 @@
-// File này dùng để định nghĩa các route cho việc quản lý câu hỏi TOEIC Reading
 const express = require("express");
 const router = express.Router();
 const questionController = require("../../controllers/admin/CRUD_readingTOEIC.controller");
-const upload = require("../../middlewares/upload.middleware");
+const { uploadReading, handleReadingError } = require("../../middlewares/uploadReading.middleware");
 
-// Route chính nên dùng "/" thay vì "/questions"
+// Route hiển thị toàn bộ câu hỏi
 router.get("/", questionController.getAllQuestions);
-router.get("/create", questionController.showCreateForm);
-router.post("/add", upload.single("image"), questionController.createQuestion);
 
-// Các route khác giữ nguyên nhưng bỏ "/questions" ở đầu
+// Route tạo câu hỏi
+router.get("/create", questionController.showCreateForm);
+router.post("/add", uploadReading.single("image"), handleReadingError, questionController.createQuestion);
+
+// Route chỉnh sửa câu hỏi
 router.get("/edit/:id", questionController.showEditForm);
-router.post("/update/:id", upload.single("image"), questionController.updateQuestion);
+router.post("/update/:id", uploadReading.single("image"), handleReadingError, questionController.updateQuestion);
+
+// Route lấy câu hỏi theo phần
 router.get("/by-part/:part", questionController.getQuestionsByPart);
-router.get("/generate-random", questionController.generateRandomExam);
+
+// Route tìm kiếm
 router.get("/search", questionController.showSearchForm);
 router.get("/search-results", questionController.searchQuestions);
+
+// Route xóa câu hỏi
 router.get("/delete/:id", questionController.deleteQuestion);
 
-// Route về exam nên tách sang file riêng nếu nhiều
+// Route tạo đề thi ngẫu nhiên
+router.post("/generate-random", questionController.generateRandomExam);
+
+// Các route liên quan đến exam
 router.get("/exams", questionController.getAllExams);
 router.get("/exams/create", questionController.showCreateFormExam);
 router.get("/exams/:id", questionController.getExamDetail);

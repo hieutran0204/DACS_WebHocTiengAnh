@@ -1,44 +1,84 @@
 extends ../layouts/default
 
 block content
-  div(style="max-width: 1000px; margin: 0 auto; padding: 20px;")
-    h1(style="text-align: center; margin-bottom: 30px; color: #333;") Đề Thi TOEIC Writing - #{writing._id.toString().substring(0, 8)}...
+  h1.text-center.text-primary.mt-4.mb-3 Đề thi Writing TOEIC: #{writing.examCode}
+  p#timer.text-center.text-danger.font-weight-bold.mb-4 Thời gian còn lại: 60:00
 
-    if success
-      div(style="padding: 10px; background-color: #dff0d8; color: #3c763d; margin-bottom: 20px; border-radius: 5px;") #{success}
-    if error
-      div(style="padding: 10px; background-color: #f2dede; color: #a94442; margin-bottom: 20px; border-radius: 5px;") #{error}
+  if error
+    p.alert.alert-danger.text-center= error
+  if success
+    p.alert.alert-success.text-center= success
 
-    if writing.notes
-      p(style="margin-bottom: 20px; color: #34495e;") Ghi chú: #{writing.notes}
+  form#examForm(action=`/testtoeic/writing/${writing._id}/submit` method="POST" enctype="multipart/form-data")
+    each question, index in writing.questions
+      .card.mb-4.shadow-sm
+        .card-body
+          h4.card-title Câu hỏi #{index + 1} (Part #{question.part})
+          
+          if question.part === 8
+            img.img-fluid.mb-3(src=question.part8.img alt="Hình ảnh câu hỏi")
+            p.text-muted
+              | Từ khóa: 
+              span.badge.badge-info= question.part8.keyword1
+              | , 
+              span.badge.badge-info= question.part8.keyword2
+            textarea.form-control(name=`answers[${index}][text]` rows="5" placeholder="Nhập câu trả lời..." required oninput=`updateWordCount(${index})`)
+            input.form-control-file.mt-2(type="file" name=`answers[${index}][file]` accept="image/*")
+            p.text-right.text-muted.mt-1.word-count(id="word-count-#{index}") Số từ: 0
 
-    //- Part 1
-    h2(style="border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-top: 20px;") Part 1 - Viết câu từ hình và từ khóa
-    each question, i in writing.part1
-      div(style="margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 5px; background-color: #f9f9f9;")
-        h3 Câu #{i+1}
-        if question.imagePath
-          img(src=`/images/${question.imagePath}` alt=`Hình ảnh câu ${i+1}` style="max-width: 300px; display: block; margin-bottom: 10px;")
-        p Từ khóa 1: #{question.keyword1}
-        p Từ khóa 2: #{question.keyword2}
-        textarea(name=`part1[${i}][answer]` placeholder="Viết câu trả lời..." style="width: 100%; padding: 8px; min-height: 80px;")
+          else if question.part === 9
+            p.font-weight-bold Tình huống:
+            p.text-muted= question.part9.situation
+            p.font-weight-bold Yêu cầu:
+            p.text-muted= question.part9.requirements
+            textarea.form-control(name=`answers[${index}][text]` rows="10" placeholder="Nhập email..." required oninput=`updateWordCount(${index})`)
+            p.text-right.text-muted.mt-1.word-count(id="word-count-#{index}") Số từ: 0
 
-    //- Part 2
-    h2(style="border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-top: 20px;") Part 2 - Viết email
-    each question, i in writing.part2
-      div(style="margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 5px; background-color: #f9f9f9;")
-        h3 Email #{i+1}
-        p Tình huống: #{question.situation}
-        p Yêu cầu: #{question.requirements}
-        textarea(name=`part2[${i}][answer]` placeholder="Viết email..." style="width: 100%; padding: 8px; min-height: 150px;")
+          else if question.part === 10
+            p.font-weight-bold Đề bài:
+            p.text-muted= question.part10.question
+            textarea.form-control(name=`answers[${index}][text]` rows="15" placeholder="Nhập bài luận..." required oninput=`updateWordCount(${index})`)
+            p.text-right.text-muted.mt-1.word-count(id="word-count-#{index}") Số từ: 0
 
-    //- Part 3
-    h2(style="border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-top: 20px;") Part 3 - Viết luận
-    each question, i in writing.part3
-      div(style="margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 5px; background-color: #f9f9f9;")
-        h3 Luận #{i+1}
-        p Đề bài: #{question.question}
-        textarea(name=`part3[${i}][answer]` placeholder="Viết bài luận..." style="width: 100%; padding: 8px; min-height: 200px;")
+    .text-center.mt-4
+      button.btn.btn-lg.btn-success(type="submit") 📝 Nộp bài
 
-    div(style="text-align: center; margin-top: 30px;")
-      button(type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;") Nộp Bài
+  style.
+    .card-title {
+      font-weight: bold;
+      color: #2c3e50;
+    }
+    .word-count {
+      font-style: italic;
+      font-size: 0.9em;
+    }
+    .form-control:focus {
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+      border-color: #80bdff;
+    }
+
+  script.
+    function updateWordCount(index) {
+      const textarea = document.querySelector(`textarea[name="answers[${index}][text]"]`);
+      const wordCount = textarea.value.trim().split(/\s+/).filter(word => word.length > 0).length;
+      document.querySelector(`#word-count-${index}`).textContent = `Số từ: ${wordCount}`;
+    }
+
+    // Đồng hồ đếm ngược (60 phút)
+    let timeLeft = 60 * 60; // 60 phút tính bằng giây
+    const timerElement = document.getElementById('timer');
+    const form = document.getElementById('examForm');
+    
+    const countdown = setInterval(() => {
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      timerElement.textContent = `Thời gian còn lại: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      
+      if (timeLeft <= 0) {
+        clearInterval(countdown);
+        alert('Hết thời gian làm bài!');
+        form.submit();
+      }
+      
+      timeLeft--;
+    }, 1000);

@@ -8,41 +8,38 @@ html
     link(rel="stylesheet", href="/client/css/login.css")
 
   body
-    #wrapper
-      #form-login
-        h1.form-heading Đăng nhập
+    .main
+      .form-container
+        .form-top
+          h1.form-title ĐĂNG NHẬP
+          a.exit(href="#") x
 
-        if error
-          p.error-message(style="color: red; text-align: center; margin-bottom: 10px;")= error
+        .form-main
+          if error
+            p.error-message(style="color: red; text-align: center; margin-bottom: 10px;")= error
 
-        form(action="/auth/login", method="POST")
-          .form-group
-            i(class="fa fa-envelope")
-            input.form-input(type="email", name="email", placeholder="Email", required)
+          form.signup-form#login(action="/auth/login", method="POST")
+            .field
+              label(for="email") Nhập email của bạn:
+              input(type="email", placeholder="Email", id="email", name="email", required, minlength="8", maxlength="24")
 
-          .form-group
-            i(class="fa fa-lock")
-            input.form-input(type="password", name="password", placeholder="Mật khẩu", required)
-            #eye
-              i(class="fa fa-eye")
+            .field
+              label(for="password") Nhập mật khẩu:
+              input(type="password", placeholder="Password", id="password", name="password", required, minlength="8", maxlength="24")
+              .eye
+                i.fa.fa-eye
 
-          button.form-submit(type="submit") Đăng nhập
+        .form-bottom
+          button.button(type="submit", form="login") ĐĂNG NHẬP NGAY!
+          a.button(href="/auth/register") CHƯA CÓ TÀI KHOẢN?
 
-        p.register-link(style="color: #fff; margin-top: 20px; text-align: center;")
-          | Chưa có tài khoản? 
-          a(href="/auth/register", style="color: #54a0ff; text-decoration: none;") Đăng ký ngay
-
-    // Thêm jQuery và JS
     script(src="https://code.jquery.com/jquery-3.6.0.min.js")
     script.
       $(document).ready(function(){
-          $('#eye').click(function(){
-              $(this).toggleClass('open');
-              $(this).children('i').toggleClass('fa-eye-slash fa-eye');
-              if($(this).hasClass('open')){
-                  $(this).prev().attr('type', 'text');
-              }else{
-                  $(this).prev().attr('type', 'password');
-              }
-          });
+        $('.eye').click(function(){
+          $(this).toggleClass('open');
+          $(this).children('i').toggleClass('fa-eye-slash fa-eye');
+          const input = $(this).prev();
+          input.attr('type', input.attr('type') === 'password' ? 'text' : 'password');
+        });
       });

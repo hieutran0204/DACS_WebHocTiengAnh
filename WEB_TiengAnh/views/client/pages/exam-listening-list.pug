@@ -3,6 +3,8 @@ extends ../layouts/default
 block content
   .container.mt-5
     h1.text-center.mb-4 Danh sách đề thi Listening TOEIC
+    if error && error.length
+      .alert.alert-danger.text-center #{error}
     if !examParts.length
       .alert.alert-info.text-center Không có đề thi Listening nào được public.
     else
@@ -21,9 +23,22 @@ block content
                   | #{difficultyMap[examPart.difficulty]}
                 p
                   strong Người tạo: 
-                  | #{examPart.createdBy.username}
+                  | #{examPart.createdBy ? examPart.createdBy.username : 'Không xác định'}
                 p
                   strong Ngày tạo: 
                   | #{new Date(examPart.createdAt).toLocaleDateString()}
               .card-footer
                 a.btn.btn-primary.w-100(href=`/toeic/listening/${examPart._id}`) Làm bài
+      // Phân trang
+      if total > limit
+        nav(aria-label='Page navigation')
+          ul.pagination.justify-content-center.mt-4
+            if page > 1
+              li.page-item
+                a.page-link(href=`?page=${page - 1}&limit=${limit}`) Trang trước
+            - for (let i = 1; i <= Math.ceil(total / limit); i++)
+              li.page-item(class=i === page ? 'active' : '')
+                a.page-link(href=`?page=${i}&limit=${limit}`) #{i}
+            if page < Math.ceil(total / limit)
+              li.page-item
+                a.page-link(href=`?page=${page + 1}&limit=${limit}`) Trang sau

@@ -1,207 +1,272 @@
+//- This is a Pug template for the admin dashboard page.
 doctype html
-html(lang="vi")
+html(lang="en")
   head
     meta(charset="UTF-8")
-    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
     title Admin Dashboard
-    link(href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet")
-    link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css")
-    script(src="https://cdn.jsdelivr.net/npm/chart.js")
-
-  body(class="bg-gray-100 dark:bg-gray-900 transition-colors duration-200")
-    //- Sidebar
-    div(class="flex h-screen")
-      //- Sidebar Navigation
-      div(class="w-64 bg-white dark:bg-gray-800 shadow-lg")
-        div(class="p-4 flex items-center border-b dark:border-gray-700")
-          i(class="fas fa-tachometer-alt text-blue-500 mr-2")
-          h1(class="text-xl font-bold dark:text-white") Admin Panel
-
-        nav(class="mt-6")
-          a(href="/admin/dashboard" class="flex items-center p-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700")
-            i(class="fas fa-th-large mr-3")
-            | Dashboard
-          a(href="#toeic" class="flex items-center p-3 bg-blue-100 dark:bg-gray-700 text-blue-600 dark:text-white")
-            i(class="fas fa-book mr-3")
-            | Quản lý TOEIC
-          a(href="#users" class="flex items-center p-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700")
-            i(class="fas fa-users mr-3")
-            | Người dùng
-          a(href="#settings" class="flex items-center p-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700")
-            i(class="fas fa-cog mr-3")
-            | Cài đặt
-
-        div(class="absolute bottom-0 w-full p-4")
-          button(id="darkModeToggle" class="w-full flex items-center justify-center p-2 rounded-lg bg-gray-200 dark:bg-gray-700")
-            i(class="fas fa-moon dark:hidden")
-            i(class="fas fa-sun hidden dark:block text-yellow-300")
-
-      //- Main Content
-      div(class="flex-1 overflow-y-auto p-8")
-        //- Dashboard Overview (Hidden by default - show when needed)
-        div(id="dashboardContent" class="hidden")
-          h2(class="text-2xl font-bold mb-6 dark:text-white") Dashboard Tổng Hợp
-          
-          //- Exam Type Cards
-          div(class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8")
-            each exam in [{name: 'TOEIC', icon: '📝', desc: 'Quản lý đề TOEIC (Part 1-7)'}, {name: 'IELTS', icon: '✍️', desc: 'Đề IELTS 4 kỹ năng'}, {name: 'TOEFL', icon: '🌍', desc: 'Đề TOEFL iBT/ITP'}]
-              div(class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer border-l-4 border-blue-500")
-                div(class="flex items-center mb-3")
-                  span(class="text-2xl mr-3")= exam.icon
-                  h3(class="text-lg font-semibold dark:text-white")= exam.name
-                p(class="text-gray-600 dark:text-gray-300")= exam.desc
-                button(class="mt-4 text-blue-500 hover:text-blue-700 dark:text-blue-400 flex items-center")
-                  | Vào trang 
-                  i(class="fas fa-arrow-right ml-2")
-
-          //- Quick Stats
-          div(class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow mb-8")
-            h3(class="text-lg font-semibold mb-4 dark:text-white") 📊 Thống kê nhanh
-            div(class="grid grid-cols-3 gap-4")
-              div(class="bg-blue-50 dark:bg-gray-700 p-4 rounded-lg")
-                p(class="text-gray-500 dark:text-gray-300") Tổng số đề thi
-                p(class="text-2xl font-bold dark:text-white") 120
-              div(class="bg-green-50 dark:bg-gray-700 p-4 rounded-lg")
-                p(class="text-gray-500 dark:text-gray-300") Đề mới nhất
-                p(class="text-xl font-bold dark:text-white") TOEIC Advanced (DE005)
-              div(class="bg-yellow-50 dark:bg-gray-700 p-4 rounded-lg")
-                p(class="text-gray-500 dark:text-gray-300") User đang hoạt động
-                p(class="text-2xl font-bold dark:text-white") 85
-
-        //- TOEIC Management (Shown by default)
-        div(id="toeicContent")
-          //- Header with Actions
-          div(class="flex justify-between items-center mb-8")
-            h2(class="text-2xl font-bold dark:text-white") 📝 Quản lý đề TOEIC
-            a(href="/admin/exams/create" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center")
-              i(class="fas fa-plus mr-2")
-              | Tạo đề mới
-
-
-          //- Quick Create Section
-          div(class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow mb-8")
-            h3(class="text-lg font-semibold mb-4 dark:text-white") 1. Tạo đề nhanh
-            div(class="grid grid-cols-1 md:grid-cols-3 gap-6")
-              //- Part Selection
-              div
-                label(class="block text-gray-700 dark:text-gray-300 mb-2") Chọn Part:
-                div(class="space-y-2")
-                  each part in [5, 6, 7]
-                    label(class="flex items-center")
-                      input(type="checkbox" class="rounded text-blue-500 mr-2")
-                      span(class="dark:text-white") Part #{part}
-                  label(class="flex items-center")
-                    input(type="checkbox" class="rounded text-blue-500 mr-2")
-                    span(class="dark:text-white") Đề tổng hợp
-
-              //- Difficulty
-              div
-                label(class="block text-gray-700 dark:text-gray-300 mb-2") Độ khó:
-                div(class="space-y-2")
-                  each diff in ['Dễ', 'Trung bình', 'Khó']
-                    label(class="flex items-center")
-                      input(type="radio" name="difficulty" class="mr-2")
-                      span(class="dark:text-white")= diff
-
-              //- Options
-              div
-                label(class="block text-gray-700 dark:text-gray-300 mb-2") Tùy chọn:
-                button(class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-3 py-2 rounded-lg mb-2 flex items-center w-full")
-                  i(class="fas fa-dice mr-2")
-                  | Tạo đề ngẫu nhiên
-                label(class="flex items-center bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-3 py-2 rounded-lg cursor-pointer")
-                  i(class="fas fa-file-upload mr-2")
-                  | Nhập từ file
-                  input(type="file" class="hidden")
-
-          //- Exam List Table
-          div(class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden")
-            div(class="p-4 flex justify-between items-center border-b dark:border-gray-700")
-              h3(class="text-lg font-semibold dark:text-white") 2. Danh sách đề TOEIC
-              div(class="relative")
-                input(type="text" placeholder="Tìm kiếm đề..." class="pl-10 pr-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white")
-                i(class="fas fa-search absolute left-3 top-3 text-gray-400")
-
-            div(class="overflow-x-auto")
-              table(class="w-full")
-                thead(class="bg-gray-50 dark:bg-gray-700")
-                  tr
-                    th(class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase") ID Đề
-                    th(class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase") Tên Đề
-                    th(class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase") Part Áp Dụng
-                    th(class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase") Độ Khó
-                    th(class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase") Lượt Thi
-                    th(class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase") Hành Động
-                tbody(class="divide-y divide-gray-200 dark:divide-gray-700")
-                  each exam in [{id: 'TE001', name: 'TOEIC Part 5+6', parts: '5, 6', difficulty: 'Dễ', attempts: 150}, {id: 'TE002', name: 'TOEIC Full Test', parts: '1-7', difficulty: 'Khó', attempts: 320}]
-                    tr(class="hover:bg-gray-50 dark:hover:bg-gray-700")
-                      td(class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white")= exam.id
-                      td(class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300")= exam.name
-                      td(class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300")= exam.parts
-                      td(class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300")
-                        span(class=`px-2 py-1 rounded-full text-xs ${exam.difficulty === 'Khó' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' : exam.difficulty === 'Trung bình' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'}`)= exam.difficulty
-                      td(class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300")= exam.attempts
-                      td(class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300")
-                        button(class="text-blue-500 hover:text-blue-700 mr-3" title="Sửa")
-                          i(class="fas fa-edit")
-                        button(class="text-red-500 hover:text-red-700 mr-3" title="Xóa")
-                          i(class="fas fa-trash")
-                        button(class="text-green-500 hover:text-green-700" title="Xuất file")
-                          i(class="fas fa-file-export")
-
-          //- Tools Section
-          div(class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6")
-            div(class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow")
-              h3(class="text-lg font-semibold mb-4 dark:text-white") 🔍 Lọc đề
-              select(class="w-full p-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white mb-2")
-                option Tất cả Part
-                option Part 5
-                option Part 6
-                option Part 7
-              select(class="w-full p-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white")
-                option Tất cả độ khó
-                option Dễ
-                option Trung bình
-                option Khó
-              button(class="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg") Áp dụng
-
-            div(class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow")
-              h3(class="text-lg font-semibold mb-4 dark:text-white") 📥 Export
-              select(class="w-full p-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white mb-2")
-                option Chọn định dạng
-                option PDF
-                option Word
-                option Excel
-              button(class="w-full bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg flex items-center justify-center")
-                i(class="fas fa-download mr-2")
-                | Xuất file
-
-            div(class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow")
-              h3(class="text-lg font-semibold mb-4 dark:text-white") 🚨 Báo cáo
-              div(class="flex items-center justify-between p-3 bg-red-50 dark:bg-gray-700 rounded-lg mb-2")
-                p(class="text-sm dark:text-white") Đề TE005 bị báo lỗi
-                button(class="text-xs text-blue-500") Xem chi tiết
-              button(class="w-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white py-2 rounded-lg") Xem tất cả
-
-    //- Dark Mode Toggle Script
-    script.
-      const darkModeToggle = document.getElementById('darkModeToggle');
-      const html = document.documentElement;
-
-      // Check for saved user preference
-      if (localStorage.getItem('darkMode') === 'true') {
-        html.classList.add('dark');
+    link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css")
+    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css")
+    style.
+      body {
+        font-size: 0.9rem;
+      }
+      .sidebar {
+        min-height: 100vh;
       }
 
-      darkModeToggle.addEventListener('click', () => {
-        html.classList.toggle('dark');
-        localStorage.setItem('darkMode', html.classList.contains('dark'));
-      });
+  body
+    .container-fluid
+      .row
+        nav#sidebar.col-md-3.col-lg-2.d-md-block.bg-dark.sidebar
+          .position-sticky.pt-3
+            .sidebar-header
+              h3.text-light.text-center Admin Panel
+            ul.nav.flex-column
+              li.nav-item
+                a.nav-link.active(href='/admin/dashboard')
+                  i.fas.fa-tachometer-alt.me-2
+                  | Dashboard
+              li.nav-item.dropdown
+                a.nav-link.dropdown-toggle(href='#', data-bs-toggle='dropdown', aria-expanded='false')
+                  i.fas.fa-question-circle.me-2
+                  | Tạo câu hỏi
+                ul.dropdown-menu.dropdown-menu-dark
+                  li
+                    a.dropdown-item(href='/admin/questions/create') Reading
+                  li
+                    a.dropdown-item(href='/admin/listening/create') Listening
+                  li
+                    a.dropdown-item(href='/admin/toeic-writing/create') Writing
+              li.nav-item.dropdown
+                a.nav-link.dropdown-toggle(href='#', data-bs-toggle='dropdown', aria-expanded='false')
+                  i.fas.fa-book.me-2
+                  | Quản lý đề thi theo Part
+                ul.dropdown-menu.dropdown-menu-dark
+                  li
+                    a.dropdown-item(href='/admin/TOEIC/exam-reading') Reading
+                  li
+                    a.dropdown-item(href='/admin/TOEIC/exam-listening') Listening
+                  li
+                    a.dropdown-item(href='/admin/toeic-writing') Writing
+                            li.nav-item.dropdown
+                a.nav-link.dropdown-toggle(href='#', data-bs-toggle='dropdown', aria-expanded='false')
+                  i.fas.fa-book.me-2
+                  | Quản lý đề thi theo kỹ năng
+                ul.dropdown-menu.dropdown-menu-dark
+                  li
+                    a.dropdown-item(href='/admin/TOEIC/exam-reading') Reading
+                  li
+                    a.dropdown-item(href='/admin/TOEIC/exam-listening') Listening
+                  li
+                    a.dropdown-item(href='/admin/toeic-writing/exams') Writing
+              li.nav-item.dropdown
+                a.nav-link.dropdown-toggle(href='#', data-bs-toggle='dropdown', aria-expanded='false')
+                  i.fas.fa-chalkboard-teacher.me-2
+                  | Quản lý luyện tập
+                ul.dropdown-menu.dropdown-menu-dark
+                  li
+                    a.dropdown-item(href='/admin/speaking') Luyện Nói
+                  li
+                    a.dropdown-item(href='/admin/transcription') Luyện Nghe Viết
+              li.nav-item.dropdown
+                a.nav-link.dropdown-toggle(href='#', data-bs-toggle='dropdown', aria-expanded='false')
+                  i.fas.fa-gamepad.me-2
+                  | Quản lý trò chơi
+                ul.dropdown-menu.dropdown-menu-dark
+                  li
+                    a.dropdown-item(href='/admin/wordgame/create') Xáo Chữ
+                  li
+                    a.dropdown-item(href='/admin/hidden-word/') Đoán Hình
+              li.nav-item
+                a.nav-link(href='/admin/users')
+                  i.fas.fa-users.me-2
+                  | Quản lý người dùng
+              li.nav-item
+                a.nav-link(href='/admin/settings')
+                  i.fas.fa-cog.me-2
+                  | Cài đặt
 
-      // Tab switching logic
-      function showTab(tabId) {
-        document.querySelectorAll('[id$="Content"]').forEach(el => {
-          el.classList.add('hidden');
+        main.col-md-9.ms-sm-auto.col-lg-10.px-md-4
+          .d-flex.justify-content-between.flex-wrap.flex-md-nowrap.align-items-center.pt-3.pb-2.mb-3.border-bottom
+            h1.h2 Dashboard
+            .btn-toolbar.mb-2.mb-md-0
+              .btn-group.me-2
+                button.btn.btn-sm.btn-outline-secondary(type='button') Export
+              button.btn.btn-sm.btn-outline-secondary.dropdown-toggle(type='button')
+                i.fas.fa-calendar.me-1
+                | Tuần này
+
+          .row.mb-4
+            .col-md-3
+              .card.bg-primary.text-white.mb-3
+                .card-body
+                  .d-flex.justify-content-between
+                    div
+                      h6.card-title Số câu hỏi
+                      h2.card-text= totalQuestions || 0
+                    i.fas.fa-question-circle.fa-3x
+                  a.stretched-link(href='/admin/questions')
+            .col-md-3
+              .card.bg-success.text-white.mb-3
+                .card-body
+                  .d-flex.justify-content-between
+                    div
+                      h6.card-title Số đề thi
+                      h2.card-text= totalExams || 0
+                    i.fas.fa-book.fa-3x
+                  a.stretched-link(href='/admin/TOEIC/exam-reading')
+            .col-md-3
+              .card.bg-warning.text-dark.mb-3
+                .card-body
+                  .d-flex.justify-content-between
+                    div
+                      h6.card-title Người dùng
+                      h2.card-text= totalUsers || 0
+                    i.fas.fa-users.fa-3x
+                  a.stretched-link(href='/admin/users')
+            .col-md-3
+              .card.bg-danger.text-white.mb-3
+                .card-body
+                  .d-flex.justify-content-between
+                    div
+                      h6.card-title Báo cáo lỗi
+                      h2.card-text= totalReports || 0
+                    i.fas.fa-exclamation-circle.fa-3x
+                  a.stretched-link(href='/admin/reports')
+
+          .row
+            .col-md-8
+              .card.mb-4
+                .card-header
+                  h5 Hoạt động gần đây
+                .card-body
+                  .table-responsive
+                    table.table.table-hover
+                      thead
+                        tr
+                          th Thời gian
+                          th Hành động
+                          th Chi tiết
+                          th Người thực hiện
+                      tbody
+                        if recentActivities && recentActivities.length > 0
+                          each activity in recentActivities
+                            tr
+                              td= new Date(activity.createdAt).toLocaleString()
+                              td
+                                if activity.examType === 'writing'
+                                  span.badge.bg-info Tạo đề thi Writing
+                                else
+                                  span.badge.bg-primary Tạo đề thi
+                              td= `${activity.examType || 'Unknown'} - Part ${activity.part || 'N/A'}`
+                              td= activity.createdBy && activity.createdBy.username ? activity.createdBy.username : 'Unknown'
+                        else
+                          tr
+                            td(colspan="4").text-center.text-muted Chưa có hoạt động nào.
+
+            .col-md-4
+              .card.mb-4
+                .card-header
+                  h5 Thao tác nhanh
+                .card-body
+                  .d-grid.gap-2
+                    a.btn.btn-primary(href='/admin/questions/create')
+                      i.fas.fa-plus.me-2
+                      | Tạo câu hỏi mới
+                    a.btn.btn-success(href='/admin/TOEIC/exam-reading/create')
+                      i.fas.fa-book-medical.me-2
+                      | Tạo đề thi Reading
+                    a.btn.btn-success(href='/admin/toeic-writing/exams/create')
+                      i.fas.fa-book-medical.me-2
+                      | Tạo đề thi Writing
+                    a.btn.btn-info(href='/admin/users/create')
+                      i.fas.fa-user-plus.me-2
+                      | Thêm người dùng
+                    a.btn.btn-warning(href='/admin/reports')
+                      i.fas.fa-exclamation-triangle.me-2
+                      | Xem báo cáo
+
+          if questionsByPart && examsByType
+            .card.mb-4
+              .card-header
+                h5 Thống kê hoạt động
+              .card-body
+                .row
+                  .col-md-6
+                    canvas#questionsChart(height='300')
+                  .col-md-6
+                    canvas#examsChart(height='300')
+
+    script(src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js')
+    script(src='https://cdn.jsdelivr.net/npm/chart.js')
+    script.
+      if (typeof questionsByPart !== 'undefined' && typeof examsByType !== 'undefined') {
+        const qCtx = document.getElementById('questionsChart').getContext('2d');
+        new Chart(qCtx, {
+          type: 'bar',
+          data: {
+            labels: ['Part 1', 'Part 2', 'Part 3', 'Part 4', 'Part 5', 'Part 6', 'Part 7'],
+            datasets: [{
+              label: 'Số câu hỏi',
+              data: [
+                questionsByPart.part1 || 0,
+                questionsByPart.part2 || 0,
+                questionsByPart.part3 || 0,
+                questionsByPart.part4 || 0,
+                questionsByPart.part5 || 0,
+                questionsByPart.part6 || 0,
+                questionsByPart.part7 || 0
+              ],
+              backgroundColor: [
+                'rgba(54, 162, 235, 0.7)',
+                'rgba(255, 99, 132, 0.7)',
+                'rgba(75, 192, 192, 0.7)',
+                'rgba(153, 102, 255, 0.7)',
+                'rgba(255, 206, 86, 0.7)',
+                'rgba(255, 159, 64, 0.7)',
+                'rgba(199, 199, 199, 0.7)'
+              ]
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              title: {
+                display: true,
+                text: 'Phân bổ câu hỏi theo Part'
+              }
+            }
+          }
         });
-        document.getElementById(tabId + 'Content').classList.remove('hidden');
+
+        const eCtx = document.getElementById('examsChart').getContext('2d');
+        new Chart(eCtx, {
+          type: 'doughnut',
+          data: {
+            labels: ['Listening', 'Reading', 'Writing'],
+            datasets: [{
+              label: 'Số đề thi',
+              data: [
+                examsByType.listening || 0,
+                examsByType.reading || 0,
+                examsByType.writing || 0
+              ],
+              backgroundColor: [
+                'rgba(54, 162, 235, 0.7)',
+                'rgba(255, 99, 132, 0.7)',
+                'rgba(75, 192, 192, 0.7)'
+              ]
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              title: {
+                display: true,
+                text: 'Phân bổ đề thi theo loại'
+              }
+            }
+          }
+        });
       }

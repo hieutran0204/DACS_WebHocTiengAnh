@@ -1,0 +1,120 @@
+extends ../../layouts/default
+
+block content
+  div(style="max-width: 1000px; margin: 0 auto; padding: 20px;")
+    h1(style="text-align: center; margin-bottom: 30px;") Chi Tiết Đề Thi TOEIC Writing
+
+    if error && error.length
+      div(style="color: red; margin-bottom: 20px; text-align: center; background-color: #ffe6e6; padding: 10px; border-radius: 4px;")
+        | #{error}
+    if success && success.length
+      div(style="color: green; margin-bottom: 20px; text-align: center; background-color: #e6ffe6; padding: 10px; border-radius: 4px;")
+        | #{success}
+
+    // Thông tin chi tiết đề thi
+    div(style="margin-bottom: 20px;")
+      h2 Thông Tin Đề Thi
+      p <strong>Mã Đề:</strong> #{exam.examCode || 'N/A'}
+      p <strong>Mã CC:</strong> #{exam.MaCC || 'N/A'}
+      p <strong>Chủ Đề Số:</strong> #{exam.TopicN || 'N/A'}
+      p <strong>Độ Khó:</strong> #{difficultyMap[exam.difficulty] || 'Chưa xác định'}
+      p <strong>Số Câu Hỏi:</strong> #{exam.questionCount || 0}
+      p <strong>Parts:</strong> 
+        if exam.parts && Array.isArray(exam.parts) && exam.parts.length
+          | #{exam.parts.map(p => `Part ${p}`).join(', ')}
+        else
+          | N/A
+      p <strong>Trạng Thái:</strong> #{exam.status || 'draft'}
+      p <strong>Ghi Chú:</strong> #{exam.notes || 'Không có'}
+
+    // Danh sách câu hỏi
+    div(style="margin-bottom: 20px;")
+      h2 Danh Sách Câu Hỏi
+      if exam.questions && exam.questions.length
+        table(style="width: 100%; border-collapse: collapse; margin-top: 20px;")
+          thead
+            tr(style="background-color: #f2f2f2;")
+              th(style="padding: 10px; border: 1px solid #ddd;") Part
+              th(style="padding: 10px; border: 1px solid #ddd;") Câu Hỏi
+              th(style="padding: 10px; border: 1px solid #ddd;") Độ Khó
+          tbody
+            each question in exam.questions
+              tr
+                td(style="padding: 10px; border: 1px solid #ddd;") Part #{question.part}
+                td(style="padding: 10px; border: 1px solid #ddd;")
+                  if question.part === 8
+                    | Keyword 1: #{question.part8.keyword1}, Keyword 2: #{question.part8.keyword2}
+                  else if question.part === 9
+                    | Situation: #{question.part9.situation}
+                  else if question.part === 10
+                    | Question: #{question.part10.question}
+                td(style="padding: 10px; border: 1px solid #ddd;") #{difficultyMap[question.difficulty] || 'Chưa xác định'}
+      else
+        p(style="text-align: center; color: #555;") Không có câu hỏi nào.
+
+    // Form chỉnh sửa đề thi
+    div(style="margin-bottom: 20px;")
+      h2 Chỉnh Sửa Đề Thi
+      form(method="POST" action=`/admin/toeic-writing/exams/update/${exam._id}`)
+        div(style="margin-bottom: 15px;")
+          label(for="examCode") Mã Đề:
+          input(type="text" name="examCode" value=exam.examCode required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;")
+        div(style="margin-bottom: 15px;")
+          label(for="MaCC") Mã CC:
+          input(type="text" name="MaCC" value=exam.MaCC required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;")
+        div(style="margin-bottom: 15px;")
+          label(for="TopicN") Chủ Đề Số:
+          input(type="number" name="TopicN" value=exam.TopicN min="1" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;")
+        div(style="margin-bottom: 15px;")
+          label(for="difficulty") Độ Khó:
+          select(name="difficulty" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;")
+            option(value="0" selected=exam.difficulty === 0) Dễ
+            option(value="1" selected=exam.difficulty === 1) Trung bình
+            option(value="2" selected=exam.difficulty === 2) Khó
+        div(style="margin-bottom: 15px;")
+          label(for="status") Trạng Thái:
+          select(name="status" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;")
+            option(value="draft" selected=exam.status === "draft") draft
+            option(value="public" selected=exam.status === "public") public
+        div(style="margin-bottom: 15px;")
+          label(for="notes") Ghi Chú:
+          textarea(name="notes" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;") #{exam.notes}
+
+        // Chọn câu hỏi Part 8
+        div(style="margin-bottom: 15px;")
+          label Part 8 (Tối đa 5 câu):
+          if allQuestions.part8 && allQuestions.part8.length
+            each question in allQuestions.part8
+              div(style="margin: 5px 0;")
+                input(type="checkbox" name="part8" value=question._id checked=exam.questions.some(q => q._id.toString() === question._id.toString()))
+                |  Keyword 1: #{question.part8.keyword1}, Keyword 2: #{question.part8.keyword2}
+          else
+            p Không có câu hỏi Part 8.
+
+        // Chọn câu hỏi Part 9
+        div(style="margin-bottom: 15px;")
+          label Part 9 (Tối đa 2 câu):
+          if allQuestions.part9 && allQuestions.part9.length
+            each question in allQuestions.part9
+              div(style="margin: 5px 0;")
+                input(type="checkbox" name="part9" value=question._id checked=exam.questions.some(q => q._id.toString() === question._id.toString()))
+                |  Situation: #{question.part9.situation}
+          else
+            p Không có câu hỏi Part 9.
+
+        // Chọn câu hỏi Part 10
+        div(style="margin-bottom: 15px;")
+          label Part 10 (Tối đa 1 câu):
+          if allQuestions.part10 && allQuestions.part10.length
+            each question in allQuestions.part10
+              div(style="margin: 5px 0;")
+                input(type="checkbox" name="part10" value=question._id checked=exam.questions.some(q => q._id.toString() === question._id.toString()))
+                |  Question: #{question.part10.question}
+          else
+            p Không có câu hỏi Part 10.
+
+        button(type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;") Cập Nhật Đề Thi
+
+    // Nút quay lại
+    div
+      a(href="/admin/toeic-writing/exams" style="padding: 10px 20px; background-color: #ccc; color: black; text-decoration: none; border-radius: 4px;") Quay Lại

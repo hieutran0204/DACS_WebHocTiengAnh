@@ -3,7 +3,7 @@ const User = require('../../models/shared/user.model');
 // Hiển thị danh sách người dùng
 exports.getUserList = async (req, res) => {
   try {
-    const users = await User.find().select('username email role createdAt');
+    const users = await User.find().select('fullname username email phonenumber age sex role createdAt');
     res.render('admin/pages/users/list', {
       users,
       success: req.flash('success'),
@@ -24,30 +24,30 @@ exports.showCreateForm = (req, res) => {
 // Tạo người dùng mới
 exports.createUser = async (req, res) => {
   try {
-    const { username, email, password, role } = req.body;
-    
+    const { fullname, phonenumber, email, age, username, password, sex, role } = req.body;
+
     // Kiểm tra dữ liệu đầu vào
-    if (!username || !email || !password || !role) {
+    if (!fullname || !phonenumber || !email || !age || !username || !password || !sex || !role) {
       req.flash('error', 'Vui lòng điền đầy đủ thông tin');
       return res.redirect('/admin/users/create');
     }
 
-    // Kiểm tra username và email đã tồn tại
-    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+    // Kiểm tra username, email, và phonenumber đã tồn tại
+    const existingUser = await User.findOne({ $or: [{ username }, { email }, { phonenumber }] });
     if (existingUser) {
-      req.flash('error', 'Username hoặc email đã tồn tại');
+      req.flash('error', 'Tên người dùng, email hoặc số điện thoại đã tồn tại');
       return res.redirect('/admin/users/create');
     }
 
     // Tạo người dùng mới
-    const user = new User({ username, email, password, role });
+    const user = new User({ fullname, phonenumber, email, age, username, password, sex, role });
     await user.save();
 
     req.flash('success', 'Tạo người dùng thành công');
     res.redirect('/admin/users');
   } catch (error) {
     console.error('Lỗi khi tạo người dùng:', error);
-    req.flash('error', 'Lỗi khi tạo người dùng');
+    req.flash('error', 'Lỗi khi tạo người dùng: ' + error.message);
     res.redirect('/admin/users/create');
   }
 };
@@ -55,7 +55,7 @@ exports.createUser = async (req, res) => {
 // Hiển thị form sửa người dùng
 exports.showEditForm = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select('username email role');
+    const user = await User.findById(req.params.id).select('fullname username email phonenumber age sex role');
     if (!user) {
       req.flash('error', 'Không tìm thấy người dùng');
       return res.redirect('/admin/users');
@@ -71,33 +71,33 @@ exports.showEditForm = async (req, res) => {
 // Cập nhật thông tin người dùng
 exports.updateUser = async (req, res) => {
   try {
-    const { username, email, role } = req.body;
+    const { fullname, phonenumber, email, age, username, sex, role } = req.body;
     const userId = req.params.id;
 
     // Kiểm tra dữ liệu đầu vào
-    if (!username || !email || !role) {
+    if (!fullname || !phonenumber || !email || !age || !username || !sex || !role) {
       req.flash('error', 'Vui lòng điền đầy đủ thông tin');
       return res.redirect(`/admin/users/edit/${userId}`);
     }
 
-    // Kiểm tra username và email đã tồn tại (trừ user hiện tại)
+    // Kiểm tra username, email, và phonenumber đã tồn tại (trừ user hiện tại)
     const existingUser = await User.findOne({
-      $or: [{ username }, { email }],
+      $or: [{ username }, { email }, { phonenumber }],
       _id: { $ne: userId }
     });
     if (existingUser) {
-      req.flash('error', 'Username hoặc email đã tồn tại');
+      req.flash('error', 'Tên người dùng, email hoặc số điện thoại đã tồn tại');
       return res.redirect(`/admin/users/edit/${userId}`);
     }
 
     // Cập nhật người dùng
-    await User.findByIdAndUpdate(userId, { username, email, role }, { new: true });
+    await User.findByIdAndUpdate(userId, { fullname, phonenumber, email, age, username, sex, role }, { new: true });
 
     req.flash('success', 'Cập nhật người dùng thành công');
     res.redirect('/admin/users');
   } catch (error) {
     console.error('Lỗi khi cập nhật người dùng:', error);
-    req.flash('error', 'Lỗi khi cập nhật người dùng');
+    req.flash('error', 'Lỗi khi cập nhật người dùng: ' + error.message);
     res.redirect(`/admin/users/edit/${req.params.id}`);
   }
 };
@@ -107,7 +107,7 @@ exports.deleteUser = async (req, res) => {
   try {
     const userId = req.params.id;
 
-    // Không cho phép xóa admin chính (giả định admin đầu tiên)
+    // Không cho phép xóa admin chính (giả định admin duy nhất)
     const user = await User.findById(userId);
     if (!user) {
       req.flash('error', 'Không tìm thấy người dùng');
@@ -124,7 +124,7 @@ exports.deleteUser = async (req, res) => {
     res.redirect('/admin/users');
   } catch (error) {
     console.error('Lỗi khi xóa người dùng:', error);
-    req.flash('error', 'Lỗi khi xóa người dùng');
+    req.flash('error', 'Lỗi khi xóa người dùng: ' + error.message);
     res.redirect('/admin/users');
   }
 };

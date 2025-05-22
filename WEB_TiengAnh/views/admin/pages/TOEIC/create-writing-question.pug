@@ -2,82 +2,187 @@ extends ../../layouts/default
 
 block content
   div(style="max-width: 800px; margin: 0 auto; padding: 20px;")
-    h1(style="text-align: center; margin-bottom: 30px;") Tạo đề TOEIC Writing
+    h1(style="text-align: center; margin-bottom: 30px;") Tạo Câu Hỏi TOEIC Writing
 
-    form(action="/admin/toeic-writing/create" method="POST" enctype="multipart/form-data")
-      //- Phần chọn part (chỉ để hiển thị, không ảnh hưởng submit)
-      div(style="margin-bottom: 20px; text-align: center;")
-        label(for="partSelector" style="font-weight: bold; margin-right: 10px;") Chọn phần hiển thị:
-        select(id="partSelector" onchange="togglePartDisplay()" style="padding: 5px;")
-          option(value="all") Tất cả các phần
-          option(value="1") Chỉ Part 1
-          option(value="2") Chỉ Part 2
-          option(value="3") Chỉ Part 3
+    if error && error.length
+      div(style="color: red; margin-bottom: 20px; text-align: center; background-color: #ffe6e6; padding: 10px; border-radius: 4px;")
+        | #{error}
+    if success && success.length
+      div(style="color: green; margin-bottom: 20px; text-align: center; background-color: #e6ffe6; padding: 10px; border-radius: 4px;")
+        | #{success}
 
-      //- Phần 1 - Luôn có trong form nhưng có thể ẩn
-      div.part-section(id="part1-section")
-        h2(style="border-bottom: 1px solid #ddd; padding-bottom: 10px;") Part 1 - Viết câu từ hình và từ khóa
-        each _, i in Array(5)
-          div.question-box(style="margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 5px;")
-            h3 Câu #{i+1}
-            div(style="margin-bottom: 10px;")
-              input(type="text" name=`part1[${i}][keyword1]` placeholder="Từ khóa 1" style="width: 100%; padding: 8px;" required)
-            div(style="margin-bottom: 10px;")
-              input(type="text" name=`part1[${i}][keyword2]` placeholder="Từ khóa 2" style="width: 100%; padding: 8px;" required)
-            div
-              label(style="display: block; margin-bottom: 5px;") Hình ảnh:
-              input(type="file" name=`part1[${i}][image]` accept="image/*" style="width: 100%;" required)
+    form(action="/admin/toeic-writing/add" method="POST" enctype="multipart/form-data" id="writingForm")
+      div(style="margin-bottom: 20px;")
+        label(for="MaCC" style="display: block; margin-bottom: 5px;") Mã Chứng Chỉ:
+        input(type="text" name="MaCC" placeholder="VD: TOEIC Writing" required maxlength="50" style="width: 100%; padding: 8px; border-radius: 4px;")
 
-      //- Phần 2 - Luôn có trong form nhưng có thể ẩn
-      div.part-section(id="part2-section" style="display: none;")
-        h2(style="border-bottom: 1px solid #ddd; padding-bottom: 10px;") Part 2 - Viết email
-        each _, i in Array(2)
-          div.question-box(style="margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 5px;")
-            h3 Email #{i+1}
-            div(style="margin-bottom: 10px;")
-              textarea(name=`part2[${i}][situation]` placeholder="Tình huống" style="width: 100%; padding: 8px; min-height: 80px;" required)
-            div(style="margin-bottom: 10px;")
-              textarea(name=`part2[${i}][requirements]` placeholder="Yêu cầu" style="width: 100%; padding: 8px; min-height: 80px;" required)
-            div
-              textarea(name=`part2[${i}][sampleAnswer]` placeholder="Câu trả lời mẫu" style="width: 100%; padding: 8px; min-height: 100px;")
+      div(style="margin-bottom: 20px;")
+        label(for="TopicN" style="display: block; margin-bottom: 5px;") Mã Đề:
+        input(type="number" name="TopicN" placeholder="VD: 1" required min="1" style="width: 100%; padding: 8px; border-radius: 4px;")
 
-      //- Phần 3 - Luôn có trong form nhưng có thể ẩn
-      div.part-section(id="part3-section" style="display: none;")
-        h2(style="border-bottom: 1px solid #ddd; padding-bottom: 10px;") Part 3 - Viết luận
-        div.question-box(style="margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 5px;")
-          div(style="margin-bottom: 10px;")
-            textarea(name="part3[0][question]" placeholder="Đề bài luận" style="width: 100%; padding: 8px; min-height: 100px;" required)
-          div
-            textarea(name="part3[0][sampleAnswer]" placeholder="Bài luận mẫu" style="width: 100%; padding: 8px; min-height: 150px;")
+      div(style="margin-bottom: 20px;")
+        label(for="part" style="display: block; margin-bottom: 5px;") Part:
+        select(name="part" required style="width: 100%; padding: 8px; border-radius: 4px;" onchange="toggleFields(this)")
+          option(value="" disabled selected) Chọn Part
+          option(value="8") Part 8 (Viết câu từ hình và từ khóa)
+          option(value="9") Part 9 (Viết email)
+          option(value="10") Part 10 (Viết luận)
+
+      div(style="margin-bottom: 20px;")
+        label(for="questionN" style="display: block; margin-bottom: 5px;") Số Câu Hỏi:
+        input(type="number" name="questionN" placeholder="VD: 1" required min="1" max="100" style="width: 100%; padding: 8px; border-radius: 4px;")
+
+      div(style="margin-bottom: 20px;")
+        label(for="difficulty" style="display: block; margin-bottom: 5px;") Độ Khó:
+        select(name="difficulty" required style="width: 100%; padding: 8px; border-radius: 4px;")
+          option(value="" disabled selected) Chọn Độ Khó
+          option(value="0") Dễ
+          option(value="1") Trung bình
+          option(value="2") Khó
+
+      div#part8-fields(style="display: none;")
+        div(style="margin-bottom: 20px;")
+          label(for="keyword1" style="display: block; margin-bottom: 5px;") Từ Khóa 1:
+          input(type="text" name="keyword1" placeholder="VD: office" maxlength="100" style="width: 100%; padding: 8px; border-radius: 4px;")
+        div(style="margin-bottom: 20px;")
+          label(for="keyword2" style="display: block; margin-bottom: 5px;") Từ Khóa 2:
+          input(type="text" name="keyword2" placeholder="VD: meeting" maxlength="100" style="width: 100%; padding: 8px; border-radius: 4px;")
+        div(style="margin-bottom: 20px;")
+          label(for="image" style="display: block; margin-bottom: 5px;") Hình Ảnh:
+          input(type="file" name="image" accept="image/jpeg,image/png,image/gif" style="width: 100%;")
+          span.file-size(style="color: #555; margin-left: 10px; display: none;")
+          img.file-preview(style="max-width: 100px; margin-top: 10px; display: none;")
+
+      div#part9-fields(style="display: none;")
+        div(style="margin-bottom: 20px;")
+          label(for="situation" style="display: block; margin-bottom: 5px;") Tình Huống:
+          textarea(name="situation" placeholder="VD: You received a complaint..." maxlength="1000" style="width: 100%; padding: 8px; min-height: 100px; border-radius: 4px;")
+        div(style="margin-bottom: 20px;")
+          label(for="requirements" style="display: block; margin-bottom: 5px;") Yêu Cầu:
+          textarea(name="requirements" placeholder="VD: Respond to the complaint..." maxlength="1000" style="width: 100%; padding: 8px; min-height: 100px; border-radius: 4px;")
+        div(style="margin-bottom: 20px;")
+          label(for="sampleAnswer" style="display: block; margin-bottom: 5px;") Câu Trả Lời Mẫu:
+          textarea(name="sampleAnswer" placeholder="VD: Dear Customer..." maxlength="2000" style="width: 100%; padding: 8px; min-height: 150px; border-radius: 4px;")
+
+      div#part10-fields(style="display: none;")
+        div(style="margin-bottom: 20px;")
+          label(for="question" style="display: block; margin-bottom: 5px;") Đề Bài Luận:
+          textarea(name="question" placeholder="VD: Discuss the importance of..." maxlength="1000" style="width: 100%; padding: 8px; min-height: 100px; border-radius: 4px;")
+        div(style="margin-bottom: 20px;")
+          label(for="sampleAnswer" style="display: block; margin-bottom: 5px;") Bài Luận Mẫu:
+          textarea(name="sampleAnswer" placeholder="VD: In today’s world..." maxlength="3000" style="width: 100%; padding: 8px; min-height: 150px; border-radius: 4px;")
+
+      div(style="margin-bottom: 20px;")
+        label(for="notes" style="display: block; margin-bottom: 5px;") Ghi chú:
+        textarea(name="notes" placeholder="Thêm ghi chú (nếu có)" maxlength="2000" style="width: 100%; padding: 8px; min-height: 100px; border-radius: 4px;")
 
       div(style="text-align: center; margin-top: 30px;")
-        button(type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;") Tạo Đề
+        button(type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;") Tạo Câu Hỏi
 
   script.
-    function togglePartDisplay() {
-      const selection = document.getElementById('partSelector').value;
-      
-      // Ẩn tất cả các phần trước
-      document.querySelectorAll('.part-section').forEach(section => {
-        section.style.display = 'none';
-      });
+    function toggleFields(select) {
+      const part8Fields = document.getElementById('part8-fields');
+      const part9Fields = document.getElementById('part9-fields');
+      const part10Fields = document.getElementById('part10-fields');
 
-      // Hiển thị theo lựa chọn
-      if (selection === 'all') {
-        document.getElementById('part1-section').style.display = 'block';
-        document.getElementById('part2-section').style.display = 'block';
-        document.getElementById('part3-section').style.display = 'block';
-      } else if (selection === '1') {
-        document.getElementById('part1-section').style.display = 'block';
-      } else if (selection === '2') {
-        document.getElementById('part2-section').style.display = 'block';
-      } else if (selection === '3') {
-        document.getElementById('part3-section').style.display = 'block';
+      part8Fields.style.display = 'none';
+      part9Fields.style.display = 'none';
+      part10Fields.style.display = 'none';
+
+      part8Fields.querySelectorAll('[required]').forEach(field => field.removeAttribute('required'));
+      part9Fields.querySelectorAll('[required]').forEach(field => field.removeAttribute('required'));
+      part10Fields.querySelectorAll('[required]').forEach(field => field.removeAttribute('required'));
+
+      if (select.value === '8') {
+        part8Fields.style.display = 'block';
+        part8Fields.querySelector('input[name="keyword1"]').setAttribute('required', 'required');
+        part8Fields.querySelector('input[name="keyword2"]').setAttribute('required', 'required');
+        part8Fields.querySelector('input[name="image"]').setAttribute('required', 'required');
+      } else if (select.value === '9') {
+        part9Fields.style.display = 'block';
+        part9Fields.querySelector('textarea[name="situation"]').setAttribute('required', 'required');
+        part9Fields.querySelector('textarea[name="requirements"]').setAttribute('required', 'required');
+      } else if (select.value === '10') {
+        part10Fields.style.display = 'block';
+        part10Fields.querySelector('textarea[name="question"]').setAttribute('required', 'required');
       }
     }
 
-    // Mặc định hiển thị tất cả khi trang load
-    document.addEventListener('DOMContentLoaded', function() {
-      document.getElementById('partSelector').value = 'all';
-      togglePartDisplay();
+    document.querySelector('input[type="file"]').addEventListener('change', function (e) {
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      const file = e.target.files[0];
+      const sizeDisplay = document.querySelector('.file-size');
+      const preview = document.querySelector('.file-preview');
+
+      sizeDisplay.style.display = 'none';
+      sizeDisplay.textContent = '';
+      preview.style.display = 'none';
+      preview.src = '';
+
+      if (!file) {
+        alert('Vui lòng chọn một file!');
+        this.value = '';
+        return;
+      }
+
+      if (!validTypes.includes(file.type)) {
+        alert('Chỉ chấp nhận file JPEG, PNG, GIF!');
+        this.value = '';
+        return;
+      }
+
+      if (file.size > maxSize) {
+        alert('File quá lớn! Vui lòng chọn file dưới 5MB.');
+        this.value = '';
+        return;
+      }
+
+      const sizeInKB = (file.size / 1024).toFixed(2);
+      sizeDisplay.textContent = `Kích thước: ${sizeInKB} KB`;
+      sizeDisplay.style.display = 'inline';
+
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        preview.src = event.target.result;
+        preview.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    });
+
+    document.getElementById('writingForm').addEventListener('submit', function (e) {
+      const partSelect = document.querySelector('select[name="part"]');
+      if (!partSelect.value) {
+        e.preventDefault();
+        alert('Vui lòng chọn Part!');
+        return;
+      }
+
+      if (partSelect.value === '8') {
+        const keyword1 = document.querySelector('input[name="keyword1"]').value.trim();
+        const keyword2 = document.querySelector('input[name="keyword2"]').value.trim();
+        const fileInput = document.querySelector('input[name="image"]');
+        if (!keyword1 || !keyword2 || !fileInput.files.length) {
+          e.preventDefault();
+          alert('Part 8 yêu cầu 2 từ khóa và 1 hình ảnh!');
+        }
+      } else if (partSelect.value === '9') {
+        const situation = document.querySelector('textarea[name="situation"]').value.trim();
+        const requirements = document.querySelector('textarea[name="requirements"]').value.trim();
+        if (!situation || !requirements) {
+          e.preventDefault();
+          alert('Part 9 yêu cầu Tình Huống và Yêu Cầu!');
+        }
+      } else if (partSelect.value === '10') {
+        const question = document.querySelector('textarea[name="question"]').value.trim();
+        if (!question) {
+          e.preventDefault();
+          alert('Part 10 yêu cầu Đề Bài Luận!');
+        }
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const partSelect = document.querySelector('select[name="part"]');
+      if (partSelect) toggleFields(partSelect);
     });

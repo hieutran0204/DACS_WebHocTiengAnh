@@ -2,97 +2,156 @@ extends ../../layouts/default
 
 block content
   div(style="max-width: 800px; margin: 0 auto; padding: 20px;")
-    h1(style="text-align: center; margin-bottom: 30px;") Chỉnh sửa đề TOEIC Writing
+    h1(style="text-align: center; margin-bottom: 30px;") Chỉnh Sửa Câu Hỏi TOEIC Writing
 
-    form(action=`/admin/toeic-writing/edit/${writing._id}` method="POST" enctype="multipart/form-data")
-      //- Phần Details
-      div(style="margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 5px; background-color: #f9f9f9;")
-        h2(style="border-bottom: 1px solid #ddd; padding-bottom: 10px;") Chi tiết đề thi
-        div(style="margin-bottom: 10px;")
-          label(style="font-weight: bold; margin-right: 10px;") ID Đề:
-          span #{writing._id.toString().substring(0, 8)}...
-        div(style="margin-bottom: 10px;")
-          label(style="font-weight: bold; margin-right: 10px;") Ngày tạo:
-          span #{writing.createdAt.toLocaleDateString('vi-VN')}
-        div(style="margin-bottom: 10px;")
-          label(style="font-weight: bold; margin-right: 10px; display: block;") Ghi chú:
-          textarea(name="notes" placeholder="Nhập ghi chú cho đề thi" style="width: 100%; padding: 8px; min-height: 80px;")= writing.notes || ''
+    if error && error.length
+      div(style="color: red; margin-bottom: 20px; text-align: center; background-color: #ffe6e6; padding: 10px; border-radius: 4px;")
+        | #{error}
+    if success && success.length
+      div(style="color: green; margin-bottom: 20px; text-align: center; background-color: #e6ffe6; padding: 10px; border-radius: 4px;")
+        | #{success}
 
-      //- Thêm trường part ẩn để xác định phần cần cập nhật
-      input(type="hidden" name="part" value="all")
+    form(action=`/admin/toeic-writing/update/${question._id}` method="POST" enctype="multipart/form-data" id="writingForm")
+      div(style="margin-bottom: 20px;")
+        label(for="MaCC" style="display: block; margin-bottom: 5px;") Mã Chứng Chỉ:
+        input(type="text" name="MaCC" value=question.MaCC required maxlength="50" style="width: 100%; padding: 8px; border-radius: 4px;")
 
-      //- Phần chọn part
-      div(style="margin-bottom: 20px; text-align: center;")
-        label(for="partSelector" style="font-weight: bold; margin-right: 10px;") Chọn phần hiển thị:
-        select(id="partSelector" onchange="togglePartDisplay()" style="padding: 5px;")
-          option(value="all") Tất cả các phần
-          option(value="1") Chỉ Part 1
-          option(value="2") Chỉ Part 2
-          option(value="3") Chỉ Part 3
+      div(style="margin-bottom: 20px;")
+        label(for="TopicN" style="display: block; margin-bottom: 5px;") Mã Đề:
+        input(type="number" name="TopicN" value=question.TopicN required min="1" style="width: 100%; padding: 8px; border-radius: 4px;")
 
-      //- Phần 1
-      div.part-section(id="part1-section")
-        h2(style="border-bottom: 1px solid #ddd; padding-bottom: 10px;") Part 1 - Viết câu từ hình và từ khóa
-        each question, i in writing.part1
-          div.question-box(style="margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 5px;")
-            h3 Câu #{i+1}
-            div(style="margin-bottom: 10px;")
-              input(type="text" name=`part1[${i}][keyword1]` placeholder="Từ khóa 1" style="width: 100%; padding: 8px;" value=question.keyword1 required)
-            div(style="margin-bottom: 10px;")
-              input(type="text" name=`part1[${i}][keyword2]` placeholder="Từ khóa 2" style="width: 100%; padding: 8px;" value=question.keyword2 required)
-            div(style="margin-bottom: 10px;")
-              if question.imagePath
-                div
-                  img(src=`/images/${question.imagePath}` alt="Hình ảnh cũ" style="max-width: 200px; display: block; margin-bottom: 10px;")
-                  input(type="hidden" name=`part1[${i}][existingImagePath]` value=question.imagePath)
-              label(style="display: block; margin-bottom: 5px;") Hình ảnh mới (nếu muốn thay đổi):
-              input(type="file" name=`part1[${i}][image]` accept="image/*" style="width: 100%;")
+      div(style="margin-bottom: 20px;")
+        label(for="part" style="display: block; margin-bottom: 5px;") Part:
+        select(name="part" required style="width: 100%; padding: 8px; border-radius: 4px;" onchange="toggleFields(this)")
+          option(value="8" selected=(question.part === 8)) Part 8 (Viết câu từ hình và từ khóa)
+          option(value="9" selected=(question.part === 9)) Part 9 (Viết email)
+          option(value="10" selected=(question.part === 10)) Part 10 (Viết luận)
 
-      //- Phần 2
-      div.part-section(id="part2-section" style="display: none;")
-        h2(style="border-bottom: 1px solid #ddd; padding-bottom: 10px;") Part 2 - Viết email
-        each question, i in writing.part2
-          div.question-box(style="margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 5px;")
-            h3 Email #{i+1}
-            div(style="margin-bottom: 10px;")
-              textarea(name=`part2[${i}][situation]` placeholder="Tình huống" style="width: 100%; padding: 8px; min-height: 80px;" required)= question.situation
-            div(style="margin-bottom: 10px;")
-              textarea(name=`part2[${i}][requirements]` placeholder="Yêu cầu" style="width: 100%; padding: 8px; min-height: 80px;" required)= question.requirements
+      div(style="margin-bottom: 20px;")
+        label(for="questionN" style="display: block; margin-bottom: 5px;") Số Câu Hỏi:
+        input(type="number" name="questionN" value=question.questionN required min="1" max="100" style="width: 100%; padding: 8px; border-radius: 4px;")
+
+      div(style="margin-bottom: 20px;")
+        label(for="difficulty" style="display: block; margin-bottom: 5px;") Độ Khó:
+        select(name="difficulty" required style="width: 100%; padding: 8px; border-radius: 4px;")
+          option(value="0" selected=(question.difficulty === 0)) Dễ
+          option(value="1" selected=(question.difficulty === 1)) Trung bình
+          option(value="2" selected=(question.difficulty === 2)) Khó
+
+      div#part8-fields(style=`display: ${question.part === 8 ? 'block' : 'none'};`)
+        div(style="margin-bottom: 20px;")
+          label(for="keyword1" style="display: block; margin-bottom: 5px;") Từ Khóa 1:
+          input(type="text" name="keyword1" value=(question.part === 8 && question.part8 ? question.part8.keyword1 : '') placeholder="VD: office" maxlength="100" style="width: 100%; padding: 8px; border-radius: 4px;" required)
+        div(style="margin-bottom: 20px;")
+          label(for="keyword2" style="display: block; margin-bottom: 5px;") Từ Khóa 2:
+          input(type="text" name="keyword2" value=(question.part === 8 && question.part8 ? question.part8.keyword2 : '') placeholder="VD: meeting" maxlength="100" style="width: 100%; padding: 8px; border-radius: 4px;" required)
+        div(style="margin-bottom: 20px;")
+          label(for="image" style="display: block; margin-bottom: 5px;") Hình Ảnh:
+          if question.part === 8 && question.part8 && question.part8.img
+            img(src=question.part8.img style="max-width: 100px; margin-bottom: 10px; display: block;")
             div
-              textarea(name=`part2[${i}][sampleAnswer]` placeholder="Câu trả lời mẫu" style="width: 100%; padding: 8px; min-height: 100px;")= question.sampleAnswer
+              input(type="checkbox" name="removeImage" id="removeImage")
+              label(for="removeImage" style="margin-left: 5px;") Xóa hình ảnh hiện tại
+          input(type="file" name="image" accept="image/jpeg,image/png,image/gif" style="width: 100%;")
+          span.file-size(style="color: #555; margin-left: 10px; display: none;")
+          img.file-preview(style="max-width: 100px; margin-top: 10px; display: none;")
 
-      //- Phần 3
-      div.part-section(id="part3-section" style="display: none;")
-        h2(style="border-bottom: 1px solid #ddd; padding-bottom: 10px;") Part 3 - Viết luận
-        each question, i in writing.part3
-          div.question-box(style="margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 5px;")
-            div(style="margin-bottom: 10px;")
-              textarea(name=`part3[${i}][question]` placeholder="Đề bài luận" style="width: 100%; padding: 8px; min-height: 100px;" required)= question.question
-            div
-              textarea(name=`part3[${i}][sampleAnswer]` placeholder="Bài luận mẫu" style="width: 100%; padding: 8px; min-height: 150px;")= question.sampleAnswer
+      div#part9-fields(style=`display: ${question.part === 9 ? 'block' : 'none'};`)
+        div(style="margin-bottom: 20px;")
+          label(for="situation" style="display: block; margin-bottom: 5px;") Tình Huống:
+          textarea(name="situation" placeholder="VD: You received a complaint..." maxlength="1000" style="width: 100%; padding: 8px; min-height: 100px; border-radius: 4px;" required) #{question.part === 9 && question.part9 ? question.part9.situation : ''}
+        div(style="margin-bottom: 20px;")
+          label(for="requirements" style="display: block; margin-bottom: 5px;") Yêu Cầu:
+          textarea(name="requirements" placeholder="VD: Respond to the complaint..." maxlength="1000" style="width: 100%; padding: 8px; min-height: 100px; border-radius: 4px;" required) #{question.part === 9 && question.part9 ? question.part9.requirements : ''}
+        div(style="margin-bottom: 20px;")
+          label(for="sampleAnswer" style="display: block; margin-bottom: 5px;") Câu Trả Lời Mẫu:
+          textarea(name="sampleAnswer" placeholder="VD: Dear Customer..." maxlength="2000" style="width: 100%; padding: 8px; min-height: 150px; border-radius: 4px;") #{question.part === 9 && question.part9 && question.part9.sampleAnswer ? question.part9.sampleAnswer : ''}
+
+      div#part10-fields(style=`display: ${question.part === 10 ? 'block' : 'none'};`)
+        div(style="margin-bottom: 20px;")
+          label(for="question" style="display: block; margin-bottom: 5px;") Đề Bài Luận:
+          textarea(name="question" placeholder="VD: Discuss the importance of..." maxlength="1000" style="width: 100%; padding: 8px; min-height: 100px; border-radius: 4px;" required) #{question.part === 10 && question.part10 ? question.part10.question : ''}
+        div(style="margin-bottom: 20px;")
+          label(for="sampleAnswer" style="display: block; margin-bottom: 5px;") Bài Luận Mẫu:
+          textarea(name="sampleAnswer" placeholder="VD: In today’s world..." maxlength="3000" style="width: 100%; padding: 8px; min-height: 150px; border-radius: 4px;") #{question.part === 10 && question.part10 && question.part10.sampleAnswer ? question.part10.sampleAnswer : ''}
+
+      div(style="margin-bottom: 20px;")
+        label(for="notes" style="display: block; margin-bottom: 5px;") Ghi chú:
+        textarea(name="notes" placeholder="Thêm ghi chú (nếu có)" maxlength="2000" style="width: 100%; padding: 8px; min-height: 100px; border-radius: 4px;") #{question.notes || ''}
 
       div(style="text-align: center; margin-top: 30px;")
-        button(type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;") Cập nhật
+        button(type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;") Cập Nhật Câu Hỏi
 
   script.
-    function togglePartDisplay() {
-      const selection = document.getElementById('partSelector').value;
-      document.querySelector('input[name="part"]').value = selection === 'all' ? '999' : selection;
-      
-      document.querySelectorAll('.part-section').forEach(section => {
-        section.style.display = 'none';
-      });
+    function toggleFields(select) {
+      const part8Fields = document.getElementById('part8-fields');
+      const part9Fields = document.getElementById('part9-fields');
+      const part10Fields = document.getElementById('part10-fields');
 
-      if (selection === 'all') {
-        document.getElementById('part1-section').style.display = 'block';
-        document.getElementById('part2-section').style.display = 'block';
-        document.getElementById('part3-section').style.display = 'block';
-      } else {
-        document.getElementById(`part${selection}-section`).style.display = 'block';
+      part8Fields.style.display = select.value === '8' ? 'block' : 'none';
+      part9Fields.style.display = select.value === '9' ? 'block' : 'none';
+      part10Fields.style.display = select.value === '10' ? 'block' : 'none';
+
+      // Cập nhật required attribute dựa trên part được chọn
+      part8Fields.querySelectorAll('[required]').forEach(field => field.removeAttribute('required'));
+      part9Fields.querySelectorAll('[required]').forEach(field => field.removeAttribute('required'));
+      part10Fields.querySelectorAll('[required]').forEach(field => field.removeAttribute('required'));
+
+      if (select.value === '8') {
+        part8Fields.querySelector('input[name="keyword1"]').setAttribute('required', 'required');
+        part8Fields.querySelector('input[name="keyword2"]').setAttribute('required', 'required');
+      } else if (select.value === '9') {
+        part9Fields.querySelector('textarea[name="situation"]').setAttribute('required', 'required');
+        part9Fields.querySelector('textarea[name="requirements"]').setAttribute('required', 'required');
+      } else if (select.value === '10') {
+        part10Fields.querySelector('textarea[name="question"]').setAttribute('required', 'required');
       }
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-      document.getElementById('partSelector').value = 'all';
-      togglePartDisplay();
+    document.querySelector('input[type="file"]').addEventListener('change', function (e) {
+      const maxSize = 5 * 1024 * 1024;
+      const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      const file = e.target.files[0];
+      const sizeDisplay = this.nextElementSibling;
+      const preview = sizeDisplay.nextElementSibling;
+
+      sizeDisplay.style.display = 'none';
+      sizeDisplay.textContent = '';
+      preview.style.display = 'none';
+      preview.src = '';
+
+      if (!file) {
+        alert('Vui lòng chọn một file!');
+        this.value = '';
+        return;
+      }
+
+      if (!validTypes.includes(file.type)) {
+        alert('Chỉ chấp nhận file JPEG, PNG, GIF!');
+        this.value = '';
+        return;
+      }
+
+      if (file.size > maxSize) {
+        alert('File quá lớn! Vui lòng chọn file dưới 5MB.');
+        this.value = '';
+        return;
+      }
+
+      const sizeInKB = (file.size / 1024).toFixed(2);
+      sizeDisplay.textContent = `Kích thước: ${sizeInKB} KB`;
+      sizeDisplay.style.display = 'inline';
+
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        preview.src = event.target.result;
+        preview.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Gọi toggleFields ban đầu dựa trên part hiện tại
+    document.addEventListener('DOMContentLoaded', function () {
+      const partSelect = document.querySelector('select[name="part"]');
+      if (partSelect) toggleFields(partSelect);
     });

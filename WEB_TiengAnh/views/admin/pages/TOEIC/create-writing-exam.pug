@@ -1,0 +1,105 @@
+extends ../../layouts/default
+
+block content
+  div(style="max-width: 1000px; margin: 0 auto; padding: 20px;")
+    h1(style="text-align: center; margin-bottom: 30px;") Tạo Đề Thi TOEIC Writing
+
+    if error && error.length
+      div(style="color: red; margin-bottom: 20px; text-align: center; background-color: #ffe6e6; padding: 10px; border-radius: 4px;")
+        | #{error}
+    if success && success.length
+      div(style="color: green; margin-bottom: 20px; text-align: center; background-color: #e6ffe6; padding: 10px; border-radius: 4px;")
+        | #{success}
+
+    form(action="/admin/toeic-writing/exams/add" method="POST" style="display: flex; flex-direction: column; gap: 15px;")
+      div
+        label(for="MaCC" style="display: block; margin-bottom: 5px;") Mã CC:
+        input(type="text" id="MaCC" name="MaCC" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;")
+      div
+        label(for="TopicN" style="display: block; margin-bottom: 5px;") Mã Đề:
+        input(type="number" id="TopicN" name="TopicN" required min="1" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;")
+      div
+        label(for="difficulty" style="display: block; margin-bottom: 5px;") Độ Khó:
+        select(id="difficulty" name="difficulty" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;")
+          option(value="") -- Chọn Độ Khó --
+          option(value="0") Dễ
+          option(value="1") Trung Bình
+          option(value="2") Khó
+
+      // Part 8 - Chọn tối đa 5 câu hỏi với checkbox
+      div
+        label(for="part8Questions" style="display: block; margin-bottom: 5px;") Part 8 (Chọn tối đa 5 câu):
+        div(style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; padding: 5px;")
+          - var part8Questions = (questions && questions.part8) ? questions.part8 : [];
+          if part8Questions.length === 0
+            p(style="padding: 5px; color: #666;") Không có câu hỏi Part 8
+          else
+            each question, index in part8Questions
+              if question.part8 && question.part8.keyword1 && question.part8.keyword2
+                label(style="display: block; padding: 5px;")
+                  input(type="checkbox" name="part8[]" value=question._id style="margin-right: 10px;")
+                  | #{question.questionN} - #{question.part8.keyword1}, #{question.part8.keyword2}
+
+      // Part 9 - Chọn tối đa 2 câu hỏi với checkbox
+      div
+        label(for="part9Questions" style="display: block; margin-bottom: 5px;") Part 9 (Chọn tối đa 2 câu):
+        div(style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; padding: 5px;")
+          - var part9Questions = (questions && questions.part9) ? questions.part9 : [];
+          if part9Questions.length === 0
+            p(style="padding: 5px; color: #666;") Không có câu hỏi Part 9
+          else
+            each question, index in part9Questions
+              if question.part9 && question.part9.situation
+                label(style="display: block; padding: 5px;")
+                  input(type="checkbox" name="part9[]" value=question._id style="margin-right: 10px;")
+                  | #{question.questionN} - #{question.part9.situation.slice(0, 30)}...
+
+      // Part 10 - Chọn tối đa 1 câu hỏi
+      div
+        label(for="part10Questions" style="display: block; margin-bottom: 5px;") Part 10 (Chọn tối đa 1 câu):
+        select(id="part10Questions" name="part10" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" required)
+          option(value="") -- Chọn 1 câu --
+          - var part10Questions = (questions && questions.part10) ? questions.part10 : [];
+          if part10Questions.length === 0
+            option(value="" disabled) Không có câu hỏi Part 10
+          else
+            each question in part10Questions
+              if question.part10 && question.part10.question
+                option(value=question._id) #{question.questionN} - #{question.part10.question.slice(0, 30)}...
+
+      div
+        label(for="notes" style="display: block; margin-bottom: 5px;") Ghi chú (tùy chọn):
+        textarea(name="notes" maxlength="2000" style="width: 100%; padding: 8px; min-height: 50px; border-radius: 4px;")
+
+      button(type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;") Tạo Đề Thi
+
+    a(href="/admin/toeic-writing/exams" style="display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #2196F3; color: white; text-decoration: none; border-radius: 4px;") Quay lại
+
+  script.
+    // Giới hạn số lượng câu hỏi được chọn
+    document.querySelectorAll('input[name="part8[]"]').forEach(checkbox => {
+      checkbox.addEventListener('change', function() {
+        const checkedBoxes = document.querySelectorAll('input[name="part8[]"]:checked');
+        if (checkedBoxes.length > 5) {
+          this.checked = false;
+          alert('Chỉ được chọn tối đa 5 câu cho Part 8!');
+        }
+      });
+    });
+
+    document.querySelectorAll('input[name="part9[]"]').forEach(checkbox => {
+      checkbox.addEventListener('change', function() {
+        const checkedBoxes = document.querySelectorAll('input[name="part9[]"]:checked');
+        if (checkedBoxes.length > 2) {
+          this.checked = false;
+          alert('Chỉ được chọn tối đa 2 câu cho Part 9!');
+        }
+      });
+    });
+
+    document.getElementById('part10Questions').addEventListener('change', function() {
+      if (this.value && this.selectedOptions.length > 1) {
+        this.selectedIndex = 0; // Reset về option mặc định
+        alert('Chỉ được chọn tối đa 1 câu cho Part 10!');
+      }
+    });

@@ -1,4 +1,5 @@
 extends ../../layouts/default
+
 block content
   .container-fluid
     h1 Quản lý người dùng
@@ -16,8 +17,12 @@ block content
           table.table.table-hover
             thead
               tr
-                th Username
+                th Họ và tên
+                th Tên người dùng
                 th Email
+                th Số điện thoại
+                th Độ tuổi
+                th Giới tính
                 th Vai trò
                 th Ngày tạo
                 th Hành động
@@ -25,8 +30,12 @@ block content
               if users && users.length > 0
                 each user in users
                   tr
+                    td #{user.fullname}
                     td #{user.username}
                     td #{user.email}
+                    td #{user.phonenumber}
+                    td #{user.age === 'u18' ? 'Dưới 18' : user.age === 'f18t39' ? '18-39' : user.age === 'f40t64' ? '40-64' : 'Trên 65'}
+                    td #{user.sex === 'male' ? 'Nam' : user.sex === 'female' ? 'Nữ' : 'Khác'}
                     td #{user.role === 'admin' ? 'Quản trị' : 'Người dùng'}
                     td #{new Date(user.createdAt).toLocaleDateString('vi-VN')}
                     td
@@ -34,4 +43,4 @@ block content
                       a.btn.btn-sm.btn-danger(href=`/admin/users/delete/${user._id}`, onclick="return confirm('Bạn có chắc muốn xóa người dùng này?')") Xóa
               else
                 tr
-                  td(colspan="5").text-center.text-muted Không có người dùng nào.
+                  td(colspan="9").text-center.text-muted Không có người dùng nào.

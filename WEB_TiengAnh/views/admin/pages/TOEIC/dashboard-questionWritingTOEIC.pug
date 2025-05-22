@@ -1,0 +1,53 @@
+extends ../../layouts/default
+
+block content
+  div(style="max-width: 1000px; margin: 0 auto; padding: 20px;")
+    h1(style="text-align: center; margin-bottom: 30px;") Dashboard Câu Hỏi TOEIC Writing
+
+    if error && error.length
+      div(style="color: red; margin-bottom: 20px; text-align: center; background-color: #ffe6e6; padding: 10px; border-radius: 4px;")
+        | #{error}
+    if success && success.length
+      div(style="color: green; margin-bottom: 20px; text-align: center; background-color: #e6ffe6; padding: 10px; border-radius: 4px;")
+        | #{success}
+
+    div(style="margin-bottom: 20px;")
+      a(href="/admin/toeic-writing/create" style="padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 4px;") Tạo Câu Hỏi Mới
+      a(href="/admin/toeic-writing/exams/create" style="padding: 10px 20px; background-color: #2196F3; color: white; text-decoration: none; border-radius: 4px; margin-left: 10px;") Tạo Đề Thi Mới
+      a(href="/admin/toeic-writing/exams" style="padding: 10px 20px; background-color: #FFC107; color: white; text-decoration: none; border-radius: 4px; margin-left: 10px;") Xem Đề Thi
+      a(href="/admin/toeic-writing/by-part/8" style="padding: 10px 20px; background-color: #9C27B0; color: white; text-decoration: none; border-radius: 4px; margin-left: 10px;") Xem Part 8
+      a(href="/admin/toeic-writing/by-part/9" style="padding: 10px 20px; background-color: #9C27B0; color: white; text-decoration: none; border-radius: 4px; margin-left: 10px;") Xem Part 9
+      a(href="/admin/toeic-writing/by-part/10" style="padding: 10px 20px; background-color: #9C27B0; color: white; text-decoration: none; border-radius: 4px; margin-left: 10px;") Xem Part 10
+
+    if questions.length
+      table(style="width: 100%; border-collapse: collapse; margin-top: 20px;")
+        thead
+          tr(style="background-color: #f2f2f2;")
+            th(style="padding: 10px; border: 1px solid #ddd;") Mã CC
+            th(style="padding: 10px; border: 1px solid #ddd;") Mã Đề
+            th(style="padding: 10px; border: 1px solid #ddd;") Part
+            th(style="padding: 10px; border: 1px solid #ddd;") Câu
+            th(style="padding: 10px; border: 1px solid #ddd;") Nội Dung
+            th(style="padding: 10px; border: 1px solid #ddd;") Độ Khó
+            th(style="padding: 10px; border: 1px solid #ddd;") Hành Động
+        tbody
+          each question in questions
+            tr
+              td(style="padding: 10px; border: 1px solid #ddd;") #{question.MaCC}
+              td(style="padding: 10px; border: 1px solid #ddd;") #{question.TopicN}
+              td(style="padding: 10px; border: 1px solid #ddd;") Part #{question.part}
+              td(style="padding: 10px; border: 1px solid #ddd;") #{question.questionN}
+              td(style="padding: 10px; border: 1px solid #ddd;")
+                if question.part == 8
+                  | Từ khóa: #{question.part8.keyword1}, #{question.part8.keyword2}
+                else if question.part == 9
+                  | Tình huống: #{question.part9.situation.substring(0, 50)}...
+                else if question.part == 10
+                  | Đề bài: #{question.part10.question.substring(0, 50)}...
+              td(style="padding: 10px; border: 1px solid #ddd;") #{difficultyMap[question.difficulty]}
+              td(style="padding: 10px; border: 1px solid #ddd;")
+                a(href=`/admin/toeic-writing/edit/${question._id}` style="margin-right: 10px; color: #4CAF50;") Sửa
+                form(action=`/admin/toeic-writing/delete/${question._id}?_method=DELETE` method="POST" style="display: inline;" onsubmit="return confirm('Bạn có chắc muốn xóa câu hỏi này?')")
+                  button(type="submit" style="color: #ff4444; background: none; border: none; cursor: pointer;") Xóa
+    else
+      p(style="text-align: center; color: #555;") Không có câu hỏi nào.
