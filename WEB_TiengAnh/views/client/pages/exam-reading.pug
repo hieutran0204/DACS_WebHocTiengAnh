@@ -2,85 +2,172 @@ extends ../layouts/default
 
 block content
   .container.mt-5
-    h1.text-center.mb-4 Đề thi Reading TOEIC
+    h1.text-center.mb-5 Đề thi Reading TOEIC
 
-    if error && error.length
-      .alert.alert-danger.text-center #{error}
+    // Hiển thị thông báo lỗi hoặc thông tin
+    if error
+      .alert.alert-danger.text-center(role='alert')
+        i.bi.bi-exclamation-triangle.me-2
+        | #{error}
     else if !examPart
-      .alert.alert-info.text-center Không có đề thi Reading nào được tìm thấy hoặc đề thi chưa được public.
+      .alert.alert-info.text-center(role='alert')
+        i.bi.bi-info-circle.me-2
+        | Không có đề thi Reading nào được tìm thấy hoặc đề thi chưa được public.
     else
-      .card.mb-4
-        .card-header.bg-primary.text-white
-          h2.mb-0 
-            | Đề #{examPart._id} - Part #{examPart.part ? examPart.part.join(', ') : 'N/A'} 
-            | (Độ khó: #{difficultyMap[examPart.difficulty] || 'Chưa xác định'})
+      // Thông tin đề thi
+      .card.mb-5.shadow-sm
+        .card-header.bg-primary.text-white.d-flex.justify-content-between.align-items-center
+          h2.mb-0
+            | Đề #{examPart._id} - Part #{examPart.part ? examPart.part.join(', ') : 'N/A'}
+          span.badge.bg-light.text-dark
+            | Độ khó: #{difficultyMap[examPart.difficulty] || 'Chưa xác định'}
 
         .card-body
-          .mb-3
+          .d-flex.justify-content-between.align-items-center.mb-4
             p.mb-0.fw-bold
               | Thời gian còn lại: 
               span#timer.text-danger.fw-bold.ms-2 30:00
+            p.mb-0.fw-bold
+              | Đã trả lời: 
+              span#answeredCount.text-primary.fw-bold.ms-2 0
+            a.btn.btn-outline-secondary.btn-sm(href='/toeic/reading') Quay lại danh sách đề
 
-          form(action=`/toeic/reading/${examPart._id}/submit` method="POST")
-            input(type='hidden' name='examPartId' value=examPart._id)
+      // Cảnh báo nếu thiếu Part
+      if !questionsByPart['Part 5'] && examPart.part.includes(5)
+        .alert.alert-warning.text-center(role='alert')
+          i.bi.bi-exclamation-circle.me-2
+          | Không có câu hỏi nào cho Part 5.
+      if !questionsByPart['Part 6'] && examPart.part.includes(6)
+        .alert.alert-warning.text-center(role='alert')
+          i.bi.bi-exclamation-circle.me-2
+          | Không có câu hỏi nào cho Part 6.
+      if !questionsByPart['Part 7'] && examPart.part.includes(7)
+        .alert.alert-warning.text-center(role='alert')
+          i.bi.bi-exclamation-circle.me-2
+          | Không có câu hỏi nào cho Part 7.
 
-            each partKey, index in Object.keys(questionsByPart)
-              .card.mt-4
-                .card-header.bg-light.fw-bold #{partKey}
-                .card-body
-                  each question in questionsByPart[partKey]
-                    .question.border.p-3.mb-4.rounded.bg-white
-                      h5.mb-3
-                        | Câu #{question.questionN}
-                        if question.blankIndex !== undefined
-                          | (Blank #{question.blankIndex + 1})
-                        else if question.subQuestionIndex !== undefined
-                          | (Q#{question.subQuestionIndex + 1})
+      // Form làm bài
+      form#examForm(action=`/toeic/reading/${examPart._id}/submit`, method='POST')
+        input(type='hidden', name='examPartId', value=examPart._id)
 
-                      if question.passage
-                        .mb-3
-                          p.mb-1.fw-bold Passage:
-                          pre.bg-light.p-2.rounded(style='white-space: pre-wrap') #{question.passage}
-
+        // Hiển thị từng Part
+        each partKey in ['Part 5', 'Part 6', 'Part 7']
+          if questionsByPart[partKey]
+            .card.mt-4.shadow-sm
+              .card-header.bg-light.fw-bold.text-dark #{partKey}
+              .card-body
+                - let currentPassage = null
+                each question in questionsByPart[partKey]
+                  if question.type === 'passage'
+                    - currentPassage = question
+                    .mb-4
+                      p.mb-2.fw-bold Câu #{question.displayNumber}:
+                      pre.bg-light.p-3.rounded.border(style='white-space: pre-wrap; font-size: 1rem;') #{question.passage || 'Không có đoạn văn'}
                       if question.Img
-                        .mb-3
-                          img.img-fluid(src=question.Img alt='Question Image' style='max-height: 300px;')
+                        img.img-fluid.rounded.mb-3(src=question.Img, alt='Passage Image', style='max-height: 300px; max-width: 100%;')
+                  else
+                    if (partKey === 'Part 6' || partKey === 'Part 7') && currentPassage && currentPassage.questionId.toString() === question.questionId.toString()
+                      .question.border.p-4.mb-4.rounded.bg-white.shadow-sm
+                        h5.mb-3.text-dark #{question.displayNumber}
+                        p.mb-3.fw-bold.text-muted #{question.questionText || 'Không có nội dung câu hỏi'}
 
-                      p.mb-2.fw-bold Câu hỏi: 
-                        | #{question.questionText}
+                        if question.options && Array.isArray(question.options) && question.options.length === 4
+                          each option, optIndex in question.options
+                            .form-check.mb-2
+                              - const inputId = `${question.questionId}-${question.blankIndex || question.subQuestionIndex || 0}-${optIndex}`
+                              - const inputName = `answers[${question.questionId}-${question.blankIndex || question.subQuestionIndex || 0}]`
+                              input.form-check-input(
+                                type='radio',
+                                id=inputId,
+                                name=inputName,
+                                value=String.fromCharCode(65 + optIndex),
+                                required,
+                                onchange='updateAnsweredCount()'
+                              )
+                              label.form-check-label(for=inputId, style='cursor: pointer;')
+                                | #{String.fromCharCode(65 + optIndex)}. #{option || 'Không có nội dung đáp án'}
+                        else
+                          p.text-warning.fw-bold Không có lựa chọn đáp án hợp lệ.
+                    else if partKey === 'Part 5'
+                      .question.border.p-4.mb-4.rounded.bg-white.shadow-sm
+                        h5.mb-3.text-dark Câu #{question.displayNumber}
+                        p.mb-3.fw-bold.text-muted #{question.questionText || 'Không có nội dung câu hỏi'}
 
-                      if question.options && Array.isArray(question.options)
-                        each option, optIndex in question.options
-                          .form-check.mb-2
-                            input.form-check-input(
-                              type='radio'
-                              id=`${question.questionId}-${optIndex}`
-                              name=`answers[${question.questionId}-${question.blankIndex || question.subQuestionIndex || 0}]`
-                              value=String.fromCharCode(65 + optIndex)
-                              required
-                            )
-                            label.form-check-label(for=`${question.questionId}-${optIndex}`)
-                              | #{String.fromCharCode(65 + optIndex)}. #{option}
-                      else
-                        p.text-warning (Không có lựa chọn đáp án)
+                        if question.options && Array.isArray(question.options) && question.options.length === 4
+                          each option, optIndex in question.options
+                            .form-check.mb-2
+                              - const inputId = `${question.questionId}-${optIndex}`
+                              - const inputName = `answers[${question.questionId}-0]`
+                              input.form-check-input(
+                                type='radio',
+                                id=inputId,
+                                name=inputName,
+                                value=String.fromCharCode(65 + optIndex),
+                                required,
+                                onchange='updateAnsweredCount()'
+                              )
+                              label.form-check-label(for=inputId, style='cursor: pointer;')
+                                | #{String.fromCharCode(65 + optIndex)}. #{option || 'Không có nội dung đáp án'}
+                        else
+                          p.text-warning.fw-bold Không có lựa chọn đáp án hợp lệ.
 
-            button.btn.btn-success.mt-4(type='submit') Nộp bài
+        // Nút nộp bài
+        .d-flex.justify-content-end.mt-5
+          button.btn.btn-success(type='button', onclick='confirmSubmit()')
+            i.bi.bi-check-circle.me-2
+            | Nộp bài
 
-  // Load Bootstrap JS
-  script(src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js')
+    // Thêm Bootstrap Icons và Bootstrap JS
+    link(href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css', rel='stylesheet')
+    script(src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js')
 
-  // Countdown timer
-  script.
-    let time = 1800; // 30 phút
-    const timerDisplay = document.getElementById('timer');
-    const countdown = setInterval(() => {
-      const minutes = Math.floor(time / 60);
-      const seconds = time % 60;
-      timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-      time--;
-      if (time < 0) {
-        clearInterval(countdown);
-        timerDisplay.textContent = 'Hết giờ!';
-        document.querySelector('form').submit();
+    // Script quản lý timer, đếm câu trả lời và xác nhận nộp bài
+    script.
+      let time = localStorage.getItem('toeicTimer') ? parseInt(localStorage.getItem('toeicTimer')) : 1800;
+      const timerDisplay = document.getElementById('timer');
+      let countdown;
+
+      function startTimer() {
+        countdown = setInterval(() => {
+          const minutes = Math.floor(time / 60);
+          const seconds = time % 60;
+          timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+          localStorage.setItem('toeicTimer', time);
+          time--;
+          if (time < 0) {
+            clearInterval(countdown);
+            timerDisplay.textContent = 'Hết giờ!';
+            localStorage.removeItem('toeicTimer');
+            document.getElementById('examForm').submit();
+          }
+        }, 1000);
       }
-    }, 1000);
+
+      function updateAnsweredCount() {
+        const answered = document.querySelectorAll('input[type="radio"]:checked').length;
+        document.getElementById('answeredCount').textContent = answered;
+      }
+
+      function confirmSubmit() {
+        const totalQuestions = document.querySelectorAll('.question').length;
+        const answered = document.querySelectorAll('input[type="radio"]:checked').length;
+        const unanswered = totalQuestions - answered;
+        if (unanswered > 0) {
+          if (confirm(`Bạn còn ${unanswered} câu chưa trả lời. Bạn có chắc muốn nộp bài không?`)) {
+            clearInterval(countdown);
+            localStorage.removeItem('toeicTimer');
+            document.getElementById('examForm').submit();
+          }
+        } else {
+          if (confirm('Bạn đã hoàn thành bài thi. Bạn có chắc muốn nộp bài không?')) {
+            clearInterval(countdown);
+            localStorage.removeItem('toeicTimer');
+            document.getElementById('examForm').submit();
+          }
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        startTimer();
+        updateAnsweredCount();
+      });

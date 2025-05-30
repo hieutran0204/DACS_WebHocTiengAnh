@@ -1,225 +1,491 @@
 extends ../layouts/default
+
 block content
   .transcription-practice-container
-    h1.title= item.title
-    .audio-player-container
-      audio#transcriptionAudio(controls, src=`/${item.audioPath}`, controlsList="nodownload")
-        Your browser does not support the audio element.
-      .audio-controls
-        button.play-button(type="button") ▶ Play
-        button.pause-button(type="button") ⏸ Pause
-        span.current-time 0:00
-        span.duration-time / 0:00
-    
-    .transcription-box
-      form(action=`/transcription/${item._id}`, method="POST")
-        label(for="userText") Type what you hear:
-        textarea#userText(name="userText", rows="10", placeholder="Type the transcription here...")
-        button.compare-button(type="submit") Check Accuracy
-        
-        if result !== undefined
+    if error
+      .alert.alert-danger.text-center #{error}
+    else if !item
+      .alert.alert-info.text-center Không tìm thấy bài transcription.
+    else
+      .header-section
+        h1.title #{item.title}
+        a.back-button(href="/transcription") ← Quay lại danh sách
+
+      .audio-player-container
+        if item.imagePath
+          .image-container.mb-4
+            img(src=item.imagePath alt="Transcription Image")
+        if item.audioPath
+          audio#transcriptionAudio(controls src=item.audioPath controlsList="nodownload")
+            | Your browser does not support the audio element.
+          .audio-controls
+            button.play-button(type="button") ▶ Play
+            button.pause-button(type="button") ⏸ Pause
+            span.current-time 0:00
+            span.duration-time / 0:00
+        else
+          p.text-warning.text-center Không có audio để nghe.
+
+      .transcription-box
+        form#transcriptionForm(action=`/transcription/${item._id}` method="POST")
+          label(for="userText") Nhập transcript mà bạn nghe được:
+          textarea#userText(name="userText" rows="8" placeholder="Nhập transcript tại đây..." required)= result ? result.userInput : ''
+          button.compare-button(type="submit")
+            span.button-text Kiểm tra độ chính xác
+            span.button-loading.d-none
+              i.fas.fa-spinner.fa-spin
+
+        if result
           .result-container
-            h3.result-title Your Result
+            h3.result-title Kết quả của bạn
             .accuracy-meter
-              .accuracy-fill(style=`width: ${result}%`)
-              .accuracy-text= `${result}% Accuracy`
-            if result >= 80
-              .feedback.good Great job! You understood most of the content.
-            else if result >= 50
-              .feedback.average Not bad! Keep practicing to improve.
+              .accuracy-fill(style=`width: ${result.percent}%`)
+              .accuracy-text #{result.percent}% Độ chính xác
+            if result.percent >= 80
+              .feedback.good Chúc mừng! Bạn đã hiểu hầu hết nội dung.
+            else if result.percent >= 50
+              .feedback.average Không tệ! Hãy tiếp tục luyện tập để cải thiện.
             else
-              .feedback.poor Try listening again and pay attention to details.
-            
-            .original-transcript
-              h4 Original Transcript:
-              .transcript-content= item.transcriptText
-    
+              .feedback.poor Hãy nghe lại và chú ý đến các chi tiết nhỏ nhé.
+
+            .comparison-table.mt-4
+              h4 So sánh chi tiết
+              if result.comparison && result.comparison.length
+                table.table.table-bordered
+                  thead
+                    tr
+                      th Từ của bạn
+                      th Từ gốc
+                      th Kết quả
+                  tbody
+                    each comp in result.comparison
+                      tr(class=comp.isCorrect ? 'table-success' : 'table-danger')
+                        td #{comp.userWord || '-'}
+                        td #{comp.originalWord || '-'}
+                        td #{comp.isCorrect ? 'Đúng' : 'Sai'}
+              else
+                p.text-warning Không có dữ liệu so sánh.
+
+            .original-transcript.mt-4
+              h4 Transcript gốc:
+              .transcript-content #{result.original}
+
     script.
       const audio = document.getElementById('transcriptionAudio');
       const playButton = document.querySelector('.play-button');
       const pauseButton = document.querySelector('.pause-button');
       const currentTime = document.querySelector('.current-time');
       const durationTime = document.querySelector('.duration-time');
-      
-      // Format time from seconds to MM:SS
+      const form = document.getElementById('transcriptionForm');
+      const compareButton = document.querySelector('.compare-button');
+      const buttonText = document.querySelector('.button-text');
+      const buttonLoading = document.querySelector('.button-loading');
+
+      console.log('Audio element:', audio); // Debug
+
+      // Format thời gian từ giây sang MM:SS
       function formatTime(seconds) {
+        if (isNaN(seconds)) return '0:00';
         const mins = Math.floor(seconds / 60);
         const secs = Math.floor(seconds % 60);
         return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
       }
-      
-      // Update time display
-      audio.addEventListener('timeupdate', () => {
-        currentTime.textContent = formatTime(audio.currentTime);
-      });
-      
-      // Set duration when metadata is loaded
-      audio.addEventListener('loadedmetadata', () => {
-        durationTime.textContent = formatTime(audio.duration);
-      });
-      
-      // Play/pause controls
-      playButton.addEventListener('click', () => {
-        audio.play();
-      });
-      
-      pauseButton.addEventListener('click', () => {
-        audio.pause();
-      });
-    
+
+      // Cập nhật thời gian hiện tại
+      if (audio) {
+        audio.addEventListener('timeupdate', () => {
+          currentTime.textContent = formatTime(audio.currentTime);
+        });
+
+        // Cập nhật thời lượng khi metadata được tải
+        audio.addEventListener('loadedmetadata', () => {
+          durationTime.textContent = `/ ${formatTime(audio.duration)}`;
+        });
+
+        audio.addEventListener('error', (e) => {
+          console.error('Lỗi tải audio:', e);
+          currentTime.textContent = 'Lỗi';
+          durationTime.textContent = '';
+        });
+
+        // Điều khiển play/pause
+        playButton.addEventListener('click', () => {
+          audio.play().catch(err => console.error('Lỗi phát audio:', err));
+        });
+
+        pauseButton.addEventListener('click', () => {
+          audio.pause();
+        });
+      } else {
+        console.warn('Không tìm thấy audio element');
+      }
+
+      // Hiệu ứng loading khi gửi form
+      if (form) {
+        form.addEventListener('submit', () => {
+          compareButton.disabled = true;
+          buttonText.classList.add('d-none');
+          buttonLoading.classList.remove('d-none');
+        });
+      }
+
   style.
     .transcription-practice-container {
-      max-width: 800px;
+      max-width: 900px;
       margin: 0 auto;
-      padding: 2rem;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 2.5rem 1rem;
+      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f9fafb;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     }
+
+    .header-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
     .title {
-      color: #2c3e50;
+      color: #1f2937;
+      text-align: left;
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .back-button {
+      color: #4b5563;
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .back-button:hover {
+      background: #e5e7eb;
+      color: #1f2937;
+    }
+
+    .image-container {
       text-align: center;
       margin-bottom: 2rem;
     }
+
+    .image-container img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
     .audio-player-container {
-      margin-bottom: 2rem;
+      margin-bottom: 2.5rem;
       text-align: center;
+      background: #ffffff;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
     }
+
     audio {
       width: 100%;
-      max-width: 500px;
-      margin: 0 auto;
+      max-width: 600px;
+      margin: 0 auto 1rem;
       display: block;
+      border-radius: 8px;
+      background: #f1f3f4;
     }
+
     .audio-controls {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 1rem;
-      margin-top: 0.5rem;
     }
+
     .play-button, .pause-button {
-      background: #3498db;
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
       color: white;
       border: none;
       border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      font-size: 1rem;
+      width: 48px;
+      height: 48px;
+      font-size: 1.2rem;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      transition: transform 0.2s ease, background 0.3s ease;
     }
+
     .play-button:hover, .pause-button:hover {
-      background: #2980b9;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      transform: scale(1.05);
     }
+
     .current-time, .duration-time {
       font-family: monospace;
-      font-size: 0.9rem;
-      color: #7f8c8d;
+      font-size: 1rem;
+      color: #6b7280;
+      font-weight: 500;
     }
+
     .transcription-box {
-      background: #fff;
-      border-radius: 8px;
+      background: #ffffff;
+      border-radius: 12px;
       padding: 2rem;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      margin-bottom: 2rem;
     }
+
     label {
       display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 500;
-      color: #2c3e50;
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+      color: #1f2937;
+      font-size: 1.1rem;
     }
+
     textarea {
       width: 100%;
       padding: 1rem;
-      border: 1px solid #ddd;
-      border-radius: 4px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
       font-family: inherit;
       font-size: 1rem;
       margin-bottom: 1.5rem;
-      min-height: 200px;
+      min-height: 180px;
       resize: vertical;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      background: #f9fafb;
     }
+
     textarea:focus {
       outline: none;
-      border-color: #3498db;
-      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      background: #ffffff;
     }
+
     .compare-button {
-      background: #3498db;
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
       color: white;
       border: none;
-      padding: 0.8rem 1.5rem;
-      border-radius: 4px;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
       font-size: 1rem;
+      font-weight: 600;
       cursor: pointer;
-      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     }
+
     .compare-button:hover {
-      background: #2980b9;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      transform: translateY(-2px);
     }
+
+    .compare-button:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+      transform: none;
+    }
+
     .result-container {
       margin-top: 2rem;
       padding-top: 2rem;
-      border-top: 1px solid #eee;
+      border-top: 1px solid #e5e7eb;
     }
+
     .result-title {
-      color: #2c3e50;
-      margin-bottom: 1rem;
+      color: #1f2937;
+      margin-bottom: 1.5rem;
+      font-size: 1.5rem;
+      font-weight: 600;
     }
+
     .accuracy-meter {
-      height: 30px;
-      background: #ecf0f1;
-      border-radius: 15px;
+      height: 40px;
+      background: #e5e7eb;
+      border-radius: 20px;
       margin-bottom: 1.5rem;
       position: relative;
       overflow: hidden;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
     }
+
     .accuracy-fill {
       height: 100%;
-      background: linear-gradient(to right, #2ecc71, #27ae60);
-      border-radius: 15px;
-      transition: width 0.5s ease;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      border-radius: 20px;
+      transition: width 0.8s ease;
     }
+
     .accuracy-text {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      color: white;
-      font-weight: bold;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 1rem;
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
     }
+
     .feedback {
       padding: 1rem;
-      border-radius: 4px;
+      border-radius: 8px;
       font-weight: 500;
       text-align: center;
       margin-bottom: 1.5rem;
+      font-size: 1rem;
+      transition: background 0.3s ease;
     }
+
     .feedback.good {
-      background: #d5f5e3;
-      color: #27ae60;
+      background: #d1fae5;
+      color: #16a34a;
     }
+
     .feedback.average {
-      background: #fef9e7;
-      color: #f39c12;
+      background: #fef3c7;
+      color: #d97706;
     }
+
     .feedback.poor {
-      background: #fadbd8;
-      color: #e74c3c;
+      background: #fee2e2;
+      color: #dc2626;
     }
+
+    .comparison-table {
+      margin-bottom: 2rem;
+    }
+
+    .comparison-table h4 {
+      color: #1f2937;
+      margin-bottom: 1rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .table {
+      border-collapse: separate;
+      border-spacing: 0;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .table th {
+      background: #f3f4f6;
+      color: #1f2937;
+      font-weight: 600;
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .table td {
+      padding: 1rem;
+      vertical-align: middle;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .table-success {
+      background: #ecfdf5;
+      color: #065f46;
+    }
+
+    .table-danger {
+      background: #fef2f2;
+      color: #991b1b;
+    }
+
     .original-transcript {
-      background: #f8f9fa;
+      background: #f8fafc;
       padding: 1.5rem;
-      border-radius: 4px;
-      border-left: 4px solid #3498db;
+      border-radius: 8px;
+      border-left: 5px solid #3b82f6;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     }
+
     .original-transcript h4 {
       margin-top: 0;
-      color: #2c3e50;
+      color: #1f2937;
+      font-size: 1.2rem;
+      font-weight: 600;
     }
+
     .transcript-content {
       white-space: pre-wrap;
-      line-height: 1.6;
+      line-height: 1.7;
+      color: #374151;
+      font-size: 1rem;
+    }
+
+    @media (max-width: 576px) {
+      .transcription-practice-container {
+        padding: 1.5rem 1rem;
+      }
+
+      .header-section {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+      }
+
+      .title {
+        font-size: 1.75rem;
+      }
+
+      .back-button {
+        font-size: 0.9rem;
+        padding: 0.5rem;
+      }
+
+      audio {
+        max-width: 100%;
+      }
+
+      .play-button, .pause-button {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+      }
+
+      .transcription-box {
+        padding: 1.5rem;
+      }
+
+      textarea {
+        min-height: 150px;
+        font-size: 0.95rem;
+      }
+
+      .compare-button {
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 0.95rem;
+      }
+
+      .accuracy-meter {
+        height: 35px;
+      }
+
+      .accuracy-text {
+        font-size: 0.9rem;
+      }
+
+      .table th, .table td {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+      }
     }

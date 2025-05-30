@@ -8,7 +8,7 @@ block content
           .card-header.bg-primary.text-white
             .d-flex.justify-content-between.align-items-center
               h4.mb-0 Danh sách câu hỏi Reading TOEIC
-              a.btn.btn-light(href='/admin/readingTOEIC/create')
+              a.btn.btn-light(href='/admin/questions/create')
                 i.bi.bi-plus-circle.me-2
                 | Thêm câu hỏi
 
@@ -100,7 +100,7 @@ block content
                         td.text-center #{q.createdAt ? q.createdAt.toLocaleString('vi-VN') : 'N/A'}
                         td.text-center
                           .btn-group(role="group")
-                            a.btn.btn-sm.btn-outline-primary.rounded-start(href=`/admin/readingTOEIC/edit/${q._id}`, title="Chỉnh sửa")
+                            a.btn.btn-sm.btn-outline-primary.rounded-start(href=`/admin/questions/edit/${q._id}`, title="Chỉnh sửa")
                               i.bi.bi-pencil
                             button.btn.btn-sm.btn-outline-danger.rounded-end(type='button', onclick=`confirmDelete('${q._id}')`, title="Xóa")
                               i.bi.bi-trash
@@ -110,7 +110,7 @@ block content
                 i.bi.bi-question-circle.display-4.text-muted
                 h4.mt-3.text-muted Không có câu hỏi nào
                 p.text-muted Hãy thêm câu hỏi mới để bắt đầu
-                a.btn.btn-primary.mt-3(href='/admin/readingTOEIC/create')
+                a.btn.btn-primary.mt-3(href='/admin/questions/create')
                   i.bi.bi-plus-circle.me-2
                   | Thêm câu hỏi
 
@@ -144,7 +144,7 @@ block content
         cancelButtonText: 'Hủy'
       }).then((result) => {
         if (result.isConfirmed) {
-          fetch(`/admin/readingTOEIC/delete/${id}`, {
+          fetch(`/admin/questions/delete/${id}`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

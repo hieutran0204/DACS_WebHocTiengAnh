@@ -14,32 +14,15 @@ const ensureDirectoryExists = (directory) => {
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
+    const skillType = 'transcription'; // Mặc định là transcription
     let uploadPath;
-    // Debug req.path
-    console.log('req.path:', req.path);
-    console.log('req.body:', req.body); // Thêm log để kiểm tra body
-
-    // Xác định skillType dựa trên req.path
-    let skillType;
-    if (req.path.includes('listeningTOEIC')) {
-      skillType = 'listening_TOEIC';
-    } else if (req.path.includes('writingTOEIC')) {
-      skillType = 'writing_TOEIC';
-    } else if (req.path.includes('readingTOEIC')) {
-      skillType = 'reading_TOEIC';
-    } else {
-      console.warn('Không xác định được skillType, mặc định là listening_TOEIC');
-      skillType = 'listening_TOEIC'; // Mặc định là listening nếu không rõ
-    }
-
-    console.log('skillType:', skillType);
 
     if (file.fieldname === 'audio') {
-      uploadPath = path.join(__dirname, '..', 'public', 'shared', 'audio', skillType);
+      uploadPath = path.join(__dirname, '..', 'public', 'shared', 'audio', 'transcription');
     } else if (file.fieldname === 'image') {
-      uploadPath = path.join(__dirname,  '..', 'public', 'shared', 'images', skillType);
+      uploadPath = path.join(__dirname, '..', 'public', 'shared', 'images', 'transcription');
     } else if (file.fieldname === 'diagram') {
-      uploadPath = path.join(__dirname,  '..', 'public', 'shared', 'diagrams', skillType);
+      uploadPath = path.join(__dirname, '..', 'public', 'shared', 'diagrams', 'transcription');
     }
 
     console.log('uploadPath:', uploadPath);
@@ -47,27 +30,11 @@ const storage = multer.diskStorage({
     cb(null, uploadPath);
   },
   filename: function (req, file, cb) {
-    // Debug req.path
-    console.log('req.path trong filename:', req.path);
-    console.log('req.body trong filename:', req.body);
-
-    let skillType;
-    if (req.path.includes('listeningTOEIC')) {
-      skillType = 'listening';
-    } else if (req.path.includes('writingTOEIC')) {
-      skillType = 'writing';
-    } else if (req.path.includes('readingTOEIC')) {
-      skillType = 'reading';
-    } else {
-      console.warn('Không xác định được skillType, mặc định là listening');
-      skillType = 'listening'; // Mặc định là listening nếu không rõ
-    }
-
-    console.log('skillType trong filename:', skillType);
+    const skillType = 'transcription'; // Mặc định là transcription
 
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     const extname = path.extname(file.originalname).toLowerCase();
-    
+
     const validAudioExt = ['.mp3', '.wav'];
     const validImageExt = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
     if (file.fieldname === 'audio' && !validAudioExt.includes(extname)) {
@@ -76,7 +43,7 @@ const storage = multer.diskStorage({
     if (['image', 'diagram'].includes(file.fieldname) && !validImageExt.includes(extname)) {
       return cb(new Error('File ảnh phải có định dạng JPEG, PNG, GIF hoặc WEBP'), false);
     }
-    
+
     const filename = `${skillType}-${file.fieldname}-${uniqueSuffix}${extname}`;
     console.log('Tên file được tạo:', filename);
     cb(null, filename);
@@ -86,7 +53,7 @@ const storage = multer.diskStorage({
 const checkFileType = (req, file, cb) => {
   const validAudioTypes = ['audio/mpeg', 'audio/mp3', 'audio/wav'];
   const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-  
+
   if (file.fieldname === 'audio') {
     if (validAudioTypes.includes(file.mimetype)) {
       cb(null, true);

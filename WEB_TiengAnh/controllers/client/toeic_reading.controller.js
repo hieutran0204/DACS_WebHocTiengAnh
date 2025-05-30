@@ -15,9 +15,7 @@ exports.getExamReadingList = async (req, res) => {
       .limit(parseInt(limit))
       .lean();
 
-    if (!readingExams.length) {
-      console.log('Không có đề thi Reading nào với status: public');
-    }
+    console.log('Danh sách đề thi:', readingExams);
 
     const total = await ExamPartReading.countDocuments({ status: 'public' });
 
@@ -37,7 +35,7 @@ exports.getExamReadingList = async (req, res) => {
       page: 1,
       limit: 10,
       total: 0,
-      error: 'Lỗi server khi lấy danh sách đề thi Reading'
+      error: 'Lỗi server khi lấy danh sách đề thi Reading.'
     });
   }
 };
@@ -47,87 +45,271 @@ exports.getPublicReadingExams = async (req, res) => {
   try {
     const { id } = req.params;
 
+    console.log(`=== Bắt đầu lấy đề thi ID: ${id} ===`);
+
     const readingExam = await ExamPartReading.findOne({ _id: id, status: 'public' })
       .populate({
         path: 'questions.questionId',
+        model: 'Question',
         select: 'part questionN question options correctAnswer passage blanks questions Img'
       })
       .populate('createdBy', 'username')
       .lean();
 
     if (!readingExam) {
-      console.log(`Không tìm thấy đề thi với id: ${id} hoặc status không phải public`);
+      console.error(`Không tìm thấy đề thi với ID: ${id} hoặc status không public`);
       return res.render('client/pages/exam-reading', {
         examPart: null,
         questionsByPart: {},
         difficultyMap: { 0: 'Dễ', 1: 'Trung bình', 2: 'Khó' },
-        error: 'Không tìm thấy đề thi hoặc đề thi chưa được public'
+        error: 'Không tìm thấy đề thi hoặc đề thi chưa được public.'
       });
     }
 
-    // Kiểm tra populate
-    if (readingExam.questions.some(q => !q.questionId)) {
-      console.error('Lỗi populate: Một số questionId không tồn tại trong Reading_TOEIC');
+    console.log('Đề thi:', JSON.stringify(readingExam, null, 2));
+
+    if (!readingExam.questions || !Array.isArray(readingExam.questions)) {
+      console.error('Dữ liệu questions không hợp lệ:', readingExam.questions);
+      return res.render('client/pages/exam-reading', {
+        examPart: readingExam,
+        questionsByPart: {},
+        difficultyMap: { 0: 'Dễ', 1: 'Trung bình', 2: 'Khó' },
+        error: 'Dữ liệu câu hỏi không hợp lệ.'
+      });
     }
 
-    // Nhóm câu hỏi theo Part (5, 6, 7)
     const questionsByPart = {};
-    readingExam.questions.forEach((q) => {
-      if (q.questionId) {
-        const part = q.questionId.part;
-        const partKey = `Part ${part}`;
-        if (!questionsByPart[partKey]) questionsByPart[partKey] = [];
 
-        if (part === 6) {
-          // Part 6: Tạo câu hỏi cho mỗi blank
-          q.questionId.blanks.forEach((blank, blankIndex) => {
-            questionsByPart[partKey].push({
-              questionId: q.questionId._id,
-              part,
-              questionN: q.questionId.questionN,
-              passage: q.questionId.passage,
-              Img: q.questionId.Img,
-              questionText: `Blank ${blank.blank}`,
-              options: blank.options,
-              blankIndex
-            });
-          });
-        } else if (part === 7) {
-          // Part 7: Tạo câu hỏi cho mỗi sub-question
-          q.questionId.questions.forEach((subQuestion, subQuestionIndex) => {
-            questionsByPart[partKey].push({
-              questionId: q.questionId._id,
-              part,
-              questionN: q.questionId.questionN,
-              passage: q.questionId.passage,
-              Img: q.questionId.Img,
-              questionText: subQuestion.question,
-              options: subQuestion.options,
-              subQuestionIndex
-            });
-          });
-        } else {
-          // Part 5: Câu hỏi đơn
+    // Xử lý Part 5
+    console.log('--- Xử lý Part 5 ---');
+    let part5Counter = 0;
+    readingExam.questions.forEach((q, index) => {
+      if (!q.questionId) {
+        console.warn(`Câu hỏi ${index + 1} không có questionId:`, q);
+        return;
+      }
+
+      const part = q.questionId.part;
+      const partKey = `Part ${part}`;
+      if (!questionsByPart[partKey]) questionsByPart[partKey] = [];
+
+      if (part === 5) {
+        part5Counter++;
+        if (!q.questionId.question || !q.questionId.options || !Array.isArray(q.questionId.options) || q.questionId.options.length !== 4) {
+          console.warn(`Câu hỏi Part 5 (questionN: ${q.questionId.questionN}) không hợp lệ:`, q.questionId);
           questionsByPart[partKey].push({
             questionId: q.questionId._id,
             part,
             questionN: q.questionId.questionN,
-            questionText: q.questionId.question,
-            options: q.questionId.options,
-            Img: q.questionId.Img
+            questionText: 'Không có nội dung câu hỏi',
+            options: ['A', 'B', 'C', 'D'],
+            type: 'question',
+            displayNumber: part5Counter
           });
+          return;
         }
+        questionsByPart[partKey].push({
+          questionId: q.questionId._id,
+          part,
+          questionN: q.questionId.questionN,
+          questionText: q.questionId.question,
+          options: q.questionId.options,
+          type: 'question',
+          displayNumber: part5Counter
+        });
       }
     });
 
-    // Sắp xếp câu hỏi theo questionN và blankIndex/subQuestionIndex
-    for (const partKey in questionsByPart) {
-      questionsByPart[partKey].sort((a, b) => {
-        if (a.questionN === b.questionN) {
-          return (a.blankIndex || a.subQuestionIndex || 0) - (b.blankIndex || b.subQuestionIndex || 0);
-        }
-        return a.questionN - b.questionN;
+    // Xử lý Part 6
+    console.log('--- Xử lý Part 6 ---');
+    const part6Groups = {};
+    let part6MainCounter = 0;
+    readingExam.questions.forEach((q, index) => {
+      if (!q.questionId) {
+        console.warn(`Câu hỏi ${index + 1} không có questionId:`, q);
+        return;
+      }
+
+      const part = q.questionId.part;
+      if (part !== 6) return;
+
+      const partKey = `Part ${part}`;
+      if (!questionsByPart[partKey]) questionsByPart[partKey] = [];
+
+      const questionIdStr = q.questionId._id.toString();
+      if (!part6Groups[questionIdStr]) {
+        part6MainCounter++;
+        part6Groups[questionIdStr] = {
+          passage: {
+            questionId: q.questionId._id,
+            part,
+            questionN: q.questionId.questionN,
+            passage: q.questionId.passage || 'Không có đoạn văn',
+            Img: q.questionId.Img || '',
+            type: 'passage',
+            displayNumber: part6MainCounter
+          },
+          questions: []
+        };
+      }
+
+      // Xử lý blanks (hỗ trợ cả 'blanks' và 'questions')
+      const blanks = q.questionId.blanks && Array.isArray(q.questionId.blanks) && q.questionId.blanks.length > 0
+        ? q.questionId.blanks
+        : q.questionId.questions && Array.isArray(q.questionId.questions) && q.questionId.questions.length > 0
+          ? q.questionId.questions
+          : [];
+
+      if (blanks.length > 0) {
+        blanks.forEach((blank, blankIndex) => {
+          if (!blank.options || !Array.isArray(blank.options) || blank.options.length !== 4) {
+            console.warn(`Blank ${blankIndex + 1} (questionN: ${q.questionId.questionN}) không hợp lệ:`, blank);
+            return;
+          }
+          part6Groups[questionIdStr].questions.push({
+            questionId: q.questionId._id,
+            part,
+            questionN: q.questionId.questionN,
+            questionText: `Điền vào chỗ trống ${blank.blank || blankIndex + 1}`,
+            options: blank.options,
+            blankIndex,
+            type: 'question',
+            displayNumber: `${part6MainCounter}.${blankIndex + 1}`
+          });
+        });
+      } else {
+        console.warn(`Câu hỏi Part 6 (questionN: ${q.questionId.questionN}) không có blanks/questions hợp lệ`);
+        part6Groups[questionIdStr].questions.push({
+          questionId: q.questionId._id,
+          part,
+          questionN: q.questionId.questionN,
+          questionText: 'Không có chỗ trống nào được định nghĩa',
+          options: ['A', 'B', 'C', 'D'],
+          blankIndex: 0,
+          type: 'question',
+          displayNumber: `${part6MainCounter}.1`
+        });
+      }
+    });
+
+    // Sắp xếp và thêm vào questionsByPart['Part 6']
+    Object.values(part6Groups).sort((a, b) => a.passage.questionN - b.passage.questionN).forEach(group => {
+      questionsByPart['Part 6'].push(group.passage);
+      group.questions.sort((a, b) => a.blankIndex - b.blankIndex).forEach(q => {
+        questionsByPart['Part 6'].push(q);
       });
+    });
+
+    // Xử lý Part 7
+    console.log('--- Xử lý Part 7 ---');
+    const part7Groups = {};
+    let part7MainCounter = 0;
+    readingExam.questions.forEach((q, index) => {
+      if (!q.questionId) {
+        console.warn(`Câu hỏi ${index + 1} không có questionId:`, q);
+        return;
+      }
+
+      const part = q.questionId.part;
+      if (part !== 7) return;
+
+      const partKey = `Part ${part}`;
+      if (!questionsByPart[partKey]) questionsByPart[partKey] = [];
+
+      const questionIdStr = q.questionId._id.toString();
+      if (!part7Groups[questionIdStr]) {
+        part7MainCounter++;
+        part7Groups[questionIdStr] = {
+          passage: {
+            questionId: q.questionId._id,
+            part,
+            questionN: q.questionId.questionN,
+            passage: q.questionId.passage || 'Không có đoạn văn',
+            Img: q.questionId.Img || '',
+            type: 'passage',
+            displayNumber: part7MainCounter
+          },
+          questions: []
+        };
+      }
+
+      // Xử lý sub-questions
+      if (q.questionId.questions && Array.isArray(q.questionId.questions) && q.questionId.questions.length > 0) {
+        q.questionId.questions.forEach((subQuestion, subQuestionIndex) => {
+          if (!subQuestion.question || !subQuestion.options || !Array.isArray(subQuestion.options) || subQuestion.options.length !== 4) {
+            console.warn(`Sub-question ${subQuestionIndex + 1} (questionN: ${q.questionId.questionN}) không hợp lệ:`, subQuestion);
+            return;
+          }
+          part7Groups[questionIdStr].questions.push({
+            questionId: q.questionId._id,
+            part,
+            questionN: q.questionId.questionN,
+            questionText: subQuestion.question,
+            options: subQuestion.options,
+            subQuestionIndex,
+            type: 'question',
+            displayNumber: `${part7MainCounter}.${subQuestionIndex + 1}`
+          });
+        });
+      } else {
+        console.warn(`Câu hỏi Part 7 (questionN: ${q.questionId.questionN}) không có sub-questions hợp lệ`);
+        part7Groups[questionIdStr].questions.push({
+          questionId: q.questionId._id,
+          part,
+          questionN: q.questionId.questionN,
+          questionText: 'Không có câu hỏi nào được định nghĩa',
+          options: ['A', 'B', 'C', 'D'],
+          subQuestionIndex: 0,
+          type: 'question',
+          displayNumber: `${part7MainCounter}.1`
+        });
+      }
+    });
+
+    // Sắp xếp và thêm vào questionsByPart['Part 7']
+    Object.values(part7Groups).sort((a, b) => a.passage.questionN - b.passage.questionN).forEach(group => {
+      questionsByPart['Part 7'].push(group.passage);
+      group.questions.sort((a, b) => a.subQuestionIndex - b.subQuestionIndex).forEach(q => {
+        questionsByPart['Part 7'].push(q);
+      });
+    });
+
+    console.log('=== questionsByPart cuối cùng: ===', JSON.stringify(questionsByPart, null, 2));
+
+    // Thêm placeholder nếu thiếu Part
+    if (!questionsByPart['Part 5'] && readingExam.part.includes(5)) {
+      console.error('Part 5 không có câu hỏi nào');
+      questionsByPart['Part 5'] = [{
+        questionId: 'placeholder-part5',
+        part: 5,
+        questionN: 1,
+        questionText: 'Không có câu hỏi cho Part 5 do lỗi dữ liệu.',
+        options: ['A', 'B', 'C', 'D'],
+        type: 'question',
+        displayNumber: 1
+      }];
+    }
+    if (!questionsByPart['Part 6'] && readingExam.part.includes(6)) {
+      console.error('Part 6 không có câu hỏi nào');
+      questionsByPart['Part 6'] = [{
+        questionId: 'placeholder-part6',
+        part: 6,
+        questionN: 1,
+        passage: 'Không có đoạn văn cho Part 6 do lỗi dữ liệu.',
+        type: 'passage',
+        displayNumber: 1
+      }];
+    }
+    if (!questionsByPart['Part 7'] && readingExam.part.includes(7)) {
+      console.error('Part 7 không có câu hỏi nào');
+      questionsByPart['Part 7'] = [{
+        questionId: 'placeholder-part7',
+        part: 7,
+        questionN: 1,
+        passage: 'Không có đoạn văn cho Part 7 do lỗi dữ liệu.',
+        type: 'passage',
+        displayNumber: 1
+      }];
     }
 
     res.render('client/pages/exam-reading', {
@@ -142,7 +324,7 @@ exports.getPublicReadingExams = async (req, res) => {
       examPart: null,
       questionsByPart: {},
       difficultyMap: { 0: 'Dễ', 1: 'Trung bình', 2: 'Khó' },
-      error: 'Lỗi server khi lấy đề thi Reading'
+      error: 'Lỗi server khi lấy đề thi Reading.'
     });
   }
 };
@@ -164,6 +346,7 @@ exports.submitReadingExam = async (req, res) => {
     const examPart = await ExamPartReading.findById(examPartId)
       .populate({
         path: 'questions.questionId',
+        model: 'Question',
         select: 'part questionN question correctAnswer blanks questions'
       })
       .lean();
@@ -177,55 +360,26 @@ exports.submitReadingExam = async (req, res) => {
       });
     }
 
+    if (!examPart.questions || !Array.isArray(examPart.questions)) {
+      console.error('examPart.questions không hợp lệ:', examPart.questions);
+      return res.render('client/pages/exam-reading', {
+        examPart: null,
+        questionsByPart: {},
+        error: 'Dữ liệu câu hỏi không hợp lệ'
+      });
+    }
+
     let score = 0;
     let totalQuestions = 0;
     const results = [];
 
     examPart.questions.forEach((q) => {
-      if (!q.questionId) return;
+      if (!q.questionId) {
+        console.warn('Câu hỏi không có questionId:', q);
+        return;
+      }
 
-      if (q.questionId.part === 6) {
-        // Part 6: Chấm điểm cho mỗi blank
-        q.questionId.blanks.forEach((blank, blankIndex) => {
-          const key = `${q.questionId._id}-${blankIndex}`;
-          const userAnswer = answers[key];
-          const correctAnswer = blank.correctAnswer;
-          const isCorrect = userAnswer && userAnswer === correctAnswer;
-          if (isCorrect) score++;
-          totalQuestions++;
-
-          results.push({
-            questionId: q.questionId._id,
-            blankIndex,
-            questionN: q.questionId.questionN,
-            questionText: `Blank ${blank.blank}`,
-            userAnswer: userAnswer || 'Không chọn',
-            correctAnswer,
-            isCorrect
-          });
-        });
-      } else if (q.questionId.part === 7) {
-        // Part 7: Chấm điểm cho mỗi sub-question
-        q.questionId.questions.forEach((subQuestion, subQuestionIndex) => {
-          const key = `${q.questionId._id}-${subQuestionIndex}`;
-          const userAnswer = answers[key];
-          const correctAnswer = subQuestion.correctAnswer;
-          const isCorrect = userAnswer && userAnswer === correctAnswer;
-          if (isCorrect) score++;
-          totalQuestions++;
-
-          results.push({
-            questionId: q.questionId._id,
-            subQuestionIndex,
-            questionN: q.questionId.questionN,
-            questionText: subQuestion.question,
-            userAnswer: userAnswer || 'Không chọn',
-            correctAnswer,
-            isCorrect
-          });
-        });
-      } else {
-        // Part 5: Chấm điểm câu hỏi đơn
+      if (q.questionId.part === 5) {
         const key = `${q.questionId._id}-0`;
         const userAnswer = answers[key];
         const correctAnswer = q.questionId.correctAnswer;
@@ -236,11 +390,59 @@ exports.submitReadingExam = async (req, res) => {
         results.push({
           questionId: q.questionId._id,
           questionN: q.questionId.questionN,
-          questionText: q.questionId.question,
+          questionText: q.questionId.question || 'Không có câu hỏi',
           userAnswer: userAnswer || 'Không chọn',
           correctAnswer,
           isCorrect
         });
+      } else if (q.questionId.part === 6) {
+        const blanks = q.questionId.blanks && Array.isArray(q.questionId.blanks) && q.questionId.blanks.length > 0
+          ? q.questionId.blanks
+          : q.questionId.questions && Array.isArray(q.questionId.questions) && q.questionId.questions.length > 0
+            ? q.questionId.questions
+            : [];
+
+        if (blanks.length > 0) {
+          blanks.forEach((blank, blankIndex) => {
+            const key = `${q.questionId._id}-${blankIndex}`;
+            const userAnswer = answers[key];
+            const correctAnswer = blank.correctAnswer;
+            const isCorrect = userAnswer && userAnswer === correctAnswer;
+            if (isCorrect) score++;
+            totalQuestions++;
+
+            results.push({
+              questionId: q.questionId._id,
+              blankIndex,
+              questionN: q.questionId.questionN,
+              questionText: `Điền vào chỗ trống ${blank.blank || blankIndex + 1}`,
+              userAnswer: userAnswer || 'Không chọn',
+              correctAnswer,
+              isCorrect
+            });
+          });
+        }
+      } else if (q.questionId.part === 7) {
+        if (q.questionId.questions && Array.isArray(q.questionId.questions)) {
+          q.questionId.questions.forEach((subQuestion, subQuestionIndex) => {
+            const key = `${q.questionId._id}-${subQuestionIndex}`;
+            const userAnswer = answers[key];
+            const correctAnswer = subQuestion.correctAnswer;
+            const isCorrect = userAnswer && userAnswer === correctAnswer;
+            if (isCorrect) score++;
+            totalQuestions++;
+
+            results.push({
+              questionId: q.questionId._id,
+              subQuestionIndex,
+              questionN: q.questionId.questionN,
+              questionText: subQuestion.question || 'Không có câu hỏi',
+              userAnswer: userAnswer || 'Không chọn',
+              correctAnswer,
+              isCorrect
+            });
+          });
+        }
       }
     });
 
@@ -260,7 +462,7 @@ exports.submitReadingExam = async (req, res) => {
     res.render('client/pages/exam-reading', {
       examPart: null,
       questionsByPart: {},
-      error: 'Lỗi server khi chấm điểm'
+      error: 'Lỗi server khi chấm điểm.'
     });
   }
 };

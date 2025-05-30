@@ -8,14 +8,14 @@ const examPartReadingSchema = new mongoose.Schema({
     default: 'Reading'
   },
   part: {
-    type: [Number], // Lưu danh sách các part (5, 6, 7)
+    type: [Number],
     required: true,
     enum: [5, 6, 7]
   },
   questions: [{
     questionId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Question', // Tham chiếu đến Reading TOEIC questions
+      ref: 'Question',
       required: true
     }
   }],
@@ -41,7 +41,6 @@ const examPartReadingSchema = new mongoose.Schema({
   }
 });
 
-// Chỉ mục để tối ưu truy vấn
 examPartReadingSchema.index({ examType: 1, part: 1, createdAt: -1 });
 
 module.exports = mongoose.model('ExamPart_Reading', examPartReadingSchema);

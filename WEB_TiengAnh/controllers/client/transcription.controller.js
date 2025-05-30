@@ -5,37 +5,110 @@ function normalize(text) {
 }
 
 exports.listAll = async (req, res) => {
-  const list = await Transcription.find().sort({ createdAt: -1 });
-  res.render('client/pages/transcription-list', { list });
+  try {
+    const list = await Transcription.find().sort({ createdAt: -1 }).lean();
+    if (!list.length) {
+      console.log('Không có bài transcription nào');
+    }
+    res.render('client/pages/transcription-list', { list, error: null });
+  } catch (error) {
+    console.error('Lỗi lấy danh sách transcription:', error);
+    res.render('client/pages/transcription-list', { list: [], error: 'Lỗi server khi lấy danh sách transcription' });
+  }
 };
 
 exports.playAndCompare = async (req, res) => {
-    const item = await Transcription.findById(req.params.id);
-    
-    // Thêm log để debug
-    console.log('Audio path:', item.audioPath); 
+  try {
+    const item = await Transcription.findById(req.params.id).lean();
+    if (!item) {
+      return res.render('client/pages/transcription-play', {
+        item: null,
+        error: 'Không tìm thấy bài transcription',
+        result: null
+      });
+    }
+
+    console.log('Audio path:', item.audioPath);
+    console.log('Image path:', item.imagePath);
     console.log('Full item:', item);
-    
-    // Đảm bảo đường dẫn audio đúng format
-    const audioPath = item.audioPath.startsWith('/') ? item.audioPath : `/${item.audioPath}`;
-    
-    res.render('client/pages/transcription-play', { 
+
+    const audioPath = item.audioPath && !item.audioPath.startsWith('/') ? `/${item.audioPath}` : item.audioPath;
+    const imagePath = item.imagePath && !item.imagePath.startsWith('/') ? `/${item.imagePath}` : item.imagePath;
+
+    res.render('client/pages/transcription-play', {
       item: {
-        ...item._doc,
-        audioPath: audioPath
-      } 
+        ...item,
+        audioPath,
+        imagePath
+      },
+      error: null,
+      result: null
     });
-  };
+  } catch (error) {
+    console.error('Lỗi khi lấy bài transcription:', error);
+    res.render('client/pages/transcription-play', {
+      item: null,
+      error: 'Lỗi server khi lấy bài transcription',
+      result: null
+    });
+  }
+};
 
 exports.checkTranscript = async (req, res) => {
-  const item = await Transcription.findById(req.params.id);
-  const userInput = normalize(req.body.userText);
-  const original = normalize(item.transcriptText);
+  try {
+    const item = await Transcription.findById(req.params.id).lean();
+    if (!item) {
+      return res.render('client/pages/transcription-play', {
+        item: null,
+        error: 'Không tìm thấy bài transcription',
+        result: null
+      });
+    }
 
-  const userWords = userInput.split(/\s+/);
-  const originalWords = original.split(/\s+/);
-  const matchCount = userWords.filter((word, i) => word === originalWords[i]).length;
-  const percent = Math.round((matchCount / originalWords.length) * 100);
+    const userInput = normalize(req.body.userText || '');
+    const original = normalize(item.transcriptText || '');
 
-  res.render('client/pages/transcription-play', { item, result: percent });
+    const userWords = userInput.split(/\s+/).filter(word => word);
+    const originalWords = original.split(/\s+/).filter(word => word);
+
+    // So sánh từng từ
+    const comparison = [];
+    for (let i = 0; i < Math.max(userWords.length, originalWords.length); i++) {
+      const userWord = userWords[i] || '';
+      const originalWord = originalWords[i] || '';
+      comparison.push({
+        userWord,
+        originalWord,
+        isCorrect: userWord === originalWord
+      });
+    }
+
+    const matchCount = comparison.filter(item => item.isCorrect).length;
+    const percent = originalWords.length > 0 ? Math.round((matchCount / originalWords.length) * 100) : 0;
+
+    const audioPath = item.audioPath && !item.audioPath.startsWith('/') ? `/${item.audioPath}` : item.audioPath;
+    const imagePath = item.imagePath && !item.imagePath.startsWith('/') ? `/${item.imagePath}` : item.imagePath;
+
+    res.render('client/pages/transcription-play', {
+      item: {
+        ...item,
+        audioPath,
+        imagePath
+      },
+      result: {
+        percent,
+        comparison,
+        userInput: req.body.userText || '',
+        original: item.transcriptText
+      },
+      error: null
+    });
+  } catch (error) {
+    console.error('Lỗi khi so sánh transcript:', error);
+    res.render('client/pages/transcription-play', {
+      item: null,
+      error: 'Lỗi server khi so sánh transcript',
+      result: null
+    });
+  }
 };
