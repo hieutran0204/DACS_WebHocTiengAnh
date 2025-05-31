@@ -37,26 +37,35 @@ exports.createExam = async (req, res) => {
       if (!value) throw new Error(`Vui lòng điền ${field}`);
     }
 
-    if (isNaN(topicNum) || topicNum < 1) throw new Error("Mã Đề phải là số lớn hơn 0.");
+    if (isNaN(topicNum) || topicNum < 1)
+      throw new Error("Mã Đề phải là số lớn hơn 0.");
     if (isNaN(difficultyLevel) || ![0, 1, 2].includes(difficultyLevel)) {
-      throw new Error("Độ Khó không hợp lệ. Chỉ chấp nhận 0 (Dễ), 1 (Trung bình), 2 (Khó).");
+      throw new Error(
+        "Độ Khó không hợp lệ. Chỉ chấp nhận 0 (Dễ), 1 (Trung bình), 2 (Khó)."
+      );
     }
 
     // Chuyển đổi mảng ID từ form
-    const part8Ids = Array.isArray(part8) ? part8 : (part8 ? [part8] : []);
-    const part9Ids = Array.isArray(part9) ? part9 : (part9 ? [part9] : []);
-    const part10Ids = Array.isArray(part10) ? part10 : (part10 ? [part10] : []);
+    const part8Ids = Array.isArray(part8) ? part8 : part8 ? [part8] : [];
+    const part9Ids = Array.isArray(part9) ? part9 : part9 ? [part9] : [];
+    const part10Ids = Array.isArray(part10) ? part10 : part10 ? [part10] : [];
 
-    if (part8Ids.length > 5) throw new Error("Part 8 chỉ được chọn tối đa 5 câu.");
-    if (part9Ids.length > 2) throw new Error("Part 9 chỉ được chọn tối đa 2 câu.");
-    if (part10Ids.length > 1) throw new Error("Part 10 chỉ được chọn tối đa 1 câu.");
+    if (part8Ids.length > 5)
+      throw new Error("Part 8 chỉ được chọn tối đa 5 câu.");
+    if (part9Ids.length > 2)
+      throw new Error("Part 9 chỉ được chọn tối đa 2 câu.");
+    if (part10Ids.length > 1)
+      throw new Error("Part 10 chỉ được chọn tối đa 1 câu.");
 
     // Lấy các câu hỏi từ database dựa trên ID
     const questions = await WritingQuestion.find({
       _id: { $in: [...part8Ids, ...part9Ids, ...part10Ids] },
     }).lean();
 
-    if (questions.length !== (part8Ids.length + part9Ids.length + part10Ids.length)) {
+    if (
+      questions.length !==
+      part8Ids.length + part9Ids.length + part10Ids.length
+    ) {
       throw new Error("Một hoặc nhiều câu hỏi không tồn tại.");
     }
 
@@ -67,7 +76,7 @@ exports.createExam = async (req, res) => {
       TopicN: topicNum,
       difficulty: difficultyLevel,
       notes: notes?.trim() || "",
-      questions: questions.map(q => q._id),
+      questions: questions.map((q) => q._id),
       createdBy: adminId, // Lưu ID của admin
       status: "draft", // Mặc định là draft
     });
@@ -93,11 +102,11 @@ exports.getExams = async (req, res) => {
       .lean();
 
     // Thêm questionCount và parts cho mỗi exam
-    const examsWithDetails = exams.map(exam => {
+    const examsWithDetails = exams.map((exam) => {
       const questions = Array.isArray(exam.questions) ? exam.questions : [];
       const parts = questions
-        .filter(q => q && typeof q.part === "number")
-        .map(q => q.part);
+        .filter((q) => q && typeof q.part === "number")
+        .map((q) => q.part);
       return {
         ...exam,
         questionCount: questions.length,
@@ -152,8 +161,8 @@ exports.getExamDetail = async (req, res) => {
     // Tính toán questionCount và parts
     const questions = Array.isArray(exam.questions) ? exam.questions : [];
     const parts = questions
-      .filter(q => q && typeof q.part === "number")
-      .map(q => q.part);
+      .filter((q) => q && typeof q.part === "number")
+      .map((q) => q.part);
 
     const examWithDetails = {
       ...exam,
@@ -187,7 +196,17 @@ exports.getExamDetail = async (req, res) => {
 exports.updateExam = async (req, res) => {
   try {
     const examId = req.params.id;
-    const { examCode, MaCC, TopicN, difficulty, part8, part9, part10, notes, status } = req.body;
+    const {
+      examCode,
+      MaCC,
+      TopicN,
+      difficulty,
+      part8,
+      part9,
+      part10,
+      notes,
+      status,
+    } = req.body;
     const topicNum = parseInt(TopicN);
     const difficultyLevel = parseInt(difficulty);
 
@@ -197,30 +216,41 @@ exports.updateExam = async (req, res) => {
       if (!value) throw new Error(`Vui lòng điền ${field}`);
     }
 
-    if (isNaN(topicNum) || topicNum < 1) throw new Error("Mã Đề phải là số lớn hơn 0.");
+    if (isNaN(topicNum) || topicNum < 1)
+      throw new Error("Mã Đề phải là số lớn hơn 0.");
     if (isNaN(difficultyLevel) || ![0, 1, 2].includes(difficultyLevel)) {
-      throw new Error("Độ Khó không hợp lệ. Chỉ chấp nhận 0 (Dễ), 1 (Trung bình), 2 (Khó).");
+      throw new Error(
+        "Độ Khó không hợp lệ. Chỉ chấp nhận 0 (Dễ), 1 (Trung bình), 2 (Khó)."
+      );
     }
 
     if (!["draft", "public"].includes(status)) {
-      throw new Error("Trạng Thái không hợp lệ. Chỉ chấp nhận draft hoặc public.");
+      throw new Error(
+        "Trạng Thái không hợp lệ. Chỉ chấp nhận draft hoặc public."
+      );
     }
 
     // Chuyển đổi mảng ID từ form
-    const part8Ids = Array.isArray(part8) ? part8 : (part8 ? [part8] : []);
-    const part9Ids = Array.isArray(part9) ? part9 : (part9 ? [part9] : []);
-    const part10Ids = Array.isArray(part10) ? part10 : (part10 ? [part10] : []);
+    const part8Ids = Array.isArray(part8) ? part8 : part8 ? [part8] : [];
+    const part9Ids = Array.isArray(part9) ? part9 : part9 ? [part9] : [];
+    const part10Ids = Array.isArray(part10) ? part10 : part10 ? [part10] : [];
 
-    if (part8Ids.length > 5) throw new Error("Part 8 chỉ được chọn tối đa 5 câu.");
-    if (part9Ids.length > 2) throw new Error("Part 9 chỉ được chọn tối đa 2 câu.");
-    if (part10Ids.length > 1) throw new Error("Part 10 chỉ được chọn tối đa 1 câu.");
+    if (part8Ids.length > 5)
+      throw new Error("Part 8 chỉ được chọn tối đa 5 câu.");
+    if (part9Ids.length > 2)
+      throw new Error("Part 9 chỉ được chọn tối đa 2 câu.");
+    if (part10Ids.length > 1)
+      throw new Error("Part 10 chỉ được chọn tối đa 1 câu.");
 
     // Lấy các câu hỏi từ database dựa trên ID
     const questions = await WritingQuestion.find({
       _id: { $in: [...part8Ids, ...part9Ids, ...part10Ids] },
     }).lean();
 
-    if (questions.length !== (part8Ids.length + part9Ids.length + part10Ids.length)) {
+    if (
+      questions.length !==
+      part8Ids.length + part9Ids.length + part10Ids.length
+    ) {
       throw new Error("Một hoặc nhiều câu hỏi không tồn tại.");
     }
 
@@ -233,7 +263,7 @@ exports.updateExam = async (req, res) => {
         TopicN: topicNum,
         difficulty: difficultyLevel,
         notes: notes?.trim() || "",
-        questions: questions.map(q => q._id),
+        questions: questions.map((q) => q._id),
         status,
       },
       { new: true, runValidators: true }
@@ -271,7 +301,6 @@ exports.publishExam = async (req, res) => {
     req.flash("error", `Lỗi: ${error.message}`);
     return res.redirect("/admin/toeic-writing/exams");
   }
-  
 };
 
 // Chuyển về bản nháp

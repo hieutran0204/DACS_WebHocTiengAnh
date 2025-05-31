@@ -1,0 +1,209 @@
+/* client/css/speaking-list.css */
+
+.container {
+  max-width: 1200px;
+  padding: 0 1.5rem;
+  margin: 3rem auto;
+}
+
+h1 {
+  color: #2c3e50;
+  font-size: 2.5rem;
+  margin-bottom: 2.5rem;
+  position: relative;
+  padding-bottom: 1rem;
+  text-align: center;
+  font-weight: 700;
+}
+
+h1:after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #3498db, #2c3e50);
+  border-radius: 2px;
+}
+
+/* Card Styles */
+.card {
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  height: 100%;
+  background: white;
+  position: relative;
+  z-index: 1;
+}
+
+.card:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(52, 152, 219, 0.1) 0%, rgba(44, 62, 80, 0.05) 100%);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(52, 152, 219, 0.2);
+}
+
+.card:hover:before {
+  opacity: 1;
+}
+
+.card.shadow-sm {
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.card-body {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.card-title {
+  color: #2c3e50;
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+  transition: color 0.3s ease;
+}
+
+.card:hover .card-title {
+  color: #3498db;
+}
+
+.card-text {
+  color: #7f8c8d;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
+}
+
+/* Button Styles */
+.btn-primary {
+  background-color: #3498db;
+  border-color: #3498db;
+  border-radius: 8px;
+  padding: 0.7rem 1.5rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  align-self: flex-start;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.btn-primary:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(52, 152, 219, 0.8) 100%);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+  border-color: #2980b9;
+}
+
+.btn-primary:hover:after {
+  opacity: 1;
+}
+
+/* Microphone Icon Indicator */
+.card:after {
+  content: '🎤';
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 1.5rem;
+  opacity: 0.2;
+  transition: all 0.3s ease;
+}
+
+.card:hover:after {
+  opacity: 0.4;
+  transform: scale(1.1);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+  .col-md-4 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
+  
+  .col-md-4 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+  
+  .card-body {
+    padding: 1.5rem;
+  }
+}
+
+/* Animation */
+@keyframes slideUpFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card {
+  animation: slideUpFadeIn 0.6s ease forwards;
+  opacity: 0;
+}
+
+/* Staggered animation delay */
+.card:nth-child(1) { animation-delay: 0.1s; }
+.card:nth-child(2) { animation-delay: 0.2s; }
+.card:nth-child(3) { animation-delay: 0.3s; }
+.card:nth-child(4) { animation-delay: 0.4s; }
+.card:nth-child(5) { animation-delay: 0.5s; }
+.card:nth-child(6) { animation-delay: 0.6s; }
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #95a5a6;
+}
+
+.empty-state-icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.3;
+}

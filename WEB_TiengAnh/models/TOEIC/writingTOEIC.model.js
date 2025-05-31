@@ -1,94 +1,94 @@
 const mongoose = require("mongoose");
 
 const part8Schema = new mongoose.Schema({
-  keyword1: { 
-    type: String, 
-    required: true, 
+  keyword1: {
+    type: String,
+    required: true,
     maxlength: 100,
-    trim: true
+    trim: true,
   },
-  keyword2: { 
-    type: String, 
-    required: true, 
+  keyword2: {
+    type: String,
+    required: true,
     maxlength: 100,
-    trim: true
+    trim: true,
   },
-  img: { 
-    type: String, 
+  img: {
+    type: String,
     required: true,
     validate: {
       validator: (v) => /\.(jpg|jpeg|png|gif)$/i.test(v),
-      message: "Chỉ chấp nhận file ảnh (jpg, jpeg, png, gif)."
-    }
+      message: "Chỉ chấp nhận file ảnh (jpg, jpeg, png, gif).",
+    },
   },
 });
 
 const part9Schema = new mongoose.Schema({
-  situation: { 
-    type: String, 
-    required: true, 
+  situation: {
+    type: String,
+    required: true,
     maxlength: 1000,
-    trim: true
+    trim: true,
   },
-  requirements: { 
-    type: String, 
-    required: true, 
+  requirements: {
+    type: String,
+    required: true,
     maxlength: 1000,
-    trim: true
+    trim: true,
   },
-  sampleAnswer: { 
-    type: String, 
+  sampleAnswer: {
+    type: String,
     maxlength: 2000,
     trim: true,
-    default: ""
+    default: "",
   },
 });
 
 const part10Schema = new mongoose.Schema({
-  question: { 
-    type: String, 
-    required: true, 
+  question: {
+    type: String,
+    required: true,
     maxlength: 1000,
-    trim: true
+    trim: true,
   },
-  sampleAnswer: { 
-    type: String, 
+  sampleAnswer: {
+    type: String,
     maxlength: 3000,
     trim: true,
-    default: ""
+    default: "",
   },
 });
 
 const writingToeicSchema = new mongoose.Schema(
   {
-    MaCC: { 
-      type: String, 
+    MaCC: {
+      type: String,
       required: true,
-      trim: true
+      trim: true,
     },
-    TopicN: { 
-      type: Number, 
+    TopicN: {
+      type: Number,
       required: true,
-      min: 1
+      min: 1,
     },
-    part: { 
-      type: Number, 
-      enum: [8, 9, 10], 
-      required: true 
-    },
-    questionN: { 
-      type: Number, 
+    part: {
+      type: Number,
+      enum: [8, 9, 10],
       required: true,
-      min: 1
+    },
+    questionN: {
+      type: Number,
+      required: true,
+      min: 1,
     },
     part8: part8Schema,
     part9: part9Schema,
     part10: part10Schema,
-    notes: { 
-      type: String, 
+    notes: {
+      type: String,
       maxlength: 2000,
       trim: true,
-      default: ""
+      default: "",
     },
     difficulty: {
       type: Number,
@@ -96,20 +96,24 @@ const writingToeicSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { 
+  {
     timestamps: true,
     toJSON: { virtuals: true },
-    toObject: { virtuals: true }
+    toObject: { virtuals: true },
   }
 );
 
 // Index để đảm bảo tính duy nhất
-writingToeicSchema.index({ 
-  MaCC: 1, 
-  TopicN: 1, 
-  part: 1, 
-  questionN: 1 
-}, { unique: true });
+writingToeicSchema.index(
+  {
+    MaCC: 1,
+    TopicN: 1,
+    part: 1,
+    questionN: 1,
+  },
+  { unique: true }
+);
 
-module.exports = mongoose.models.WritingQuestion || 
-                mongoose.model("WritingQuestion", writingToeicSchema, "Writing_TOEIC");
+module.exports =
+  mongoose.models.WritingQuestion ||
+  mongoose.model("WritingQuestion", writingToeicSchema, "Writing_TOEIC");

@@ -5,7 +5,6 @@
 // // const ListeningTOEICPart4 = require('../../models/TOEIC/listeningTOEIC.model').ListeningTOEICPart4;
 // // const Question = require('../../models/TOEIC/readingToiec.model');
 
-
 // // let User;
 // // try {
 // //   User = mongoose.model('User');
@@ -621,22 +620,26 @@
 //     res.redirect('/admin/TOEIC/exam-listening');
 //   }
 // };
-const mongoose = require('mongoose');
-const ListeningTOEICPart1 = require('../../models/TOEIC/listeningTOEIC.model').ListeningTOEICPart1;
-const ListeningTOEICPart2 = require('../../models/TOEIC/listeningTOEIC.model').ListeningTOEICPart2;
-const ListeningTOEICPart3 = require('../../models/TOEIC/listeningTOEIC.model').ListeningTOEICPart3;
-const ListeningTOEICPart4 = require('../../models/TOEIC/listeningTOEIC.model').ListeningTOEICPart4;
-const Question = require('../../models/TOEIC/readingToiec.model');
-const ExamPart_Listening = require('../../models/TOEIC/ExamPart_Listening.model');
-const ExamPart_Reading = require('../../models/TOEIC/ExamPart_Reading.model');
-const ExamPart_Writing = require('../../models/TOEIC/ExamPart_Writing.model');
-const WritingQuestion = require('../../models/TOEIC/writingToeic.model');
+const mongoose = require("mongoose");
+const ListeningTOEICPart1 =
+  require("../../models/TOEIC/listeningTOEIC.model").ListeningTOEICPart1;
+const ListeningTOEICPart2 =
+  require("../../models/TOEIC/listeningTOEIC.model").ListeningTOEICPart2;
+const ListeningTOEICPart3 =
+  require("../../models/TOEIC/listeningTOEIC.model").ListeningTOEICPart3;
+const ListeningTOEICPart4 =
+  require("../../models/TOEIC/listeningTOEIC.model").ListeningTOEICPart4;
+const Question = require("../../models/TOEIC/readingToiec.model");
+const ExamPart_Listening = require("../../models/TOEIC/ExamPart_Listening.model");
+const ExamPart_Reading = require("../../models/TOEIC/ExamPart_Reading.model");
+const ExamPart_Writing = require("../../models/TOEIC/ExamPart_Writing.model");
+const WritingQuestion = require("../../models/TOEIC/writingToeic.model");
 
 let User;
 try {
-  User = mongoose.model('User');
+  User = mongoose.model("User");
 } catch (error) {
-  User = mongoose.model('User', new mongoose.Schema({ username: String }));
+  User = mongoose.model("User", new mongoose.Schema({ username: String }));
 }
 
 // exports.index = async (req, res) => {
@@ -654,7 +657,18 @@ try {
 exports.getDashboard_TOEIC = async (req, res) => {
   const defaultData = {
     totalQuestions: 0,
-    questionsByPart: { part1: 0, part2: 0, part3: 0, part4: 0, part5: 0, part6: 0, part7: 0, part8: 0, part9: 0, part10: 0 },
+    questionsByPart: {
+      part1: 0,
+      part2: 0,
+      part3: 0,
+      part4: 0,
+      part5: 0,
+      part6: 0,
+      part7: 0,
+      part8: 0,
+      part9: 0,
+      part10: 0,
+    },
     totalExams: 0,
     examsByType: { listening: 0, reading: 0, writing: 0 },
     totalUsers: 0,
@@ -673,7 +687,7 @@ exports.getDashboard_TOEIC = async (req, res) => {
         ListeningTOEICPart4.countDocuments(),
       ]);
     } catch (error) {
-      console.error('Error counting listening questions:', error);
+      console.error("Error counting listening questions:", error);
     }
 
     // Đếm câu hỏi Reading
@@ -681,7 +695,7 @@ exports.getDashboard_TOEIC = async (req, res) => {
     try {
       readingCount = await Question.countDocuments();
     } catch (error) {
-      console.error('Error counting reading questions:', error);
+      console.error("Error counting reading questions:", error);
     }
 
     // Đếm câu hỏi Writing
@@ -691,10 +705,12 @@ exports.getDashboard_TOEIC = async (req, res) => {
       writingCounts.part9 = await WritingQuestion.countDocuments({ part: 9 });
       writingCounts.part10 = await WritingQuestion.countDocuments({ part: 10 });
     } catch (error) {
-      console.error('Error counting writing questions:', error);
+      console.error("Error counting writing questions:", error);
     }
 
-    const totalQuestions = listeningCounts.reduce((sum, count) => sum + count, 0) + readingCount +
+    const totalQuestions =
+      listeningCounts.reduce((sum, count) => sum + count, 0) +
+      readingCount +
       (writingCounts.part8 + writingCounts.part9 + writingCounts.part10);
 
     const questionsByPart = {
@@ -711,11 +727,11 @@ exports.getDashboard_TOEIC = async (req, res) => {
     };
 
     try {
-      questionsByPart.part5 = await Question.countDocuments({ part: '5' });
-      questionsByPart.part6 = await Question.countDocuments({ part: '6' });
-      questionsByPart.part7 = await Question.countDocuments({ part: '7' });
+      questionsByPart.part5 = await Question.countDocuments({ part: "5" });
+      questionsByPart.part6 = await Question.countDocuments({ part: "6" });
+      questionsByPart.part7 = await Question.countDocuments({ part: "7" });
     } catch (error) {
-      console.error('Error counting reading questions by part:', error);
+      console.error("Error counting reading questions by part:", error);
     }
 
     // Đếm tổng số đề thi (Listening + Reading + Writing)
@@ -726,7 +742,7 @@ exports.getDashboard_TOEIC = async (req, res) => {
       const writingExams = await ExamPart_Writing.countDocuments();
       totalExams = listeningExams + readingExams + writingExams;
     } catch (error) {
-      console.error('Error counting exams:', error);
+      console.error("Error counting exams:", error);
     }
 
     const examsByType = {
@@ -739,7 +755,7 @@ exports.getDashboard_TOEIC = async (req, res) => {
       examsByType.reading = await ExamPart_Reading.countDocuments();
       examsByType.writing = await ExamPart_Writing.countDocuments();
     } catch (error) {
-      console.error('Error counting exams by type:', error);
+      console.error("Error counting exams by type:", error);
     }
 
     // Đếm số người dùng
@@ -747,7 +763,7 @@ exports.getDashboard_TOEIC = async (req, res) => {
     try {
       totalUsers = await User.countDocuments();
     } catch (error) {
-      console.error('Error counting users:', error);
+      console.error("Error counting users:", error);
     }
 
     const totalReports = 0;
@@ -758,57 +774,65 @@ exports.getDashboard_TOEIC = async (req, res) => {
       const listeningActivities = await ExamPart_Listening.find()
         .sort({ createdAt: -1 })
         .limit(3)
-        .select('examType part createdAt createdBy')
-        .populate('createdBy', 'username')
+        .select("examType part createdAt createdBy")
+        .populate("createdBy", "username")
         .lean();
 
       const readingActivities = await ExamPart_Reading.find()
         .sort({ createdAt: -1 })
         .limit(3)
-        .select('examType part createdAt createdBy')
-        .populate('createdBy', 'username')
+        .select("examType part createdAt createdBy")
+        .populate("createdBy", "username")
         .lean();
 
       const writingActivities = await ExamPart_Writing.find()
         .sort({ createdAt: -1 })
         .limit(3)
-        .select('examType part createdAt createdBy')
-        .populate('createdBy', 'username')
+        .select("examType part createdAt createdBy")
+        .populate("createdBy", "username")
         .lean();
 
-      recentActivities = [...listeningActivities, ...readingActivities, ...writingActivities]
+      recentActivities = [
+        ...listeningActivities,
+        ...readingActivities,
+        ...writingActivities,
+      ]
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
         .slice(0, 3);
     } catch (populateError) {
-      console.error('Populate error:', populateError);
+      console.error("Populate error:", populateError);
       try {
         const listeningActivities = await ExamPart_Listening.find()
           .sort({ createdAt: -1 })
           .limit(3)
-          .select('examType part createdAt createdBy')
+          .select("examType part createdAt createdBy")
           .lean();
 
         const readingActivities = await ExamPart_Reading.find()
           .sort({ createdAt: -1 })
           .limit(3)
-          .select('examType part createdAt createdBy')
+          .select("examType part createdAt createdBy")
           .lean();
 
         const writingActivities = await ExamPart_Writing.find()
           .sort({ createdAt: -1 })
           .limit(3)
-          .select('examType part createdAt createdBy')
+          .select("examType part createdAt createdBy")
           .lean();
 
-        recentActivities = [...listeningActivities, ...readingActivities, ...writingActivities]
+        recentActivities = [
+          ...listeningActivities,
+          ...readingActivities,
+          ...writingActivities,
+        ]
           .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
           .slice(0, 3);
       } catch (error) {
-        console.error('Error fetching recent activities:', error);
+        console.error("Error fetching recent activities:", error);
       }
     }
 
-    res.render('admin/pages/TOEIC/dashboard_TOEIC', {
+    res.render("admin/pages/TOEIC/dashboard_TOEIC", {
       totalQuestions,
       questionsByPart,
       totalExams,
@@ -818,28 +842,39 @@ exports.getDashboard_TOEIC = async (req, res) => {
       recentActivities,
     });
   } catch (error) {
-    console.error('Dashboard error:', error);
-    res.render('admin/pages/TOEIC/dashboard_TOEIC', defaultData);
+    console.error("Dashboard error:", error);
+    res.render("admin/pages/TOEIC/dashboard_TOEIC", defaultData);
   }
 };
 
 exports.redirectExamType = async (req, res) => {
   const { examType } = req.params;
-  if (examType === 'Listening') {
-    res.redirect('/admin/TOEIC/exam-listening');
-  } else if (examType === 'Reading') {
-    res.redirect('/admin/TOEIC/exam-reading');
-  } else if (examType === 'Writing') {
-    res.redirect('/admin/toeic-writing/exams');
+  if (examType === "Listening") {
+    res.redirect("/admin/TOEIC/exam-listening");
+  } else if (examType === "Reading") {
+    res.redirect("/admin/TOEIC/exam-reading");
+  } else if (examType === "Writing") {
+    res.redirect("/admin/toeic-writing/exams");
   } else {
-    res.status(400).send('Exam type không hợp lệ');
+    res.status(400).send("Exam type không hợp lệ");
   }
 };
 
 exports.getDashboardData = async (req, res) => {
   const defaultData = {
     totalQuestions: 0,
-    questionsByPart: { part1: 0, part2: 0, part3: 0, part4: 0, part5: 0, part6: 0, part7: 0, part8: 0, part9: 0, part10: 0 },
+    questionsByPart: {
+      part1: 0,
+      part2: 0,
+      part3: 0,
+      part4: 0,
+      part5: 0,
+      part6: 0,
+      part7: 0,
+      part8: 0,
+      part9: 0,
+      part10: 0,
+    },
     totalExams: 0,
     examsByType: { listening: 0, reading: 0, writing: 0 },
     totalUsers: 0,
@@ -858,7 +893,7 @@ exports.getDashboardData = async (req, res) => {
         ListeningTOEICPart4.countDocuments(),
       ]);
     } catch (error) {
-      console.error('Error counting listening questions:', error);
+      console.error("Error counting listening questions:", error);
     }
 
     // Đếm câu hỏi Reading
@@ -866,7 +901,7 @@ exports.getDashboardData = async (req, res) => {
     try {
       readingCount = await Question.countDocuments();
     } catch (error) {
-      console.error('Error counting reading questions:', error);
+      console.error("Error counting reading questions:", error);
     }
 
     // Đếm câu hỏi Writing
@@ -876,10 +911,12 @@ exports.getDashboardData = async (req, res) => {
       writingCounts.part9 = await WritingQuestion.countDocuments({ part: 9 });
       writingCounts.part10 = await WritingQuestion.countDocuments({ part: 10 });
     } catch (error) {
-      console.error('Error counting writing questions:', error);
+      console.error("Error counting writing questions:", error);
     }
 
-    const totalQuestions = listeningCounts.reduce((sum, count) => sum + count, 0) + readingCount +
+    const totalQuestions =
+      listeningCounts.reduce((sum, count) => sum + count, 0) +
+      readingCount +
       (writingCounts.part8 + writingCounts.part9 + writingCounts.part10);
 
     const questionsByPart = {
@@ -896,11 +933,11 @@ exports.getDashboardData = async (req, res) => {
     };
 
     try {
-      questionsByPart.part5 = await Question.countDocuments({ part: '5' });
-      questionsByPart.part6 = await Question.countDocuments({ part: '6' });
-      questionsByPart.part7 = await Question.countDocuments({ part: '7' });
+      questionsByPart.part5 = await Question.countDocuments({ part: "5" });
+      questionsByPart.part6 = await Question.countDocuments({ part: "6" });
+      questionsByPart.part7 = await Question.countDocuments({ part: "7" });
     } catch (error) {
-      console.error('Error counting reading questions by part:', error);
+      console.error("Error counting reading questions by part:", error);
     }
 
     // Đếm tổng số đề thi (Listening + Reading + Writing)
@@ -911,7 +948,7 @@ exports.getDashboardData = async (req, res) => {
       const writingExams = await ExamPart_Writing.countDocuments();
       totalExams = listeningExams + readingExams + writingExams;
     } catch (error) {
-      console.error('Error counting exams:', error);
+      console.error("Error counting exams:", error);
     }
 
     const examsByType = {
@@ -924,7 +961,7 @@ exports.getDashboardData = async (req, res) => {
       examsByType.reading = await ExamPart_Reading.countDocuments();
       examsByType.writing = await ExamPart_Writing.countDocuments();
     } catch (error) {
-      console.error('Error counting exams by type:', error);
+      console.error("Error counting exams by type:", error);
     }
 
     // Đếm số người dùng
@@ -932,7 +969,7 @@ exports.getDashboardData = async (req, res) => {
     try {
       totalUsers = await User.countDocuments();
     } catch (error) {
-      console.error('Error counting users:', error);
+      console.error("Error counting users:", error);
     }
 
     const totalReports = 0;
@@ -943,53 +980,61 @@ exports.getDashboardData = async (req, res) => {
       const listeningActivities = await ExamPart_Listening.find()
         .sort({ createdAt: -1 })
         .limit(3)
-        .select('examType part createdAt createdBy')
-        .populate('createdBy', 'username')
+        .select("examType part createdAt createdBy")
+        .populate("createdBy", "username")
         .lean();
 
       const readingActivities = await ExamPart_Reading.find()
         .sort({ createdAt: -1 })
         .limit(3)
-        .select('examType part createdAt createdBy')
-        .populate('createdBy', 'username')
+        .select("examType part createdAt createdBy")
+        .populate("createdBy", "username")
         .lean();
 
       const writingActivities = await ExamPart_Writing.find()
         .sort({ createdAt: -1 })
         .limit(3)
-        .select('examType part createdAt createdBy')
-        .populate('createdBy', 'username')
+        .select("examType part createdAt createdBy")
+        .populate("createdBy", "username")
         .lean();
 
-      recentActivities = [...listeningActivities, ...readingActivities, ...writingActivities]
+      recentActivities = [
+        ...listeningActivities,
+        ...readingActivities,
+        ...writingActivities,
+      ]
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
         .slice(0, 3);
     } catch (populateError) {
-      console.error('Populate error:', populateError);
+      console.error("Populate error:", populateError);
       try {
         const listeningActivities = await ExamPart_Listening.find()
           .sort({ createdAt: -1 })
           .limit(3)
-          .select('examType part createdAt createdBy')
+          .select("examType part createdAt createdBy")
           .lean();
 
         const readingActivities = await ExamPart_Reading.find()
           .sort({ createdAt: -1 })
           .limit(3)
-          .select('examType part createdAt createdBy')
+          .select("examType part createdAt createdBy")
           .lean();
 
         const writingActivities = await ExamPart_Writing.find()
           .sort({ createdAt: -1 })
           .limit(3)
-          .select('examType part createdAt createdBy')
+          .select("examType part createdAt createdBy")
           .lean();
 
-        recentActivities = [...listeningActivities, ...readingActivities, ...writingActivities]
+        recentActivities = [
+          ...listeningActivities,
+          ...readingActivities,
+          ...writingActivities,
+        ]
           .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
           .slice(0, 3);
       } catch (error) {
-        console.error('Error fetching recent activities:', error);
+        console.error("Error fetching recent activities:", error);
       }
     }
 
@@ -1003,7 +1048,7 @@ exports.getDashboardData = async (req, res) => {
       recentActivities,
     });
   } catch (error) {
-    console.error('Dashboard data error:', error);
+    console.error("Dashboard data error:", error);
     res.json(defaultData);
   }
 };
@@ -1015,29 +1060,29 @@ exports.deleteExam = async (req, res) => {
     // Thử xóa từ ExamPart_Writing
     let exam = await ExamPart_Writing.findByIdAndDelete(examId);
     if (exam) {
-      req.flash('success', 'Xóa đề thi Writing thành công');
-      return res.redirect('/admin/toeic-writing/exams');
+      req.flash("success", "Xóa đề thi Writing thành công");
+      return res.redirect("/admin/toeic-writing/exams");
     }
 
     // Thử xóa từ ExamPart_Listening
     exam = await ExamPart_Listening.findByIdAndDelete(examId);
     if (exam) {
-      req.flash('success', 'Xóa đề thi Listening thành công');
-      return res.redirect('/admin/TOEIC/exam-listening');
+      req.flash("success", "Xóa đề thi Listening thành công");
+      return res.redirect("/admin/TOEIC/exam-listening");
     }
 
     // Thử xóa từ ExamPart_Reading
     exam = await ExamPart_Reading.findByIdAndDelete(examId);
     if (exam) {
-      req.flash('success', 'Xóa đề thi Reading thành công');
-      return res.redirect('/admin/TOEIC/exam-reading');
+      req.flash("success", "Xóa đề thi Reading thành công");
+      return res.redirect("/admin/TOEIC/exam-reading");
     }
 
-    req.flash('error', 'Không tìm thấy đề thi');
-    return res.redirect('/admin/dashboard_TOEIC');
+    req.flash("error", "Không tìm thấy đề thi");
+    return res.redirect("/admin/dashboard_TOEIC");
   } catch (error) {
-    console.error('Error deleting exam:', error);
-    req.flash('error', 'Lỗi khi xóa đề thi');
-    return res.redirect('/admin/dashboard_TOEIC');
+    console.error("Error deleting exam:", error);
+    req.flash("error", "Lỗi khi xóa đề thi");
+    return res.redirect("/admin/dashboard_TOEIC");
   }
 };

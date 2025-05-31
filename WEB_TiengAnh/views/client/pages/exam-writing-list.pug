@@ -1,20 +1,28 @@
 extends ../layouts/default
 
+block head
+  link(rel="stylesheet", href="/client/css/exam-writing-list.css")
+
 block content
-  h1 Danh sách đề thi Writing TOEIC
-  if error
-    p.alert.alert-danger= error
-  if success
-    p.alert.alert-success= success
-  if writings.length
-    .row
-      each writing in writings
-        .col-md-4.mb-3
-          .card
-            .card-body
-              h3.card-title #{writing.examCode} - Topic #{writing.TopicN}
-              p.card-text Độ khó: #{writing.difficulty}
-              p.card-text #{writing.notes}
-              a.btn.btn-primary(href=`/testtoeic/writing/${writing._id}`) Làm bài
-  else
-    p Không có đề thi nào được công khai
+  .container.mt-5
+    h1.text-center.mb-4 Danh sách đề thi Writing TOEIC
+    if error && error.length
+      .alert.alert-danger.text-center #{error}
+    if success && success.length
+      .alert.alert-success.text-center #{success}
+    if !writings.length
+      .alert.alert-info.text-center Không có đề thi Writing nào được public.
+    else
+      .row
+        each writing in writings
+          .col-md-4.mb-4
+            .card.h-100
+              .card-header.bg-primary.text-white
+                h5.mb-0 #{writing.examCode} - Topic #{writing.TopicN}
+              .card-body
+                p
+                  strong Độ khó: 
+                  | #{writing.difficulty}
+                p #{writing.notes}
+              .card-footer
+                a.btn.btn-primary.w-100(href=`/testtoeic/writing/${writing._id}`) Làm bài

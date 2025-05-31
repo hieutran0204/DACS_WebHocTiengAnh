@@ -2,105 +2,10 @@ extends ../layouts/default
 
 block head
   title Trò chơi xáo chữ
-  style.
-    .game-container { max-width: 800px; margin: 0 auto; padding: 20px; text-align: center; }
-    .title { color: #2c3e50; margin-bottom: 30px; }
-    .hint-container { margin-bottom: 20px; }
-    .glow-text { font-size: 18px; color: #34495e; animation: glow 1.5s ease-in-out infinite alternate; }
-    .image-section { position: relative; margin-bottom: 20px; }
-    .image-container { position: relative; width: 100%; max-width: 400px; margin: 0 auto; }
-    .main-image { width: 100%; height: auto; display: block; }
-    .image-mask { 
-      position: absolute; 
-      top: 0; 
-      left: 0; 
-      width: 100%; 
-      height: 100%; 
-      display: grid; 
-      grid-template: repeat(2, 1fr) / repeat(2, 1fr); 
-    }
-    .mask-piece { 
-      background-color: rgba(0, 0, 0, 0.9); 
-      border: 1px solid #333; 
-      transition: opacity 0.5s ease-out; 
-    }
-    .image-mask .mask-piece.revealed { opacity: 0 !important; }
-    .game-form { margin-bottom: 20px; }
-    .input-group { 
-      display: flex; 
-      gap: 10px; 
-      justify-content: center; 
-      max-width: 400px; 
-      margin: 0 auto; 
-    }
-    input[type="text"] { 
-      padding: 10px |important; 
-      width: 70%; 
-      border: 1px solid #ddd; 
-      border-radius: 5px; 
-      font-size: 16px; 
-    }
-    .submit-btn { 
-      padding: 10px 20px; 
-      background-color: #3498db; 
-      color: white; 
-      border: none; 
-      border-radius: 5px; 
-      cursor: pointer; 
-      font-size: 16px; 
-    }
-    .submit-btn:hover { background-color: #2980b9; }
-    .modal { 
-      display: none; 
-      position: fixed; 
-      top: 0; 
-      left: 0; 
-      width: 100%; 
-      height: 100%; 
-      background-color: rgba(0,0,0,0.5); 
-      justify-content: center; 
-      align-items: center; 
-      z-index: 1050;
-    }
-    .modal-content { 
-      background-color: white; 
-      padding: 20px; 
-      border-radius: 8px; 
-      text-align: center; 
-      max-width: 400px; 
-      width: 90%; 
-    }
-    .modal-title { color: #2c3e50; margin-bottom: 15px; }
-    .btn-next, .btn-again { 
-      padding: 10px 20px; 
-      margin: 10px; 
-      border: none; 
-      border-radius: 5px; 
-      cursor: pointer; 
-      font-size: 16px; 
-    }
-    .btn-next { background-color: #4CAF50; color: white; }
-    .btn-again { background-color: #e74c3c; color: white; }
-    .correct { color: #2ecc71; font-weight: bold; }
-    .wrong { color: #e74c3c; font-weight: bold; }
-    @keyframes glow {
-      from { text-shadow: 0 0 5px #3498db; }
-      to { text-shadow: 0 0 10px #3498db, 0 0 15px #3498db; }
-    }
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-      20%, 40%, 60%, 80% { transform: translateX(5px); }
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
+  link(rel="stylesheet", href="/client/css/hidden-word.css")
 block content
+  h1.title Đoán Từ Qua Hình Ẩn
   .game-container
-    h1.title Đoán Từ Qua Hình Ẩn
-
     .hint-container
       p#hintDisplay.glow-text Gợi ý: #{question.hints[0]}
 

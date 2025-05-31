@@ -1,77 +1,185 @@
-/* Định dạng footer */
+/* Footer styles */
 .footer {
-    background-color: #f8f9fa; /* Màu nền nhạt */
-    padding: 30px 0;
-    border-top: 1px solid #e9ecef; /* Đường viền trên */
-    color: #333; /* Màu chữ */
-  }
-  
-  /* Container chính */
-  .container {
-    width: 70%; /* Giữ cùng chiều rộng với header */
-    margin: 0 auto;
-  }
-  
-  /* Nội dung footer */
+  background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%);
+  color: #ecf0f1;
+  padding: 60px 0 0;
+  font-family: "Montserrat", sans-serif;
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+.footer-section {
+  margin-bottom: 30px;
+}
+
+.footer-title {
+  color: #f1c40f;
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid rgba(241, 196, 15, 0.3);
+  display: flex;
+  align-items: center;
+}
+
+.footer-text {
+  line-height: 1.6;
+  margin-bottom: 15px;
+  font-size: 0.95rem;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-links li {
+  margin-bottom: 12px;
+}
+
+.footer-links a {
+  color: #bdc3c7;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.footer-links a:hover {
+  color: #f1c40f;
+  transform: translateX(5px);
+}
+
+.contact-info p {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+}
+
+.contact-info i {
+  width: 20px;
+  color: #f1c40f;
+}
+
+.social-links {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  color: #ecf0f1;
+  transition: all 0.3s ease;
+}
+
+.social-link:hover {
+  background: #f1c40f;
+  color: #2c3e50;
+  transform: translateY(-3px);
+}
+
+.newsletter h5 {
+  margin-bottom: 15px;
+  font-size: 1rem;
+}
+
+.newsletter .input-group {
+  display: flex;
+}
+
+.newsletter input {
+  flex: 1;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px 0 0 4px;
+  font-size: 0.9rem;
+}
+
+.newsletter button {
+  background: #f1c40f;
+  color: #2c3e50;
+  border: none;
+  padding: 0 15px;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.newsletter button:hover {
+  background: #f39c12;
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.copyright p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #bdc3c7;
+}
+
+.legal-links {
+  display: flex;
+  gap: 20px;
+}
+
+.legal-links a {
+  color: #bdc3c7;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.legal-links a:hover {
+  color: #f1c40f;
+}
+
+.footer-certificate {
+  display: flex;
+  align-items: center;
+  background: rgba(241, 196, 15, 0.1);
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-top: 15px;
+  font-size: 0.85rem;
+}
+
+.footer-certificate i {
+  color: #f1c40f;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
   .footer-content {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 20px;
+    grid-template-columns: 1fr;
   }
-  
-  /* Định dạng từng section trong footer */
-  .footer-section {
-    flex: 1;
-    min-width: 200px;
-  }
-  
-  .footer-section h4 {
-    font-size: 1.2rem;
-    margin-bottom: 15px;
-    color: #007bff; /* Màu xanh dương giống header */
-  }
-  
-  .footer-section p {
-    margin: 5px 0;
-    font-size: 0.9rem;
-  }
-  
-  /* Định dạng liên kết mạng xã hội */
-  .social-links a {
-    margin-right: 15px;
-    color: #333;
-    font-size: 1.2rem;
-    transition: color 0.3s ease;
-  }
-  
-  .social-links a:hover {
-    color: #007bff; /* Màu xanh dương khi hover */
-  }
-  
-  /* Định dạng phần bản quyền */
+
   .footer-bottom {
+    flex-direction: column;
     text-align: center;
-    margin-top: 20px;
-    padding-top: 15px;
-    border-top: 1px solid #e9ecef;
-    font-size: 0.9rem;
-    width: 100%;
+    gap: 15px;
   }
-  
-  /* Responsive */
-  @media (max-width: 576px) {
-    .container {
-      width: 90%; /* Tăng chiều rộng trên màn hình nhỏ */
-    }
-  
-    .footer-content {
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-    }
-  
-    .social-links a {
-      margin: 0 10px;
-    }
+
+  .legal-links {
+    justify-content: center;
   }
+}

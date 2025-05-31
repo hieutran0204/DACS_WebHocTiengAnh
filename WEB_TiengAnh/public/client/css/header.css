@@ -1,171 +1,178 @@
-/* Định dạng header */
+/* Header cố định chiều cao và căn giữa nội dung */
 .header {
-    background-color: #fff;
-    border-bottom: 1px solid #e9ecef;
-    padding: 10px 0;
+  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 0; /* Bỏ padding tổng */
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  font-family: "Montserrat", sans-serif;
+  height: 70px; /* Cố định chiều cao */
+  display: flex;
+  align-items: center;
 }
 
-/* Container chính */
-.container {
-    width: 70%;
-    margin: 0 auto;
+/* Container bên trong header */
+.header-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-/* Định dạng logo */
+/* Logo điều chỉnh lại */
 .logo-container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+  height: 50px;
+  display: flex;
+  align-items: center;
 }
 
 .logo-container img {
-    height: 40px;
-    transition: opacity 0.3s ease;
+  height: 100%;
+  width: auto;
+  transition: transform 0.3s ease;
 }
 
-.logo-container img:hover {
-    opacity: 0.8;
-}
-
-.logo-container small {
-    font-size: 0.7rem;
-    color: #6c757d;
-}
-
-/* Định dạng menu */
+/* Menu chính */
 .nav-menu {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px; /* Khoảng cách giữa các mục menu */
+  display: flex;
+  align-items: center;
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .nav-link {
-    color: #333;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    text-decoration: none;
-    transition: color 0.3s ease;
+  color: #ecf0f1 !important;
+  font-weight: 500;
+  padding: 0 15px !important;
+  height: 25px; /* Chiều cao bằng header */
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+  position: relative;
+  margin: 0;
 }
 
+/* Các phần còn lại giữ nguyên */
 .nav-link:hover {
-    color: #007bff;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff !important;
 }
 
-/* Định dạng nút Đăng nhập */
-.btn-login {
-    background-color: #dc3545; /* Màu đỏ giống trong hình */
-    color: #dc3545;
-    border: none;
-    border-radius: 20px; /* Bo góc tròn */
-    padding: 8px 20px;
-    font-weight: 500;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
+.nav-link:after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: #f1c40f;
+  transition: all 0.3s ease;
 }
 
-.btn-login:hover {
-    background-color: #c82333;
-    color: #c82333;
+.nav-link:hover:after {
+  width: 70%;
+  left: 15%;
 }
 
-/* Định dạng nút Đăng ký */
-.btn-register {
-    background-color: #dc3545; /* Màu đỏ giống trong hình */
-    color: #dc3545;
-    border: none;
-    border-radius: 20px; /* Bo góc tròn */
-    padding: 8px 20px;
-    font-weight: 500;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
-}
-
-.btn-register:hover {
-    background-color: #c82333;
-    color: #c82333;
-}
-
-/* Định dạng dropdown */
-.dropdown-toggle {
-    display: flex;
-    align-items: center;
-    border-color: #007bff;
-    color: #007bff;
-    border-radius: 5px;
-    padding: 8px 16px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.dropdown-toggle:hover {
-    background-color: #007bff;
-    color: #fff;
-}
-
+/* Dropdown menu */
 .dropdown-menu {
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  padding: 10px 0;
+  margin-top: 0;
 }
 
 .dropdown-item {
-    font-size: 0.9rem;
-    padding: 8px 20px;
-    transition: background-color 0.3s ease;
+  padding: 8px 20px;
+  color: #2c3e50;
+  transition: all 0.2s ease;
 }
 
 .dropdown-item:hover {
-    background-color: #f8f9fa;
+  background-color: #f8f9fa;
+  color: #3498db;
+  transform: translateX(5px);
 }
 
-/* Định dạng thanh ngang trong dropdown */
-.dropdown-menu hr {
-    border-top: 2px solid #6c757d; /* Tăng độ dày và đổi màu đậm hơn */
-    margin: 2px 0; /* Giảm khoảng cách trên dưới */
+/* Nút điều chỉnh */
+.btn-login,
+.btn-register,
+.btn-account {
+  border-radius: 20px;
+  padding: 8px 20px;
+  font-weight: 500;
+  margin-left: 10px;
+  transition: all 0.3s ease;
+  height: 40px;
+  display: flex;
+  align-items: center;
 }
 
-/* Định dạng icon */
-.fas {
-    margin-right: 5px;
+.btn-login {
+  background-color: transparent;
+  border: 2px solid #f1c40f;
+  color: #f1c40f;
+}
+
+.btn-register {
+  background-color: #f1c40f;
+  border: 2px solid #f1c40f;
+  color: #2c3e50;
+}
+
+.btn-account {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: #ecf0f1;
 }
 
 /* Responsive */
-@media (max-width: 768px) {
-    .container {
-        width: 90%;
-    }
+@media (max-width: 992px) {
+  .header {
+    height: auto;
+    padding: 10px 0;
+  }
 
-    .nav-menu {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 10px;
-    }
+  .header-container {
+    flex-direction: column;
+    padding: 10px;
+  }
 
-    .account-container {
-        margin-top: 10px;
-    }
-}
+  .nav-menu {
+    flex-direction: column;
+    width: 100%;
+    display: none;
+  }
 
-@media (max-width: 576px) {
-    .header {
-        padding: 15px 0;
-    }
+  .nav-menu.show {
+    display: flex;
+  }
 
-    .container {
-        flex-direction: column;
-        align-items: center;
-    }
+  .nav-link {
+    height: auto;
+    padding: 10px 15px !important;
+    width: 100%;
+    justify-content: center;
+  }
 
-    .logo-container {
-        margin-bottom: 10px;
-    }
+  .account-container {
+    margin-top: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
 
-    .nav-menu {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .account-container {
-        margin-top: 15px;
-    }
+  .btn-login,
+  .btn-register,
+  .btn-account {
+    margin: 5px;
+    width: 100%;
+    justify-content: center;
+  }
 }

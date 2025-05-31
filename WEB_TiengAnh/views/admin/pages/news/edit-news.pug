@@ -1,29 +1,54 @@
+extends ../../layouts/default
 
 block content
-  .container.mt-5
-    h1.text-center.mb-4 Chỉnh sửa Tin tức
-    form(action=`/admin/news/edit/${news._id}` method="POST")
-      .mb-3
-        label.form-label(for="title") Tiêu đề
-        input.form-control(type="text" id="title" name="title" value=news.title required)
-      .mb-3
-        label.form-label(for="image") URL Hình ảnh
-        input.form-control(type="text" id="image" name="image" value=news.image required)
-      .mb-3
-        label.form-label(for="content") Nội dung
-        textarea.form-control(id="content" name="content" rows="5" required)= news.content
-      .mb-3
-        label.form-label(for="question") Câu hỏi
-        input.form-control(type="text" id="question" name="question" value=news.question required)
-      .mb-3
-        label.form-label(for="options") Các lựa chọn (mỗi lựa chọn trên một dòng)
-        textarea.form-control(id="options" name="options" rows="4" required)= news.options.join('\n')
-      .mb-3
-        label.form-label(for="correctAnswer") Đáp án đúng (số thứ tự, bắt đầu từ 0)
-        input.form-control(type="number" id="correctAnswer" name="correctAnswer" min="0" value=news.correctAnswer required)
-      .mb-3
-        label.form-label(for="author") Tác giả
-        input.form-control(type="text" id="author" name="author" value=news.author required)
-      .d-flex.justify-content-center
-        button.btn.btn-primary(type="submit") Lưu thay đổi
-        a.btn.btn-secondary.ms-2(href="/admin/news/list") Hủy
+  .container.mt-5.mb-5
+    .card.shadow-sm
+      .card-header.bg-primary.text-white.text-center
+        h1.mb-0.fw-bold Chỉnh sửa Tin tức
+      .card-body
+        form(action=`/admin/news/edit/${news._id}` method="POST")
+          .mb-4
+            label.form-label.fw-medium(for="title") Tiêu đề
+            input.form-control(type="text" id="title" name="title" value=news.title required placeholder="Nhập tiêu đề tin tức")
+            small.form-text.text-muted Vui lòng nhập tiêu đề rõ ràng và ngắn gọn.
+
+          .mb-4
+            label.form-label.fw-medium(for="image") URL Hình ảnh
+            input.form-control(type="text" id="image" name="image" value=news.image required placeholder="Nhập URL hình ảnh")
+            small.form-text.text-muted Đảm bảo URL dẫn đến hình ảnh hợp lệ.
+            if news.image
+              .mt-2
+                img(src=news.image width="150" height="auto" style="object-fit: cover; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1)" alt="Hình ảnh hiện tại")
+
+          .mb-4
+            label.form-label.fw-medium(for="content") Nội dung
+            textarea.form-control(id="content" name="content" rows="6" required placeholder="Nhập nội dung tin tức")= news.content
+            small.form-text.text-muted Nhập nội dung chi tiết của tin tức.
+
+          .mb-4
+            label.form-label.fw-medium(for="question") Câu hỏi
+            input.form-control(type="text" id="question" name="question" value=news.question required placeholder="Nhập câu hỏi")
+            small.form-text.text-muted Câu hỏi nên ngắn gọn và rõ ràng.
+
+          .mb-4
+            label.form-label.fw-medium(for="options") Các lựa chọn (mỗi lựa chọn trên một dòng)
+            textarea.form-control(id="options" name="options" rows="5" required placeholder="Nhập mỗi lựa chọn trên một dòng")= news.options.join('\n')
+            small.form-text.text-muted Mỗi dòng là một lựa chọn, ví dụ: Lựa chọn 1\nLựa chọn 2\nLựa chọn 3
+
+          .mb-4
+            label.form-label.fw-medium(for="correctAnswer") Đáp án đúng (số thứ tự, bắt đầu từ 0)
+            input.form-control(type="number" id="correctAnswer" name="correctAnswer" min="0" value=news.correctAnswer required placeholder="Nhập số thứ tự đáp án đúng")
+            small.form-text.text-muted Nhập số thứ tự của đáp án đúng (0 là lựa chọn đầu tiên).
+
+          .mb-4
+            label.form-label.fw-medium(for="author") Tác giả
+            input.form-control(type="text" id="author" name="author" value=news.author required placeholder="Nhập tên tác giả")
+            small.form-text.text-muted Tên tác giả hoặc nguồn tin.
+
+          .d-flex.justify-content-center.gap-3
+            button.btn.btn-primary.shadow-sm(type="submit")
+              i.bi.bi-save.me-2
+              | Lưu thay đổi
+            a.btn.btn-secondary.shadow-sm(href="/admin/news/list")
+              i.bi.bi-x-circle.me-2
+              | Hủy
