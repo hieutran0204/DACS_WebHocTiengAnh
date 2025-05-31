@@ -315,20 +315,20 @@ exports.deleteExamPart = async (req, res) => {
 exports.publishExamPart = async (req, res) => {
   try {
     const { id } = req.params;
-
+    console.log(`Attempting to publish exam part with ID: ${id}`);
     const examPart = await ExamPart_Listening.findById(id);
     if (!examPart) {
+      console.log(`Exam part not found for ID: ${id}`);
       req.flash('error', 'Không tìm thấy đề thi');
       return res.redirect('/admin/TOEIC/exam-listening');
     }
-
     examPart.status = 'public';
     await examPart.save();
-
+    console.log(`Successfully published exam part ID: ${id}`);
     req.flash('success', 'Đề thi đã được công khai thành công');
     res.redirect('/admin/TOEIC/exam-listening');
   } catch (error) {
-    console.error(error);
+    console.error(`Error publishing exam part: ${error.message}`);
     req.flash('error', 'Lỗi server khi công khai đề thi');
     res.redirect('/admin/TOEIC/exam-listening');
   }
