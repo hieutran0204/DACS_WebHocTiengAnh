@@ -1,50 +1,47 @@
-/* Reset CSS cơ bản */
+/* client/css/register.css */
+
+/* Reset và base styles */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Arial', sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Body với nền và căn giữa form */
+html, body {
+  height: 100%;
+}
+
 body {
+  background: linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(52, 152, 219, 0.8) 100%);
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #e0f7fa, #b2ebf2); /* Nền gradient xanh nhạt */
-  font-size: 16px;
+  padding: 20px;
+  background-attachment: fixed;
+  background-size: cover;
 }
 
-/* Container chính */
+/* Main container */
 .main {
-  width: 90%;
-  max-width: 400px;
-  height: auto;
-  padding: 20px;
+  width: 100%;
+  max-width: 500px;
+  animation: fadeIn 0.6s ease-out;
 }
 
-/* Form container với viền bo góc và bóng */
+/* Form container */
 .form-container {
-  width: 100%;
-  height: 100%;
-  padding: 20px;
-  background-color: #e0f7fa; /* Nền xanh nhạt */
-  border: 2px solid #00796b; /* Viền xanh đậm */
+  background: white;
   border-radius: 15px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Bóng đẹp hơn */
-  color: #004d40; /* Màu chữ đậm */
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
 }
 
-/* Phần đầu của form */
+/* Form header */
 .form-top {
-  width: 100%;
-  padding: 10px 0;
-  border-bottom: 2px dashed #00796b; /* Đường kẻ dưới */
+  background: linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(52, 152, 219, 0.8) 100%);
+  color: white;
+  padding: 25px;
   text-align: center;
   position: relative;
 }
@@ -52,150 +49,212 @@ body {
 .form-title {
   font-size: 1.8rem;
   font-weight: 700;
-  color: #004d40;
-  margin-bottom: 10px;
+  letter-spacing: 1px;
 }
 
 .exit {
   position: absolute;
-  top: 5px;
-  right: 10px;
-  color: #d32f2f;
-  font-size: 1.2rem;
+  top: 15px;
+  right: 20px;
+  color: white;
   text-decoration: none;
-  transition: all 0.3s ease;
+  font-size: 1.5rem;
+  font-weight: 300;
+  transition: transform 0.3s ease;
 }
 
 .exit:hover {
-  color: #b71c1c;
-  font-size: 1.3rem;
+  transform: scale(1.2);
 }
 
-/* Phần chính của form */
+/* Form body */
 .form-main {
-  width: 100%;
-  padding: 20px 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  padding: 25px;
+  max-height: 60vh;
+  overflow-y: auto;
 }
 
 .error-message {
-  color: #d32f2f;
+  background-color: #fdecea;
+  color: #e74c3c;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
   text-align: center;
-  margin-bottom: 15px;
-  font-size: 0.9rem;
+  font-weight: 500;
+  border-left: 4px solid #e74c3c;
+  animation: shake 0.5s;
 }
 
-/* Form và các trường nhập liệu */
-.signup-form {
+.field {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #2c3e50;
+  font-size: 0.95rem;
+}
+
+input, select {
   width: 100%;
+  padding: 14px 15px 14px 45px;
+  border: 2px solid #dfe6e9;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background-color: #f8f9fa;
+  appearance: none;
+}
+
+select {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%237f8c8d'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-size: 15px;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+  background-color: white;
+}
+
+/* Password toggle eye icon */
+.eye {
+  position: absolute;
+  right: 15px;
+  top: 40px;
+  cursor: pointer;
+  color: #7f8c8d;
+  transition: color 0.3s ease;
+  z-index: 2;
+}
+
+.eye:hover {
+  color: #3498db;
+}
+
+/* Field icons */
+.field::before {
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  position: absolute;
+  left: 15px;
+  top: 40px;
+  color: #7f8c8d;
+  z-index: 1;
+}
+
+.field:nth-child(1)::before { content: "\f007"; } /* user */
+.field:nth-child(2)::before { content: "\f095"; } /* phone */
+.field:nth-child(3)::before { content: "\f0e0"; } /* email */
+.field:nth-child(5)::before { content: "\f007"; } /* username */
+.field:nth-child(6)::before { content: "\f023"; left: 16px; } /* password */
+.field:nth-child(7)::before { content: "\f023"; left: 16px; } /* repassword */
+
+/* Form footer */
+.form-bottom {
+  padding: 0 25px 25px;
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
 
-.field {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  padding: 5px 0;
-}
-
-.field label {
-  font-size: 0.9rem;
-  color: #004d40;
-  margin-bottom: 5px;
-  font-weight: 500;
-}
-
-.field input {
-  padding: 10px;
-  border: 1px solid #00796b;
-  border-radius: 5px;
-  font-size: 0.9rem;
-  outline: none;
-  transition: border-color 0.3s ease;
-}
-
-.field input:focus {
-  border-color: #004d40;
-  box-shadow: 0 0 5px rgba(0, 121, 107, 0.5);
-}
-
-.eye {
-  position: relative;
-  cursor: pointer;
-  margin-top: 5px;
-}
-
-.eye i {
-  font-size: 1.2rem;
-  color: #00796b;
-  transition: color 0.3s ease;
-}
-
-.eye i:hover {
-  color: #004d40;
-}
-
-/* Phần cuối của form */
-.form-bottom {
-  width: 100%;
-  padding: 15px 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-}
-
 .button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 25px;
+  display: block;
+  text-align: center;
+  padding: 15px;
+  border-radius: 8px;
   font-size: 1rem;
   font-weight: 600;
-  color: #fff;
-  background-color: #00796b;
   text-decoration: none;
-  text-align: center;
-  transition: all 0.3s ease;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.button:hover {
-  background-color: #004d40;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+.button[type="submit"] {
+  background: linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(52, 152, 219, 0.8) 100%);
+  color: white;
+  border: none;
 }
 
-a.button {
-  background-color: #b2dfdb;
-  color: #004d40;
+.button[type="submit"]:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
 }
 
-a.button:hover {
-  background-color: #80cbc4;
-  color: #004d40;
+.button:not([type="submit"]) {
+  background: white;
+  color: #3498db;
+  border: 2px solid #3498db;
+}
+
+.button:not([type="submit"]):hover {
+  background: #f8f9fa;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-5px); }
+  40%, 80% { transform: translateX(5px); }
 }
 
 /* Responsive design */
-@media screen and (max-width: 480px) {
+@media (max-width: 600px) {
+  .main {
+    max-width: 95%;
+  }
+  
   .form-title {
     font-size: 1.5rem;
   }
-
-  .field label {
-    font-size: 0.8rem;
+  
+  .form-main {
+    padding: 20px;
   }
-
-  .field input {
-    font-size: 0.8rem;
-    padding: 8px;
+  
+  input, select {
+    padding: 12px 12px 12px 40px;
   }
-
-  .button {
+  
+  .field::before {
+    top: 37px;
     font-size: 0.9rem;
-    padding: 8px 15px;
   }
+  
+  .eye {
+    top: 37px;
+  }
+}
+
+/* Custom scrollbar for form */
+.form-main::-webkit-scrollbar {
+  width: 8px;
+}
+
+.form-main::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.form-main::-webkit-scrollbar-thumb {
+  background: #3498db;
+  border-radius: 10px;
+}
+
+.form-main::-webkit-scrollbar-thumb:hover {
+  background: #2980b9;
 }

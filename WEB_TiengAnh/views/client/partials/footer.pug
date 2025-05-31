@@ -1,21 +1,89 @@
 footer.footer
   div.container
     div.footer-content
+      // Về chúng tôi
+      div.footer-section
+        h4.footer-title 
+          i.fas.fa-info-circle.mr-2
+          | Về chúng tôi
+        p.footer-text Trang web cung cấp các bài học, bài test và trò chơi giúp bạn nâng cao trình độ tiếng Anh và chuẩn bị tốt cho các kỳ thi TOEIC/IELTS.
+        div.footer-certificate
+          i.fas.fa-award.mr-2
+          span Đối tác chính thức của ETS & Cambridge
+
+      // Liên kết nhanh
+      div.footer-section
+        h4.footer-title 
+          i.fas.fa-link.mr-2
+          | Liên kết nhanh
+        ul.footer-links
+          li
+            a(href="/about") 
+              i.fas.fa-chevron-right.mr-2
+              | Giới thiệu
+          li
+            a(href="/courses") 
+              i.fas.fa-chevron-right.mr-2
+              | Khóa học
+          li
+            a(href="/blog") 
+              i.fas.fa-chevron-right.mr-2
+              | Blog học tập
+          li
+            a(href="/faq") 
+              i.fas.fa-chevron-right.mr-2
+              | Câu hỏi thường gặp
+
       // Thông tin liên hệ
       div.footer-section
-        h4 Liên Hệ
-        p Email: support@example.com
-        p Hotline: 0123 456 789
-      // Liên kết mạng xã hội
+        h4.footer-title 
+          i.fas.fa-envelope.mr-2
+          | Liên hệ
+        div.contact-info
+          p
+            i.fas.fa-map-marker-alt.mr-2
+            | 123 Đường ABC, Quận 1, TP.HCM
+          p
+            i.fas.fa-phone-alt.mr-2
+            | Hotline: 0123 456 789
+          p
+            i.fas.fa-envelope.mr-2
+            | Email: support@englishcenter.com
+          p
+            i.fas.fa-clock.mr-2
+            | Giờ làm việc: 8:00 - 17:00 (T2-T6)
+
+      // Mạng xã hội
       div.footer-section
-        h4 Theo Dõi Chúng Tôi
+        h4.footer-title 
+          i.fas.fa-share-alt.mr-2
+          | Kết nối với chúng tôi
         div.social-links
-          a(href="https://facebook.com" target="_blank")
+          a.social-link(href="https://facebook.com" target="_blank" title="Facebook")
             i.fab.fa-facebook-f
-          a(href="https://twitter.com" target="_blank")
+          a.social-link(href="https://twitter.com" target="_blank" title="Twitter")
             i.fab.fa-twitter
-          a(href="https://instagram.com" target="_blank")
+          a.social-link(href="https://youtube.com" target="_blank" title="YouTube")
+            i.fab.fa-youtube
+          a.social-link(href="https://instagram.com" target="_blank" title="Instagram")
             i.fab.fa-instagram
-      // Bản quyền
-      div.footer-bottom
-        p &copy; 2025 Trang Luyện Thi TOEIC/IELTS. All rights reserved.
+          a.social-link(href="https://linkedin.com" target="_blank" title="LinkedIn")
+            i.fab.fa-linkedin-in
+        
+        // Newsletter
+        div.newsletter
+          h5 Đăng ký nhận bản tin
+          form
+            div.input-group
+              input(type="email" placeholder="Email của bạn" required)
+              button(type="submit")
+                i.fas.fa-paper-plane
+
+    // Footer bottom
+    div.footer-bottom
+      div.copyright
+        p &copy; 2025 English Learning Center. All rights reserved.
+      div.legal-links
+        a(href="/privacy") Chính sách bảo mật
+        a(href="/terms") Điều khoản sử dụng
+        a(href="/sitemap") Sitemap

@@ -1,9 +1,6 @@
 extends ../layouts/default
-
 block content
   link(rel="stylesheet", href="/client/css/home.css")
-
-  //- HERO SLIDER
   section.hero.carousel.slide(data-bs-ride="carousel" id="heroCarousel")
     .carousel-inner
       .carousel-item.active
@@ -11,13 +8,13 @@ block content
         img(src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=800&q=80", alt="TSE - TOEIC", style="width: 100%; height: 100vh; object-fit: cover;")
         .carousel-caption.d-flex.flex-column.justify-content-center.h-100
           h2.display-3.fw-bold.text-white Nâng Cao Trình Độ Tiếng Anh
-          p.lead.text-white Hệ thống học tập thông minh giúp bạn chinh phục IELTS, TOEIC dễ dàng
+          p.lead.text-white Hệ thống học tập thông minh giúp bạn chinh phục TOEIC dễ dàng
           a.btn.btn-primary.btn-lg.mt-3(href="/auth/register") Bắt đầu ngay
       .carousel-item
         .overlay(style="background: rgba(0,0,0,0.5); position: absolute; top: 0; left: 0; width: 100%; height: 100%;")
         img(src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=800&q=80", alt="LEARN ENGLISH", style="width: 100%; height: 100vh; object-fit: cover;")
         .carousel-caption.d-flex.flex-column.justify-content-center.h-100
-          h2.display-3.fw-bold.text-white Luyện Thi IELTS Hiệu Quả
+          h2.display-3.fw-bold.text-white Luyện Thi TOEIC Hiệu Quả
           p.lead.text-white Kho đề thi mô phỏng thực tế với đánh giá chi tiết từ chuyên gia
           a.btn.btn-primary.btn-lg.mt-3(href="/toeic") Luyện tập ngay
       .carousel-item
@@ -47,8 +44,6 @@ block content
   section.test-section.py-5
     .container
       .text-center.mb-5
-        h2.display-5.fw-bold.text-primary Chào mừng đến với Trang luyện thi TOEIC/IELTS
-        p.lead.text-muted Nâng cao kỹ năng tiếng Anh với các bài thi mô phỏng thực tế!
       .row.g-4
         .col-md-4
           .card.border-0.shadow-lg.h-100
@@ -155,7 +150,7 @@ block content
         .col-md-6
           .card.border-0.shadow-sm
             .card-body.text-center
-              p.card-text.fs-5.text-muted "TOEIC đã giúp tôi nâng điểm IELTS từ 400 lên 650 chỉ sau 3 tháng. Phương pháp học thông minh và hệ thống bài tập phong phú khiến việc học trở nên dễ dàng hơn bao giờ hết."
+              p.card-text.fs-5.text-muted "TOEIC đã giúp tôi nâng điểm TOEIC từ 400 lên 650 chỉ sau 3 tháng. Phương pháp học thông minh và hệ thống bài tập phong phú khiến việc học trở nên dễ dàng hơn bao giờ hết."
               p.card-text.fw-bold.mt-3 - Nguyễn Văn A, TOEIC 650
 
   //- CTA SECTION

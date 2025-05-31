@@ -1,14 +1,11 @@
 extends ../layouts/default
-
 block head
   link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css")
-  link(rel="stylesheet", href="/client/css/game.css")
+  link(rel="stylesheet", href="/client/css/wordgame.css")
   title Trò chơi xáo chữ
-
 block content
   .container.mt-5
     h1.title.text-center.mb-4 Trò chơi xáo chữ
-    
     .instructions.mb-4
       h2 Hướng dẫn
       p Các chữ cái của một từ tiếng Anh đã bị xáo trộn.
@@ -35,5 +32,4 @@ block content
       p Bạn có thể nhấn F5 để chơi với từ mới bất cứ lúc nào!
 
   script(src="https://code.jquery.com/jquery-3.5.1.min.js")
-  script(src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js")
   script(src="/client/js/wordgame.js")
