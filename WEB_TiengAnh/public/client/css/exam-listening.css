@@ -1,0 +1,252 @@
+/* client/css/listening-exam.css */
+
+/* Base Container */
+.container {
+  max-width: 1000px;
+  padding: 0 20px;
+  margin: 2rem auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Header Styles */
+h1.text-center {
+  color: #2c3e50;
+  font-size: 2.2rem;
+  margin-bottom: 2rem;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+h1.text-center:after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #3498db, #2c3e50);
+  border-radius: 2px;
+}
+
+/* Alert Styles */
+.alert {
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 2rem;
+  border-left: 4px solid transparent;
+}
+
+.alert-danger {
+  background-color: #fdecea;
+  border-left-color: #e74c3c;
+  color: #c0392b;
+}
+
+.alert-info {
+  background-color: #e8f4fd;
+  border-left-color: #3498db;
+  color: #2c3e50;
+}
+
+/* Card Styles */
+.card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.card-header {
+  background: linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(52, 152, 219, 0.8) 100%);
+  color: white;
+  padding: 1.25rem;
+  border-bottom: none;
+}
+
+.card-header h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Timer Styles */
+.timer {
+  background: #f8f9fa;
+  padding: 10px 15px;
+  border-radius: 6px;
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+
+#timer {
+  font-weight: 600;
+  color: #e74c3c;
+}
+
+/* Question Styles */
+.question {
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.question:hover {
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+.bg-correct {
+  background-color: rgba(46, 204, 113, 0.1) !important;
+  border-left: 4px solid #2ecc71 !important;
+}
+
+.bg-incorrect {
+  background-color: rgba(231, 76, 60, 0.1) !important;
+  border-left: 4px solid #e74c3c !important;
+}
+
+h3 {
+  color: #3498db;
+  font-size: 1.3rem;
+  margin: 2rem 0 1rem;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+h5 {
+  color: #2c3e50;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+/* Audio Player Styles */
+audio {
+  width: 100%;
+  max-width: 500px;
+  margin: 10px 0;
+}
+
+audio:focus {
+  outline: none;
+}
+
+/* Image Styles */
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  margin: 10px 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Controls */
+.form-check {
+  margin-bottom: 8px;
+  padding-left: 1.8rem;
+}
+
+.form-check-input {
+  width: 1.1em;
+  height: 1.1em;
+  margin-top: 0.2em;
+  margin-left: -1.8rem;
+  border: 2px solid #95a5a6;
+}
+
+.form-check-input:checked {
+  background-color: #3498db;
+  border-color: #3498db;
+}
+
+.form-check-label {
+  cursor: pointer;
+  padding-left: 5px;
+}
+
+/* Result Styles */
+.result {
+  background: white;
+  padding: 12px;
+  border-radius: 6px;
+  margin-top: 10px;
+  font-size: 0.95rem;
+}
+
+.result p {
+  margin-bottom: 5px;
+}
+
+/* Button Styles */
+.btn {
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  border: none;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+}
+
+.btn-secondary {
+  background: #95a5a6;
+  border: none;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #7f8c8d;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Disabled States */
+.submitted .form-check-input {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.submitted button[type='submit'] {
+  display: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  h1.text-center {
+    font-size: 1.8rem;
+  }
+  
+  .card-header h2 {
+    font-size: 1.3rem;
+  }
+  
+  .question {
+    padding: 1rem;
+  }
+  
+  .btn {
+    width: 100%;
+    padding: 12px;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.container {
+  animation: fadeIn 0.5s ease-out;
+}

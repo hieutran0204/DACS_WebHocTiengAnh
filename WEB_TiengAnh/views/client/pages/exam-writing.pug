@@ -1,71 +1,65 @@
 extends ../layouts/default
 
+block head
+  link(rel="stylesheet", href="/client/css/exam-writing.css")
+
 block content
-  h1.text-center.text-primary.mt-4.mb-3 Đề thi Writing TOEIC: #{writing.examCode}
-  p#timer.text-center.text-danger.font-weight-bold.mb-4 Thời gian còn lại: 60:00
+  .container
+    h1.text-center.text-primary.mt-4.mb-3 Đề thi Writing TOEIC: #{writing.examCode}
+    p#timer.text-center.text-danger.font-weight-bold.mb-4 Thời gian còn lại: 60:00
 
-  if error
-    p.alert.alert-danger.text-center= error
-  if success
-    p.alert.alert-success.text-center= success
+    if error
+      .alert.alert-danger.text-center= error
+    if success
+      .alert.alert-success.text-center= success
 
-  form#examForm(action=`/testtoeic/writing/${writing._id}/submit` method="POST" enctype="multipart/form-data")
-    each question, index in writing.questions
-      .card.mb-4.shadow-sm
-        .card-body
-          h4.card-title Câu hỏi #{index + 1} (Part #{question.part})
-          
-          if question.part === 8
-            img.img-fluid.mb-3(src=question.part8.img alt="Hình ảnh câu hỏi")
-            p.text-muted
-              | Từ khóa: 
-              span.badge.badge-info= question.part8.keyword1
-              | , 
-              span.badge.badge-info= question.part8.keyword2
-            textarea.form-control(name=`answers[${index}][text]` rows="5" placeholder="Nhập câu trả lời..." required oninput=`updateWordCount(${index})`)
-            input.form-control-file.mt-2(type="file" name=`answers[${index}][file]` accept="image/*")
-            p.text-right.text-muted.mt-1.word-count(id="word-count-#{index}") Số từ: 0
+    form#examForm(action=`/testtoeic/writing/${writing._id}/submit` method="POST" enctype="multipart/form-data")
+      each question, index in writing.questions
+        .card.mb-4
+          .card-body
+            h4.card-title Câu hỏi #{index + 1} (Part #{question.part})
+            
+            if question.part === 8
+              img.img-fluid.mb-3(src=question.part8.img alt="Hình ảnh câu hỏi")
+              p.text-muted
+                | Từ khóa: 
+                span.badge.badge-info= question.part8.keyword1
+                | , 
+                span.badge.badge-info= question.part8.keyword2
+              textarea.form-control(name=`answers[${index}][text]` rows="5" placeholder="Nhập câu trả lời..." required oninput=`updateWordCount(${index})`)
+              input.form-control-file.mt-2(type="file" name=`answers[${index}][file]` accept="image/*")
+              p.word-count(id=`word-count-${index}`) Số từ: 0
 
-          else if question.part === 9
-            p.font-weight-bold Tình huống:
-            p.text-muted= question.part9.situation
-            p.font-weight-bold Yêu cầu:
-            p.text-muted= question.part9.requirements
-            textarea.form-control(name=`answers[${index}][text]` rows="10" placeholder="Nhập email..." required oninput=`updateWordCount(${index})`)
-            p.text-right.text-muted.mt-1.word-count(id="word-count-#{index}") Số từ: 0
+            else if question.part === 9
+              p.font-weight-bold Tình huống:
+              p.text-muted= question.part9.situation
+              p.font-weight-bold Yêu cầu:
+              p.text-muted= question.part9.requirements
+              textarea.form-control(name=`answers[${index}][text]` rows="10" placeholder="Nhập email..." required oninput=`updateWordCount(${index})`)
+              p.word-count(id=`word-count-${index}`) Số từ: 0
 
-          else if question.part === 10
-            p.font-weight-bold Đề bài:
-            p.text-muted= question.part10.question
-            textarea.form-control(name=`answers[${index}][text]` rows="15" placeholder="Nhập bài luận..." required oninput=`updateWordCount(${index})`)
-            p.text-right.text-muted.mt-1.word-count(id="word-count-#{index}") Số từ: 0
+            else if question.part === 10
+              p.font-weight-bold Đề bài:
+              p.text-muted= question.part10.question
+              textarea.form-control(name=`answers[${index}][text]` rows="15" placeholder="Nhập bài luận..." required oninput=`updateWordCount(${index})`)
+              p.word-count(id=`word-count-${index}`) Số từ: 0
 
-    .text-center.mt-4
-      button.btn.btn-lg.btn-success(type="submit") 📝 Nộp bài
+      .text-center.mt-4
+        button.btn.btn-lg.btn-success(type="submit") 
+          i.bi.bi-send.me-2
+          | Nộp bài
 
-  style.
-    .card-title {
-      font-weight: bold;
-      color: #2c3e50;
-    }
-    .word-count {
-      font-style: italic;
-      font-size: 0.9em;
-    }
-    .form-control:focus {
-      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-      border-color: #80bdff;
-    }
-
+block scripts
+  script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js")
   script.
     function updateWordCount(index) {
       const textarea = document.querySelector(`textarea[name="answers[${index}][text]"]`);
       const wordCount = textarea.value.trim().split(/\s+/).filter(word => word.length > 0).length;
-      document.querySelector(`#word-count-${index}`).textContent = `Số từ: ${wordCount}`;
+      document.getElementById(`word-count-${index}`).textContent = `Số từ: ${wordCount}`;
     }
 
     // Đồng hồ đếm ngược (60 phút)
-    let timeLeft = 60 * 60; // 60 phút tính bằng giây
+    let timeLeft = 60 * 60;
     const timerElement = document.getElementById('timer');
     const form = document.getElementById('examForm');
     

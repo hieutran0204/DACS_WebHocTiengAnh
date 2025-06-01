@@ -1,0 +1,201 @@
+/* profile.css */
+
+/* Main container styling */
+.container.mt-5 {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Card styling */
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.card:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    transform: translateY(-3px);
+}
+
+.card-body {
+    padding: 25px;
+}
+
+/* Form styling */
+.form-group {
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.form-control {
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 12px 15px;
+    transition: all 0.3s ease;
+    background-color: #f9f9f9;
+}
+
+.form-control:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    background-color: white;
+}
+
+.form-control[readonly] {
+    background-color: #f0f0f0;
+    cursor: not-allowed;
+}
+
+label {
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 8px;
+    display: block;
+}
+
+/* Button styling */
+.btn-primary {
+    background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+    border: none;
+    border-radius: 30px;
+    padding: 10px 25px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+}
+
+/* Tab and navigation styling */
+.list-group {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+.list-group-item {
+    border: none;
+    padding: 15px 20px;
+    font-weight: 500;
+    color: #555;
+    transition: all 0.3s ease;
+    background-color: #f9f9f9;
+    border-left: 3px solid transparent;
+}
+
+.list-group-item:hover {
+    background-color: #f0f0f0;
+    color: #3498db;
+    border-left-color: #3498db;
+}
+
+.list-group-item.active {
+    background: linear-gradient(135deg, rgba(52, 152, 219, 0.1) 0%, rgba(44, 62, 80, 0.1) 100%);
+    color: #3498db;
+    border-left-color: #3498db;
+}
+
+.tab-content {
+    padding: 0;
+}
+
+.tab-pane {
+    animation: fadeIn 0.5s ease;
+}
+
+/* Alert messages */
+.alert {
+    border-radius: 6px;
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    border: none;
+    font-weight: 500;
+}
+
+.alert-danger {
+    background-color: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
+}
+
+.alert-success {
+    background-color: rgba(46, 204, 113, 0.1);
+    color: #2ecc71;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .row {
+        flex-direction: column;
+    }
+    
+    .col-md-4, .col-md-8 {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .card {
+        margin-bottom: 20px;
+    }
+}
+
+/* Input validation styling */
+input:invalid {
+    border-color: #e74c3c;
+}
+
+input:valid:not([readonly]) {
+    border-color: #2ecc71;
+}
+
+/* Floating label effect */
+.form-group.focused label {
+    color: #3498db;
+    transform: translateY(-5px);
+    font-size: 0.85em;
+}
+
+/* Add some spacing */
+h2.text-center {
+    margin-bottom: 30px;
+    color: #2c3e50;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+h2.text-center::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+    border-radius: 3px;
+}
+
+h4 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+h5 {
+    color: #3498db;
+    margin-bottom: 20px;
+}

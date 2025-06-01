@@ -1,6 +1,7 @@
 extends ../layouts/default
 
-
+block head
+  link(rel="stylesheet", href="/client/css/profile.css")
 block content
   .container.mt-5
     h2.text-center Hồ Sơ Người Dùng
@@ -87,4 +88,5 @@ block scripts
       } else {
         $('.list-group-item:first').tab('show');
       }
+      
     });

@@ -26,7 +26,7 @@ exports.createTranscription = async (req, res) => {
 
     await newTranscription.save();
     req.flash('success', 'Tạo bài transcription thành công');
-    res.redirect('/admin/transcription/list');
+    res.redirect('/admin/transcription');
   } catch (error) {
     console.error('Lỗi tạo transcription:', error);
     req.flash('error', 'Lỗi tạo transcription: ' + error.message);
@@ -57,7 +57,7 @@ exports.deleteTranscription = async (req, res) => {
     const transcription = await Transcription.findById(req.params.id);
     if (!transcription) {
       req.flash('error', 'Transcription không tồn tại');
-      return res.redirect('/admin/transcription/list');
+      return res.redirect('/admin/transcription');
     }
 
     // Xóa file audio nếu có
@@ -80,10 +80,10 @@ exports.deleteTranscription = async (req, res) => {
 
     await Transcription.findByIdAndDelete(req.params.id);
     req.flash('success', 'Xóa bài transcription thành công');
-    res.redirect('/admin/transcription/list');
+    res.redirect('/admin/transcription');
   } catch (error) {
     console.error('Lỗi xóa transcription:', error);
     req.flash('error', 'Lỗi xóa transcription: ' + error.message);
-    res.redirect('/admin/transcription/list');
+    res.redirect('/admin/transcription');
   }
 };

@@ -1,178 +1,164 @@
-/* Header cố định chiều cao và căn giữa nội dung */
+/* header.css */
 .header {
-  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 0; /* Bỏ padding tổng */
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  font-family: "Montserrat", sans-serif;
-  height: 70px; /* Cố định chiều cao */
-  display: flex;
-  align-items: center;
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    padding: 15px 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    transition: all 0.3s ease;
 }
 
-/* Container bên trong header */
-.header-container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.header:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
 
-/* Logo điều chỉnh lại */
-.logo-container {
-  height: 50px;
-  display: flex;
-  align-items: center;
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
 .logo-container img {
-  height: 100%;
-  width: auto;
-  transition: transform 0.3s ease;
+    transition: transform 0.3s ease;
 }
 
-/* Menu chính */
+.logo-container img:hover {
+    transform: scale(1.05);
+}
+
 .nav-menu {
-  display: flex;
-  align-items: center;
-  height: 100%;
-  margin: 0;
-  padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 25px;
 }
 
 .nav-link {
-  color: #ecf0f1 !important;
-  font-weight: 500;
-  padding: 0 15px !important;
-  height: 25px; /* Chiều cao bằng header */
-  display: flex;
-  align-items: center;
-  transition: all 0.3s ease;
-  position: relative;
-  margin: 0;
+    color: white !important;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    position: relative;
 }
 
-/* Các phần còn lại giữ nguyên */
 .nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: #fff !important;
+    background-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
 }
 
-.nav-link:after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  width: 0;
-  height: 2px;
-  background: #f1c40f;
-  transition: all 0.3s ease;
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: white;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
 }
 
-.nav-link:hover:after {
-  width: 70%;
-  left: 15%;
+.nav-link:hover::after {
+    width: 80%;
 }
 
-/* Dropdown menu */
 .dropdown-menu {
-  border: none;
-  border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  padding: 10px 0;
-  margin-top: 0;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 10px 0;
+    margin-top: 8px;
 }
 
 .dropdown-item {
-  padding: 8px 20px;
-  color: #2c3e50;
-  transition: all 0.2s ease;
+    padding: 8px 20px;
+    transition: all 0.2s ease;
 }
 
 .dropdown-item:hover {
-  background-color: #f8f9fa;
-  color: #3498db;
-  transform: translateX(5px);
+    background-color: #f8f9fa;
+    color: #3498db !important;
+    transform: translateX(5px);
 }
 
-/* Nút điều chỉnh */
-.btn-login,
-.btn-register,
-.btn-account {
-  border-radius: 20px;
-  padding: 8px 20px;
-  font-weight: 500;
-  margin-left: 10px;
-  transition: all 0.3s ease;
-  height: 40px;
-  display: flex;
-  align-items: center;
+.account-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.btn-login, .btn-register {
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: 500;
+    transition: all 0.3s ease;
 }
 
 .btn-login {
-  background-color: transparent;
-  border: 2px solid #f1c40f;
-  color: #f1c40f;
+    color: white;
+    border: 1px solid white;
+    background: transparent;
+}
+
+.btn-login:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
 }
 
 .btn-register {
-  background-color: #f1c40f;
-  border: 2px solid #f1c40f;
-  color: #2c3e50;
+    background: white;
+    color: #3498db;
+    border: 1px solid white;
 }
 
-.btn-account {
-  background-color: rgba(255, 255, 255, 0.1);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  color: #ecf0f1;
+.btn-register:hover {
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Responsive */
-@media (max-width: 992px) {
-  .header {
-    height: auto;
+.btn-outline-primary {
+    color: white;
+    border-color: white;
+}
+
+.btn-outline-primary:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Animation for header when scrolling */
+.header.scrolled {
     padding: 10px 0;
-  }
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 90%);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
 
-  .header-container {
-    flex-direction: column;
-    padding: 10px;
-  }
+/* Responsive design */
+@media (max-width: 992px) {
+    .nav-menu {
+        gap: 15px;
+    }
+    
+    .nav-link {
+        padding: 6px 10px;
+        font-size: 14px;
+    }
+}
 
-  .nav-menu {
-    flex-direction: column;
-    width: 100%;
-    display: none;
-  }
-
-  .nav-menu.show {
-    display: flex;
-  }
-
-  .nav-link {
-    height: auto;
-    padding: 10px 15px !important;
-    width: 100%;
-    justify-content: center;
-  }
-
-  .account-container {
-    margin-top: 10px;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-  }
-
-  .btn-login,
-  .btn-register,
-  .btn-account {
-    margin: 5px;
-    width: 100%;
-    justify-content: center;
-  }
+@media (max-width: 768px) {
+    .header {
+        padding: 10px 0;
+    }
+    
+    .container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .nav-menu {
+        margin-top: 15px;
+        flex-wrap: wrap;
+    }
 }

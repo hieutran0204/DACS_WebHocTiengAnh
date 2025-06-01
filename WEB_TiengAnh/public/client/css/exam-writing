@@ -1,0 +1,227 @@
+/* client/css/writing-exam.css */
+
+/* Layout chung */
+.exam-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Header */
+.exam-header {
+  text-align: center;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.exam-title {
+  color: #2c3e50;
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+
+.exam-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  padding: 8px 20px;
+  border-radius: 50px;
+  font-weight: 600;
+  color: #e74c3c;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Alert */
+.exam-alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+  border-left: 4px solid;
+}
+
+.alert-danger {
+  background-color: #fdecea;
+  border-left-color: #e74c3c;
+  color: #c0392b;
+}
+
+.alert-success {
+  background-color: #e8f8f5;
+  border-left-color: #2ecc71;
+  color: #27ae60;
+}
+
+/* Phần thi */
+.exam-part {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  margin-bottom: 30px;
+  overflow: hidden;
+}
+
+.part-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 20px;
+  background: linear-gradient(135deg, #3498db, #2c3e50);
+  color: white;
+}
+
+.part-icon {
+  font-size: 1.5rem;
+}
+
+.part-title {
+  font-size: 1.2rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+.part-body {
+  padding: 20px;
+}
+
+.question-number {
+  color: #3498db;
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+/* Nội dung câu hỏi */
+.question-content {
+  margin-top: 15px;
+}
+
+.question-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.question-keywords {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.keyword {
+  background-color: #3498db;
+  color: white;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+
+.question-subtitle {
+  color: #2c3e50;
+  font-size: 1rem;
+  margin: 15px 0 8px;
+}
+
+/* Phần trả lời */
+.answer-input {
+  width: 100%;
+  padding: 15px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 1rem;
+  margin-bottom: 10px;
+  resize: vertical;
+  transition: all 0.3s ease;
+}
+
+.answer-input:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+  outline: none;
+}
+
+.answer-file {
+  width: 100%;
+  padding: 15px;
+  border: 2px dashed #e9ecef;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+}
+
+.answer-file:hover {
+  border-color: #3498db;
+  background-color: #f8f9fa;
+}
+
+.word-counter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #95a5a6;
+  font-size: 0.9rem;
+  justify-content: flex-end;
+}
+
+/* Nộp bài */
+.exam-footer {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.submit-button {
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  border-radius: 50px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+}
+
+.submit-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .exam-container {
+    padding: 15px;
+  }
+  
+  .exam-title {
+    font-size: 1.6rem;
+  }
+  
+  .part-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+  }
+  
+  .part-icon {
+    margin-bottom: 5px;
+  }
+}
