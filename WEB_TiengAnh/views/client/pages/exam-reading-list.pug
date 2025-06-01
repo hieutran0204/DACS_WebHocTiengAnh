@@ -1,43 +1,50 @@
 extends ../layouts/default
 
+block head
+  title Danh sách đề thi Reading TOEIC
+  link(rel="stylesheet", href="/client/css/exam-reading-list.css")
+
 block content
   .container.mt-5
     h1.text-center.mb-4 Danh sách Đề thi Reading TOEIC
 
     if error && error.length
       .alert.alert-danger.text-center #{error}
+    if !examParts.length
+      .alert.alert-info.text-center Không có đề thi Reading nào được public.
     else
-      if total === 0
-        .alert.alert-info.text-center Không có đề thi Reading nào được public.
-      else
-        .table-responsive
-          table.table.table-striped.table-hover.align-middle
-            thead.table-primary
-              tr.text-center
-                th Mã đề
-                th Part
-                th Độ khó
-                th Người tạo
-                th Ngày tạo
-                th Hành động
-            tbody
-              each examPart in examParts
-                tr.text-center
-                  td #{examPart._id}
-                  td #{examPart.part ? examPart.part.join(', ') : 'N/A'}
-                  td #{difficultyMap[examPart.difficulty] || 'Chưa xác định'}
-                  td #{examPart.createdBy ? examPart.createdBy.username : 'Không xác định'}
-                  td #{new Date(examPart.createdAt).toLocaleDateString()}
-                  td
-                    a.btn.btn-outline-primary.btn-sm(href=`/toeic/reading/${examPart._id}` title="Làm bài") 
-                      i.bi.bi-pencil-square.me-1
-                      | Làm bài
+      .row
+        each examPart in examParts
+          .col-md-4.mb-4
+            .card.h-100
+              .card-header.bg-primary.text-white
+                h5.mb-0 Đề #{examPart._id}
+              .card-body
+                p
+                  strong Part: 
+                  | #{examPart.part ? examPart.part.join(', ') : 'N/A'}
+                p
+                  strong Độ khó: 
+                  | #{difficultyMap[examPart.difficulty] || 'Chưa xác định'}
+                p
+                  strong Người tạo: 
+                  | #{examPart.createdBy ? examPart.createdBy.username : 'Không xác định'}
+                p
+                  strong Ngày tạo: 
+                  | #{new Date(examPart.createdAt).toLocaleDateString()}
+              .card-footer
+                a.btn.btn-primary.w-100(href=`/toeic/reading/${examPart._id}`) Làm bài
 
-        // Phân trang
-        nav(aria-label="Page navigation")
-          ul.pagination.pagination-sm.justify-content-center.mt-4
-            - let totalPages = Math.ceil(total / limit);
-            if totalPages > 1
-              - for (let i = 1; i <= totalPages; i++)
-                li.page-item(class=(i === page ? 'active' : ''))
-                  a.page-link(href=`/toeic/reading-list?page=${i}&limit=${limit}`) #{i}
+      // Phân trang
+      if total > limit
+        nav(aria-label='Page navigation')
+          ul.pagination.justify-content-center.mt-4
+            if page > 1
+              li.page-item
+                a.page-link(href=`?page=${page - 1}&limit=${limit}`) Trang trước
+            - for (let i = 1; i <= Math.ceil(total / limit); i++)
+              li.page-item(class=i === page ? 'active' : '')
+                a.page-link(href=`?page=${i}&limit=${limit}`) #{i}
+            if page < Math.ceil(total / limit)
+              li.page-item
+                a.page-link(href=`?page=${page + 1}&limit=${limit}`) Trang sau
